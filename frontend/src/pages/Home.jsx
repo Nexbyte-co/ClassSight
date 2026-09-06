@@ -1,11 +1,10 @@
-import { useState } from "react";
 import { Moon, Sun } from "lucide-react";
 import "./Home.css";
 import { Link } from "react-router-dom";
-import { Menu } from "lucide-react";
+import { useTheme } from "../context/ThemeContext";
 
 function Home() {
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const { isDarkMode, toggleDarkMode } = useTheme();
 
   return (
     <div className={`home-page ${isDarkMode ? "dark-mode" : ""}`}>
@@ -16,17 +15,16 @@ function Home() {
 
         <div className="header-actions">
           <button
-  className="theme-toggle-home"
-  onClick={() => setIsDarkMode(!isDarkMode)}
-  aria-label="Toggle dark mode"
->
-  {isDarkMode ? (
-    <Sun size={24} strokeWidth={1.8} />
-  ) : (
-    <Moon size={24} strokeWidth={1.8} />
-  )}
-</button>
-
+            className="theme-toggle-home"
+            onClick={toggleDarkMode}
+            aria-label="Toggle dark mode"
+          >
+            {isDarkMode ? (
+              <Sun size={24} strokeWidth={1.8} />
+            ) : (
+              <Moon size={24} strokeWidth={1.8} />
+            )}
+          </button>
         </div>
       </header>
 
