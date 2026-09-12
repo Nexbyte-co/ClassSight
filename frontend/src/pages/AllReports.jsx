@@ -255,7 +255,7 @@ function AllReports() {
                 <button
                   type="button"
                   className="dropdown-item"
-                  onClick={() => navigate("/login")}
+                  onClick={() => navigate("/")}
                   style={{ color: "#dc2626" }}
                 >
                   <LogOut size={16} strokeWidth={1.8} />
@@ -304,7 +304,7 @@ function AllReports() {
               <span>CSE Dept. · Semester 6</span>
             </div>
 
-            <button type="button" className="sidebar-logout" onClick={() => navigate("/login")}>
+            <button type="button" className="sidebar-logout" onClick={() => navigate("/")}>
               <LogOut size={17} strokeWidth={1.8} />
               <span>Log Out</span>
             </button>

@@ -1,4 +1,4 @@
-import { Moon, Sun } from "lucide-react";
+import { Moon, Sun, ScanFace } from "lucide-react";
 import "./Home.css";
 import { Link } from "react-router-dom";
 import { useTheme } from "../context/ThemeContext";
@@ -9,9 +9,21 @@ function Home() {
   return (
     <div className={`home-page ${isDarkMode ? "dark-mode" : ""}`}>
       <header className="home-header">
-        <div className="logo">
-          ClassSight
-        </div>
+        <Link
+          to="/"
+          className="brand-link"
+          onClick={(e) => {
+            if (window.location.pathname === "/") {
+              e.preventDefault();
+            }
+          }}
+          aria-label="ClassSight Home"
+        >
+          <div className="brand-icon">
+            <ScanFace size={20} strokeWidth={2.2} />
+          </div>
+          <span className="brand-name">ClassSight</span>
+        </Link>
 
         <div className="header-actions">
           <button

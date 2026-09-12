@@ -124,12 +124,26 @@
   width: 32px;
   height: 32px;
   border-radius: 8px;
-  background: var(--cs-crimson);
+  background-color: #7a1515;
+  background: var(--cs-crimson, #7a1515);
   color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
   box-shadow: 0 2px 8px rgba(122, 21, 21, 0.25);
+  flex-shrink: 0;
+}
+
+.brand-icon svg {
+  color: #ffffff;
+  stroke: #ffffff;
+}
+
+.dark-mode .brand-icon,
+.dashboard-root.dark-mode .brand-icon {
+  background-color: #9b2929;
+  background: var(--cs-crimson, #9b2929);
+  box-shadow: 0 2px 8px rgba(155, 41, 41, 0.35);
 }
 
 .brand-name {
@@ -306,7 +320,9 @@
    ========================================================================== */
 .dashboard-body {
   display: flex;
+  flex-direction: column;
   flex: 1;
+  width: 100%;
   min-height: calc(100vh - 72px);
 }
 
@@ -408,10 +424,11 @@
    ========================================================================== */
 .dashboard-main {
   flex: 1;
-  padding: 32px 40px 60px;
-  max-width: 1200px;
+  padding: 32px 36px 60px;
+  max-width: 1400px;
   margin: 0 auto;
   width: 100%;
+  box-sizing: border-box;
 }
 
 /* Greeting Section */
@@ -1375,4 +1392,687 @@
     width: 100%;
     justify-content: center;
   }
+}
+
+/* ==========================================================================
+   Active Session Strip Enhancements (Instruction 4)
+   ========================================================================== */
+.strip-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.btn-end-session {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid rgba(220, 38, 38, 0.3);
+  background: rgba(220, 38, 38, 0.08);
+  color: #dc2626;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-end-session:hover {
+  background: #dc2626;
+  color: #ffffff;
+}
+
+.btn-take-session-attendance {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid rgba(22, 163, 74, 0.3);
+  background: rgba(22, 163, 74, 0.08);
+  color: #16a34a;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-take-session-attendance:hover {
+  background: #16a34a;
+  color: #ffffff;
+}
+
+.current-class-strip.no-active-strip {
+  border-left: 4px solid var(--cs-border);
+}
+
+.inactive-badge {
+  background: rgba(140, 140, 140, 0.12) !important;
+  color: var(--cs-text-secondary) !important;
+}
+
+.dot-muted {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #999999;
+}
+
+.no-active-body {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 0 6px;
+  color: var(--cs-text-secondary);
+  font-size: 14px;
+}
+
+.no-active-body p {
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* ==========================================================================
+   Photo Scan Compact Result Bar (Instruction 6)
+   ========================================================================== */
+.attendance-result-bar {
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  background: var(--cs-card-bg);
+  border: 1px solid var(--cs-border);
+  border-left: 4px solid #16a34a;
+  border-radius: 10px;
+  padding: 12px 18px;
+  margin-top: 14px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
+  animation: fadeInResult 0.25s ease;
+}
+
+@keyframes fadeInResult {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.result-bar-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.result-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.result-chip.present {
+  color: #16a34a;
+}
+
+.result-chip.absent {
+  color: #d97706;
+}
+
+.result-chip-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.result-chip-dot.green {
+  background: #16a34a;
+  box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.18);
+}
+
+.result-chip-dot.amber {
+  background: #d97706;
+  box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.18);
+}
+
+.result-chip-value {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.result-chip-label {
+  font-weight: 500;
+}
+
+.result-bar-divider {
+  width: 1px;
+  height: 16px;
+  background: var(--cs-border);
+}
+
+.result-bar-meta {
+  font-size: 12px;
+  color: var(--cs-text-secondary);
+  font-weight: 500;
+}
+
+.result-bar-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-result-view-more {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: none;
+  background: var(--cs-crimson);
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  box-shadow: 0 2px 6px rgba(122, 21, 21, 0.2);
+}
+
+.btn-result-view-more:hover {
+  background: var(--cs-crimson-hover);
+  transform: translateX(1px);
+}
+
+/* ==========================================================================
+   Today's Classes Dynamic Status & Row Action Buttons (Instructions 3, 4, 5)
+   ========================================================================== */
+.status-pill.active-now {
+  background: rgba(22, 163, 74, 0.12);
+  color: #16a34a;
+  border: 1px solid rgba(22, 163, 74, 0.3);
+  font-weight: 600;
+}
+
+.pulse-dot-green {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #16a34a;
+  box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.7);
+  animation: pulseGreen 1.6s infinite;
+}
+
+@keyframes pulseGreen {
+  0% { box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.7); }
+  70% { box-shadow: 0 0 0 6px rgba(22, 163, 74, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(22, 163, 74, 0); }
+}
+
+.class-action-buttons {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-row-action-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.btn-start-class {
+  background: rgba(122, 21, 21, 0.08);
+  color: var(--cs-crimson);
+  border-color: rgba(122, 21, 21, 0.25);
+}
+
+.btn-start-class:hover {
+  background: var(--cs-crimson);
+  color: #ffffff;
+}
+
+.btn-end-class {
+  background: rgba(220, 38, 38, 0.08);
+  color: #dc2626;
+  border-color: rgba(220, 38, 38, 0.25);
+}
+
+.btn-end-class:hover {
+  background: #dc2626;
+  color: #ffffff;
+}
+
+.btn-take-attendance {
+  background: rgba(22, 163, 74, 0.08);
+  color: #16a34a;
+  border-color: rgba(22, 163, 74, 0.25);
+}
+
+.btn-take-attendance:hover {
+  background: #16a34a;
+  color: #ffffff;
+}
+
+.btn-take-attendance-done {
+  background: transparent;
+  color: var(--cs-text-secondary);
+  border-color: var(--cs-border);
+}
+
+.btn-take-attendance-done:hover {
+  background: var(--cs-card-hover);
+  color: var(--cs-text-primary);
+}
+
+/* Modal Delete and Confirmation (Instruction 3) */
+.cs-modal-actions-split {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 24px;
+  padding-top: 18px;
+  border-top: 1px solid var(--cs-border);
+}
+
+.cs-modal-actions-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.btn-modal-delete {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 16px;
+  border-radius: 8px;
+  border: 1px solid rgba(220, 38, 38, 0.3);
+  background: rgba(220, 38, 38, 0.06);
+  color: #dc2626;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-modal-delete:hover {
+  background: #dc2626;
+  color: #ffffff;
+}
+
+.cs-modal-confirm {
+  max-width: 440px !important;
+}
+
+.confirm-icon-danger {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(220, 38, 38, 0.1);
+  color: #dc2626;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.confirm-body-text {
+  font-size: 14px;
+  color: var(--cs-text-secondary);
+  line-height: 1.5;
+  margin: 16px 0 20px;
+}
+
+.btn-modal-delete-confirm {
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: none;
+  background: #dc2626;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-modal-delete-confirm:hover {
+  background: #b91c1c;
+}
+
+/* ==========================================================================
+   NFC Attendance Resolution Modal Styles (Task 2)
+   ========================================================================== */
+.nfc-modal-card {
+  width: min(600px, 94vw);
+  max-height: 88vh;
+  display: flex;
+  flex-direction: column;
+  padding: 24px 28px;
+  overflow: hidden;
+}
+
+.nfc-modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--cs-border);
+}
+
+.nfc-header-title-group {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.nfc-modal-icon-bubble {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: var(--cs-crimson-light);
+  color: var(--cs-crimson);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.nfc-pulse-anim {
+  animation: nfcRadarPulse 2s infinite ease-in-out;
+}
+
+@keyframes nfcRadarPulse {
+  0% { transform: scale(0.95); opacity: 0.8; }
+  50% { transform: scale(1.1); opacity: 1; }
+  100% { transform: scale(0.95); opacity: 0.8; }
+}
+
+.nfc-title-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.nfc-title-row h3 {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--cs-text-primary);
+  margin: 0;
+}
+
+.nfc-live-badge {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 3px 8px;
+  border-radius: 20px;
+  background: rgba(22, 163, 74, 0.12);
+  color: #16a34a;
+  border: 1px solid rgba(22, 163, 74, 0.25);
+}
+
+.dashboard-root.dark-mode .nfc-live-badge {
+  background: rgba(34, 197, 94, 0.18);
+  color: #22c55e;
+}
+
+/* Count strip */
+.nfc-count-strip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 14px 0 12px;
+}
+
+.nfc-count-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 6px;
+}
+
+.nfc-count-pill.pending {
+  background: rgba(217, 119, 6, 0.1);
+  color: #d97706;
+  border: 1px solid rgba(217, 119, 6, 0.2);
+}
+
+.nfc-count-pill.verified {
+  background: rgba(22, 163, 74, 0.1);
+  color: #16a34a;
+  border: 1px solid rgba(22, 163, 74, 0.2);
+}
+
+/* Student list */
+.nfc-student-list {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-right: 4px;
+  margin-bottom: 14px;
+  max-height: 290px;
+}
+
+.nfc-student-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: var(--cs-bg);
+  border: 1px solid var(--cs-border);
+  gap: 12px;
+  transition: all 0.15s ease;
+}
+
+.nfc-student-row:hover {
+  border-color: var(--cs-crimson-border);
+  background: var(--cs-card-hover);
+}
+
+.nfc-student-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  background: var(--cs-crimson);
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.nfc-student-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.nfc-student-name-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.nfc-student-name {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--cs-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.nfc-roll-pill {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: var(--cs-card-bg);
+  border: 1px solid var(--cs-border);
+  color: var(--cs-text-secondary);
+}
+
+.nfc-student-reason {
+  font-size: 12px;
+  color: var(--cs-text-muted);
+}
+
+.btn-nfc-tap {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--cs-crimson);
+  background: var(--cs-card-bg);
+  color: var(--cs-crimson);
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+.btn-nfc-tap:hover:not(:disabled) {
+  background: var(--cs-crimson);
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(122, 21, 21, 0.2);
+}
+
+.btn-nfc-tap.tapping {
+  background: var(--cs-crimson);
+  color: #ffffff;
+  opacity: 0.9;
+}
+
+/* EXACT REQUIRED INSTRUCTION BANNER (Task 2, Requirement 3) */
+.nfc-instruction-banner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  background: var(--cs-crimson-light);
+  border: 1px solid var(--cs-crimson-border);
+  margin-bottom: 16px;
+}
+
+.nfc-banner-icon {
+  color: var(--cs-crimson);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.nfc-banner-text {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--cs-crimson);
+  line-height: 1.45;
+  margin: 0;
+}
+
+/* Modal Footer */
+.nfc-modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  padding-top: 14px;
+  border-top: 1px solid var(--cs-border);
+}
+
+.btn-nfc-resolve-all {
+  padding: 9px 16px;
+  border-radius: 8px;
+  border: 1px solid var(--cs-border);
+  background: var(--cs-bg);
+  color: var(--cs-text-primary);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-nfc-resolve-all:hover:not(:disabled) {
+  background: var(--cs-card-hover);
+  border-color: var(--cs-crimson-border);
+  color: var(--cs-crimson);
+}
+
+/* Success / Empty States */
+.nfc-modal-success-state,
+.nfc-modal-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 36px 20px;
+  text-align: center;
+}
+
+.nfc-success-circle {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: rgba(22, 163, 74, 0.12);
+  color: #16a34a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+  animation: successPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.dashboard-root.dark-mode .nfc-success-circle {
+  background: rgba(34, 197, 94, 0.18);
+  color: #22c55e;
+}
+
+@keyframes successPop {
+  0% { transform: scale(0.5); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.nfc-modal-success-state h4,
+.nfc-modal-empty-state h4 {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--cs-text-primary);
+  margin: 0 0 6px;
+}
+
+.nfc-modal-success-state p,
+.nfc-modal-empty-state p {
+  font-size: 13.5px;
+  color: var(--cs-text-secondary);
+  max-width: 380px;
+  line-height: 1.45;
+  margin: 0 0 16px;
 }
