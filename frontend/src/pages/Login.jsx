@@ -1,10 +1,12 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { Eye, EyeOff, LockKeyhole, Mail } from "lucide-react";
+import { Eye, EyeOff, LockKeyhole, Mail, Moon, Sun } from "lucide-react";
+import { useTheme } from "../context/ThemeContext";
 import "./Login.css";
 
 function Login() {
   const navigate = useNavigate();
+  const { isDarkMode, toggleDarkMode } = useTheme();
 
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
@@ -17,11 +19,24 @@ function Login() {
   };
 
   return (
-    <div className="login-page">
+    <div className={`login-page ${isDarkMode ? "dark-mode" : ""}`}>
+      <button
+        className="login-theme-toggle"
+        onClick={toggleDarkMode}
+        aria-label="Toggle dark mode"
+        type="button"
+      >
+        {isDarkMode ? (
+          <Sun size={20} strokeWidth={1.8} />
+        ) : (
+          <Moon size={20} strokeWidth={1.8} />
+        )}
+      </button>
+
       <div className="login-card">
 
         <div className="login-header">
-          <Link to="/" className="login-brand">
+          <Link to="/dashboard" className="login-brand">
             ClassSight
           </Link>
 

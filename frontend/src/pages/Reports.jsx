@@ -1,9 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
-  LayoutDashboard,
-  Camera,
-  GraduationCap,
   BarChart3,
   Settings,
   Bell,
@@ -25,13 +22,14 @@ import {
 import "./Dashboard.css";
 import "./Reports.css";
 import { useTheme } from "../context/ThemeContext";
+import AppNavigationDrawer from "../components/AppNavigationDrawer";
 
 function Reports() {
   const navigate = useNavigate();
 
   // Global dark mode from ThemeContext
   const { isDarkMode, toggleDarkMode } = useTheme();
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isNavOpen, setIsNavOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
 
@@ -229,11 +227,13 @@ function Reports() {
       <header className="dashboard-header">
         <div className="header-left">
           <button
-            className="mobile-menu-toggle"
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            aria-label="Toggle navigation"
+            type="button"
+            className="hamburger-nav-btn"
+            onClick={() => setIsNavOpen(!isNavOpen)}
+            aria-label={isNavOpen ? "Close navigation menu" : "Open navigation menu"}
+            title={isNavOpen ? "Close navigation" : "Open navigation"}
           >
-            {isMobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
+            {isNavOpen ? <X size={22} /> : <Menu size={22} />}
           </button>
 
           <Link to="/dashboard" className="brand-link">
@@ -325,7 +325,7 @@ function Reports() {
                 <button
                   type="button"
                   className="dropdown-item"
-                  onClick={() => navigate("/login")}
+                  onClick={() => navigate("/")}
                   style={{ color: "#dc2626" }}
                 >
                   <LogOut size={16} strokeWidth={1.8} />
@@ -339,47 +339,12 @@ function Reports() {
 
       {/* ================= MAIN SHELL ================= */}
       <div className="dashboard-body">
-        {/* ================= SIDEBAR ================= */}
-        <aside className={`dashboard-sidebar ${isMobileMenuOpen ? "mobile-open" : ""}`}>
-          <nav className="sidebar-nav">
-            <Link to="/dashboard" className="nav-link" onClick={() => setIsMobileMenuOpen(false)}>
-              <LayoutDashboard size={19} strokeWidth={1.8} />
-              <span>Dashboard</span>
-            </Link>
-
-            <Link to="/attendance" className="nav-link" onClick={() => setIsMobileMenuOpen(false)}>
-              <Camera size={19} strokeWidth={1.8} />
-              <span>Attendance</span>
-            </Link>
-
-            <Link to="/students" className="nav-link" onClick={() => setIsMobileMenuOpen(false)}>
-              <GraduationCap size={19} strokeWidth={1.8} />
-              <span>Students</span>
-            </Link>
-
-            <Link to="/reports" className="nav-link active" onClick={() => setIsMobileMenuOpen(false)}>
-              <BarChart3 size={19} strokeWidth={2} />
-              <span>Reports</span>
-            </Link>
-
-            <Link to="/settings" className="nav-link" onClick={() => setIsMobileMenuOpen(false)}>
-              <Settings size={19} strokeWidth={1.8} />
-              <span>Settings</span>
-            </Link>
-          </nav>
-
-          <div className="sidebar-footer">
-            <div className="term-info-badge">
-              <strong>Spring Term 2026</strong>
-              <span>CSE Dept. · Semester 6</span>
-            </div>
-
-            <button type="button" className="sidebar-logout" onClick={() => navigate("/login")}>
-              <LogOut size={17} strokeWidth={1.8} />
-              <span>Log Out</span>
-            </button>
-          </div>
-        </aside>
+        {/* Navigation Drawer */}
+        <AppNavigationDrawer
+          isOpen={isNavOpen}
+          onClose={() => setIsNavOpen(false)}
+          activePage="reports"
+        />
 
         {/* ================= REPORTS CONTENT ================= */}
         <main className="reports-main">

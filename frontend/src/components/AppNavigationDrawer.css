@@ -1,0 +1,275 @@
+/* src/components/AppNavigationDrawer.css */
+
+/* ==========================================================================
+   Slide-in Application Navigation Drawer & Backdrop
+   ========================================================================== */
+
+/* Backdrop Overlay */
+.app-nav-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  z-index: 998;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.25s ease, visibility 0.25s ease;
+}
+
+.app-nav-backdrop.open {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Slide-in Drawer */
+.app-nav-drawer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 275px;
+  max-width: 85vw;
+  background: var(--cs-sidebar-bg, #ffffff);
+  border-right: 1px solid var(--cs-border, #e4e2de);
+  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.15);
+  z-index: 999;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 20px 16px;
+  transform: translateX(-100%);
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.25s ease, border-color 0.25s ease;
+  box-sizing: border-box;
+}
+
+.app-nav-drawer.open {
+  transform: translateX(0);
+}
+
+/* Drawer Header */
+.app-nav-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 18px;
+  margin-bottom: 14px;
+  border-bottom: 1px solid var(--cs-border, #e4e2de);
+}
+
+.app-nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: var(--cs-text-primary, #222222);
+}
+
+.app-nav-brand-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: var(--cs-crimson, #7a1515);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(122, 21, 21, 0.25);
+  flex-shrink: 0;
+}
+
+.app-nav-brand-name {
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+  color: var(--cs-text-primary, #222222);
+}
+
+.app-nav-close-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  background: transparent;
+  border: 1px solid var(--cs-border, #e4e2de);
+  color: var(--cs-text-muted, #888888);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.app-nav-close-btn:hover {
+  background: var(--cs-crimson-light, rgba(122, 21, 21, 0.08));
+  color: var(--cs-crimson, #7a1515);
+  border-color: var(--cs-crimson-border, rgba(122, 21, 21, 0.3));
+}
+
+/* Navigation Links */
+.app-nav-links {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+}
+
+.app-nav-link {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 16px;
+  border-radius: 10px;
+  color: var(--cs-text-secondary, #555555);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.app-nav-link:hover {
+  background: var(--cs-crimson-light, rgba(122, 21, 21, 0.08));
+  color: var(--cs-crimson, #7a1515);
+}
+
+.app-nav-link.active {
+  background: var(--cs-crimson, #7a1515);
+  color: #ffffff;
+  font-weight: 600;
+  box-shadow: 0 4px 14px rgba(122, 21, 21, 0.25);
+}
+
+.app-nav-link.active svg {
+  color: #ffffff;
+}
+
+/* Drawer Footer */
+.app-nav-footer {
+  padding-top: 18px;
+  border-top: 1px solid var(--cs-border, #e4e2de);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.app-nav-term-badge {
+  padding: 10px 12px;
+  background: var(--cs-bg, #f6f5f2);
+  border-radius: 8px;
+  font-size: 12px;
+  color: var(--cs-text-muted, #888888);
+  line-height: 1.4;
+  border: 1px solid var(--cs-border-subtle, #eeecea);
+}
+
+.app-nav-term-badge strong {
+  color: var(--cs-text-primary, #222222);
+  display: block;
+}
+
+.app-nav-logout-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: transparent;
+  border: 1px solid var(--cs-border, #e4e2de);
+  color: #dc2626;
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.app-nav-logout-btn:hover {
+  background: rgba(220, 38, 38, 0.08);
+  border-color: rgba(220, 38, 38, 0.3);
+}
+
+/* Dark mode overrides for drawer */
+.dark-mode .app-nav-drawer,
+html.dark-mode .app-nav-drawer,
+body.dark-mode .app-nav-drawer {
+  background: var(--cs-sidebar-bg, #1e1e1e);
+  border-color: var(--cs-border, rgba(255, 255, 255, 0.08));
+  box-shadow: 4px 0 32px rgba(0, 0, 0, 0.6);
+}
+
+.dark-mode .app-nav-header,
+.dark-mode .app-nav-footer,
+html.dark-mode .app-nav-header,
+html.dark-mode .app-nav-footer,
+body.dark-mode .app-nav-header,
+body.dark-mode .app-nav-footer {
+  border-color: var(--cs-border, rgba(255, 255, 255, 0.08));
+}
+
+.dark-mode .app-nav-brand-name,
+html.dark-mode .app-nav-brand-name,
+body.dark-mode .app-nav-brand-name {
+  color: #f5f5f5;
+}
+
+.dark-mode .app-nav-close-btn,
+html.dark-mode .app-nav-close-btn,
+body.dark-mode .app-nav-close-btn {
+  border-color: rgba(255, 255, 255, 0.12);
+  color: #aaaaaa;
+}
+
+.dark-mode .app-nav-close-btn:hover,
+html.dark-mode .app-nav-close-btn:hover,
+body.dark-mode .app-nav-close-btn:hover {
+  background: rgba(155, 41, 41, 0.2);
+  color: #ffffff;
+  border-color: rgba(199, 123, 123, 0.3);
+}
+
+.dark-mode .app-nav-link,
+html.dark-mode .app-nav-link,
+body.dark-mode .app-nav-link {
+  color: #bdbdbd;
+}
+
+.dark-mode .app-nav-link:hover,
+html.dark-mode .app-nav-link:hover,
+body.dark-mode .app-nav-link:hover {
+  background: rgba(155, 41, 41, 0.2);
+  color: #ffffff;
+}
+
+.dark-mode .app-nav-link.active,
+html.dark-mode .app-nav-link.active,
+body.dark-mode .app-nav-link.active {
+  background: var(--cs-crimson, #9b2929);
+  color: #ffffff;
+}
+
+.dark-mode .app-nav-term-badge,
+html.dark-mode .app-nav-term-badge,
+body.dark-mode .app-nav-term-badge {
+  background: #181818;
+  border-color: rgba(255, 255, 255, 0.05);
+  color: #8e8e8e;
+}
+
+.dark-mode .app-nav-term-badge strong,
+html.dark-mode .app-nav-term-badge strong,
+body.dark-mode .app-nav-term-badge strong {
+  color: #f5f5f5;
+}
+
+.dark-mode .app-nav-logout-btn,
+html.dark-mode .app-nav-logout-btn,
+body.dark-mode .app-nav-logout-btn {
+  border-color: rgba(220, 38, 38, 0.25);
+  color: #ef4444;
+}
+
+.dark-mode .app-nav-logout-btn:hover,
+html.dark-mode .app-nav-logout-btn:hover,
+body.dark-mode .app-nav-logout-btn:hover {
+  background: rgba(239, 68, 68, 0.15);
+}
+

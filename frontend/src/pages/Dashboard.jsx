@@ -1,10 +1,7 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
-  LayoutDashboard,
   Camera,
-  GraduationCap,
-  BarChart3,
   Settings,
   Bell,
   Sun,
@@ -12,7 +9,6 @@ import {
   ChevronDown,
   LogOut,
   Radio,
-  CheckCircle2,
   Clock,
   Calendar,
   Menu,
@@ -21,22 +17,33 @@ import {
   UploadCloud,
   Check,
   User,
-  ShieldCheck,
   Pencil,
   Plus,
   Trash2,
+  AlertTriangle,
+  ArrowRight,
+  RotateCcw,
+  Square,
+  Play,
+  CheckCircle2,
+  AlertCircle,
 } from "lucide-react";
 import "./Dashboard.css";
 import { useTheme } from "../context/ThemeContext";
+import { useAttendance } from "../context/AttendanceContext";
+import AppNavigationDrawer from "../components/AppNavigationDrawer";
 
 function Dashboard() {
   const navigate = useNavigate();
 
+  // Attendance context (Task 2)
+  const { unverifiedStudents, verifiedStudents, resolveStudent } = useAttendance();
+
   // Dark mode state
   const { isDarkMode, toggleDarkMode } = useTheme();
 
-  // Mobile sidebar toggle
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  // Navigation drawer state
+  const [isNavOpen, setIsNavOpen] = useState(false);
 
   // Dropdown states
   const [isProfileOpen, setIsProfileOpen] = useState(false);
@@ -48,9 +55,10 @@ function Dashboard() {
   const [photoScanSuccess, setPhotoScanSuccess] = useState(false);
   const fileInputRef = useRef(null);
 
-  // NFC scan state
-  const [isNfcScanning, setIsNfcScanning] = useState(false);
-  const [nfcToast, setNfcToast] = useState(null);
+  // NFC scan state (Task 2)
+  const [isNfcModalOpen, setIsNfcModalOpen] = useState(false);
+  const [resolvingStudentId, setResolvingStudentId] = useState(null);
+  const [nfcSuccessAnimation, setNfcSuccessAnimation] = useState(false);
 
   // Schedule list (Teacher can customize, add, edit, and delete)
   const [scheduleList, setScheduleList] = useState([
@@ -63,7 +71,7 @@ function Dashboard() {
       section: "3C2",
       room: "LP402",
       department: "Computer Science & Eng.",
-      status: "done", // 'done', 'next', 'upcoming'
+      status: "done",
     },
     {
       id: "class-2",
@@ -89,18 +97,107 @@ function Dashboard() {
     },
   ]);
 
-  // Active Session state (Batch, Venue, Course, Time)
-  const [activeClass, setActiveClass] = useState({
-    id: "class-1",
-    time: "08:00 AM",
-    timeRange: "08:00 AM – 08:50 AM",
-    title: "Data Structures",
-    code: "UCE301",
-    section: "3C2",
-    room: "LP402",
-    department: "Computer Science & Eng.",
-    status: "done",
-  });
+  // Dynamic status & active session tracking (Instructions 4 & 5)
+  const [manualActiveClassId, setManualActiveClassId] = useState(null);
+  const [endedClassIds, setEndedClassIds] = useState(() => new Set());
+  const [currentTimeTick, setCurrentTimeTick] = useState(() => new Date());
+
+  // Confirm delete modal state (Instruction 3)
+  const [confirmDeleteClassId, setConfirmDeleteClassId] = useState(null);
+
+  // Tick timer every 30s to dynamically update time-based status
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTimeTick(new Date());
+    }, 30000);
+    return () => clearInterval(timer);
+  }, []);
+
+  // Time slot parser helper (Instruction 5)
+  const parseTimeSlotMinutes = (timeStr) => {
+    if (!timeStr) return null;
+    const parts = timeStr.split(/[–-]/).map((s) => s.trim());
+    const parseSingle = (s) => {
+      const match = s.match(/(\d{1,2}):(\d{2})\s*(AM|PM)?/i);
+      if (!match) return null;
+      let hours = parseInt(match[1], 10);
+      const minutes = parseInt(match[2], 10);
+      const period = match[3]?.toUpperCase();
+      if (period === "PM" && hours < 12) hours += 12;
+      if (period === "AM" && hours === 12) hours = 0;
+      return hours * 60 + minutes;
+    };
+
+    const startMinutes = parseSingle(parts[0]);
+    const endMinutes =
+      parts.length > 1
+        ? parseSingle(parts[1])
+        : startMinutes !== null
+        ? startMinutes + 50
+        : null;
+    return { startMinutes, endMinutes };
+  };
+
+  // Compute status for all classes based on current time and manual actions (Instructions 4 & 5)
+  const finalScheduleList = useMemo(() => {
+    const currentMinutes =
+      currentTimeTick.getHours() * 60 + currentTimeTick.getMinutes();
+
+    const evaluated = scheduleList.map((item) => {
+      if (endedClassIds.has(item.id)) {
+        return { ...item, computedStatus: "done" };
+      }
+      if (manualActiveClassId === item.id) {
+        return { ...item, computedStatus: "active" };
+      }
+      if (manualActiveClassId !== null && manualActiveClassId !== item.id) {
+        const slot = parseTimeSlotMinutes(item.timeRange || item.time);
+        if (slot?.endMinutes && currentMinutes > slot.endMinutes) {
+          return { ...item, computedStatus: "done" };
+        }
+        return { ...item, computedStatus: "upcoming" };
+      }
+
+      // Respect scheduled time (Instruction 5)
+      const slot = parseTimeSlotMinutes(item.timeRange || item.time);
+      if (slot?.startMinutes !== null && slot?.endMinutes !== null) {
+        if (currentMinutes >= slot.startMinutes && currentMinutes <= slot.endMinutes) {
+          return { ...item, computedStatus: "active" };
+        }
+        if (currentMinutes > slot.endMinutes) {
+          return { ...item, computedStatus: "done" };
+        }
+        return { ...item, computedStatus: "unstarted", startMinutes: slot.startMinutes };
+      }
+      return { ...item, computedStatus: item.status || "upcoming" };
+    });
+
+    const unstarted = evaluated
+      .filter((c) => c.computedStatus === "unstarted")
+      .sort((a, b) => (a.startMinutes || 0) - (b.startMinutes || 0));
+
+    const nextId = unstarted.length > 0 ? unstarted[0].id : null;
+
+    return evaluated.map((c) => {
+      if (c.computedStatus === "unstarted") {
+        if (c.id === nextId) {
+          return { ...c, computedStatus: "next" };
+        }
+        return { ...c, computedStatus: "upcoming" };
+      }
+      return c;
+    });
+  }, [scheduleList, manualActiveClassId, endedClassIds, currentTimeTick]);
+
+  // Current active class in session (Instruction 4)
+  const currentActiveClass = useMemo(() => {
+    const found = finalScheduleList.find((c) => c.computedStatus === "active");
+    if (found) return found;
+    if (manualActiveClassId) {
+      return finalScheduleList.find((c) => c.id === manualActiveClassId) || null;
+    }
+    return null;
+  }, [finalScheduleList, manualActiveClassId]);
 
   // Modal: Edit Active Session
   const [isSessionModalOpen, setIsSessionModalOpen] = useState(false);
@@ -190,52 +287,70 @@ function Dashboard() {
     }
   };
 
-  // NFC Scan handler
+  // NFC Scan handler & Resolution Flow (Task 2)
   const handleNfcScan = () => {
-    setIsNfcScanning(true);
+    setIsNfcModalOpen(true);
+  };
+
+  const handleResolveViaNfc = (studentId) => {
+    setResolvingStudentId(studentId);
     setTimeout(() => {
-      setIsNfcScanning(false);
-      setNfcToast({
-        name: "Aarav Sharma",
-        roll: "3C2-042",
-        status: "Verified & Present",
+      resolveStudent(studentId, "nfc");
+      setResolvingStudentId(null);
+      // Check if all unverified students are now resolved
+      if (unverifiedStudents.length <= 1) {
+        setNfcSuccessAnimation(true);
+        setTimeout(() => {
+          setNfcSuccessAnimation(false);
+          setIsNfcModalOpen(false);
+        }, 1400);
+      }
+    }, 400);
+  };
+
+  const handleResolveAllNfc = () => {
+    if (unverifiedStudents.length === 0) return;
+    setResolvingStudentId("all");
+    setTimeout(() => {
+      unverifiedStudents.forEach((student) => {
+        resolveStudent(student.id, "nfc");
       });
+      setResolvingStudentId(null);
+      setNfcSuccessAnimation(true);
       setTimeout(() => {
-        setNfcToast(null);
-      }, 4000);
-    }, 1200);
+        setNfcSuccessAnimation(false);
+        setIsNfcModalOpen(false);
+      }, 1400);
+    }, 600);
   };
 
   const handleSignOut = () => {
-    navigate("/login");
+    navigate("/");
   };
 
   // Active Session Edit Handlers
   const handleOpenSessionEdit = () => {
+    if (!currentActiveClass) return;
     setSessionFormData({
-      section: activeClass.section || "",
-      department: activeClass.department || "Computer Science & Eng.",
-      room: activeClass.room || "",
-      timeRange: activeClass.timeRange || "",
-      title: activeClass.title || "",
-      code: activeClass.code || "",
+      section: currentActiveClass.section || "",
+      department: currentActiveClass.department || "Computer Science & Eng.",
+      room: currentActiveClass.room || "",
+      timeRange: currentActiveClass.timeRange || "",
+      title: currentActiveClass.title || "",
+      code: currentActiveClass.code || "",
     });
     setIsSessionModalOpen(true);
   };
 
   const handleSaveSession = (e) => {
     e.preventDefault();
-    const updated = {
-      ...activeClass,
-      ...sessionFormData,
-    };
-    setActiveClass(updated);
-
-    // Keep corresponding class in Today's Classes in sync if matched
-    setScheduleList((prev) =>
-      prev.map((c) => (c.id === updated.id ? { ...c, ...sessionFormData } : c))
-    );
-
+    if (currentActiveClass) {
+      setScheduleList((prev) =>
+        prev.map((c) =>
+          c.id === currentActiveClass.id ? { ...c, ...sessionFormData } : c
+        )
+      );
+    }
     setIsSessionModalOpen(false);
   };
 
@@ -265,7 +380,7 @@ function Dashboard() {
       time: item.time,
       timeRange: item.timeRange,
       department: item.department || "Computer Science & Eng.",
-      status: item.status,
+      status: item.computedStatus || item.status,
     });
     setIsClassModalOpen(true);
   };
@@ -279,14 +394,6 @@ function Dashboard() {
           item.id === editingClassId ? { ...item, ...classFormData } : item
         )
       );
-
-      // If active class is the edited one, update it as well
-      if (activeClass.id === editingClassId) {
-        setActiveClass((prev) => ({
-          ...prev,
-          ...classFormData,
-        }));
-      }
     } else {
       // Add new
       const newId = `class-${Date.now()}`;
@@ -295,25 +402,40 @@ function Dashboard() {
         ...classFormData,
       };
       setScheduleList((prev) => [...prev, newClass]);
-
-      // If no active class yet, activate this one
-      if (!activeClass || scheduleList.length === 0) {
-        setActiveClass(newClass);
-      }
     }
     setIsClassModalOpen(false);
   };
 
-  const handleDeleteClass = (id) => {
-    setScheduleList((prev) => {
-      const filtered = prev.filter((item) => item.id !== id);
-      if (activeClass.id === id) {
-        if (filtered.length > 0) {
-          setActiveClass(filtered[0]);
-        }
-      }
-      return filtered;
+  // Start & End Class Handlers (Instruction 4)
+  const handleStartClass = (id) => {
+    setManualActiveClassId(id);
+    setEndedClassIds((prev) => {
+      const next = new Set(prev);
+      next.delete(id);
+      return next;
     });
+  };
+
+  const handleEndClass = (id) => {
+    setEndedClassIds((prev) => new Set(prev).add(id));
+    if (manualActiveClassId === id) {
+      setManualActiveClassId(null);
+    }
+  };
+
+  // Confirmed Delete Class Handler (Instruction 3)
+  const confirmDeleteClass = (id) => {
+    setScheduleList((prev) => prev.filter((item) => item.id !== id));
+    if (manualActiveClassId === id) {
+      setManualActiveClassId(null);
+    }
+    setEndedClassIds((prev) => {
+      const next = new Set(prev);
+      next.delete(id);
+      return next;
+    });
+    setConfirmDeleteClassId(null);
+    setIsClassModalOpen(false);
   };
 
   return (
@@ -322,11 +444,13 @@ function Dashboard() {
       <header className="dashboard-header">
         <div className="header-left">
           <button
-            className="mobile-menu-toggle"
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            aria-label="Toggle navigation"
+            type="button"
+            className="hamburger-nav-btn"
+            onClick={() => setIsNavOpen(!isNavOpen)}
+            aria-label={isNavOpen ? "Close navigation menu" : "Open navigation menu"}
+            title={isNavOpen ? "Close navigation" : "Open navigation"}
           >
-            {isMobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
+            {isNavOpen ? <X size={22} /> : <Menu size={22} />}
           </button>
 
           <Link to="/dashboard" className="brand-link">
@@ -448,71 +572,12 @@ function Dashboard() {
 
       {/* ================= MAIN SHELL ================= */}
       <div className="dashboard-body">
-        {/* ================= SIDEBAR ================= */}
-        <aside className={`dashboard-sidebar ${isMobileMenuOpen ? "mobile-open" : ""}`}>
-          <nav className="sidebar-nav">
-            <Link
-              to="/dashboard"
-              className="nav-link active"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              <LayoutDashboard size={19} strokeWidth={2} />
-              <span>Dashboard</span>
-            </Link>
-
-            <Link
-              to="/attendance"
-              className="nav-link"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              <Camera size={19} strokeWidth={1.8} />
-              <span>Attendance</span>
-            </Link>
-
-            <Link
-              to="/students"
-              className="nav-link"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              <GraduationCap size={19} strokeWidth={1.8} />
-              <span>Students</span>
-            </Link>
-
-            <Link
-              to="/reports"
-              className="nav-link"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              <BarChart3 size={19} strokeWidth={1.8} />
-              <span>Reports</span>
-            </Link>
-
-            <Link
-              to="/settings"
-              className="nav-link"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              <Settings size={19} strokeWidth={1.8} />
-              <span>Settings</span>
-            </Link>
-          </nav>
-
-          <div className="sidebar-footer">
-            <div className="term-info-badge">
-              <strong>Spring Term 2026</strong>
-              <span>CSE Dept. · Semester 6</span>
-            </div>
-
-            <button
-              type="button"
-              className="sidebar-logout"
-              onClick={handleSignOut}
-            >
-              <LogOut size={17} strokeWidth={1.8} />
-              <span>Log Out</span>
-            </button>
-          </div>
-        </aside>
+        {/* Navigation Drawer */}
+        <AppNavigationDrawer
+          isOpen={isNavOpen}
+          onClose={() => setIsNavOpen(false)}
+          activePage="dashboard"
+        />
 
         {/* ================= MAIN CONTENT ================= */}
         <main className="dashboard-main">
@@ -529,76 +594,123 @@ function Dashboard() {
             </div>
           </div>
 
-          {/* Current Class Quick Stats Banner (3-Column Strip) */}
-          <div className="current-class-strip">
-            <div className="strip-header">
-              <div className="strip-top-badge">
-                <span className="pulse-dot" />
-                <span>Active Session</span>
+          {/* Current Class Quick Stats Banner (3-Column Strip) (Instruction 4) */}
+          {currentActiveClass ? (
+            <div className="current-class-strip">
+              <div className="strip-header">
+                <div className="strip-top-badge">
+                  <span className="pulse-dot" />
+                  <span>Active Session</span>
+                </div>
+
+                <div className="strip-header-actions">
+                  <button
+                    type="button"
+                    className="btn-end-session"
+                    onClick={() => handleEndClass(currentActiveClass.id)}
+                    title="End current active session"
+                  >
+                    <Square size={13} fill="currentColor" strokeWidth={0} />
+                    <span>End Class</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    className="btn-take-session-attendance"
+                    onClick={() =>
+                      navigate("/attendance", {
+                        state: { classData: currentActiveClass },
+                      })
+                    }
+                    title="Take attendance for this session"
+                  >
+                    <Camera size={13} strokeWidth={2} />
+                    <span>Take Attendance</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    className="btn-edit-session"
+                    onClick={handleOpenSessionEdit}
+                    title="Edit batch, venue, time, or course"
+                  >
+                    <Pencil size={13} strokeWidth={2} />
+                    <span>Edit Session</span>
+                  </button>
+                </div>
               </div>
 
-              <button
-                type="button"
-                className="btn-edit-session"
-                onClick={handleOpenSessionEdit}
-                title="Edit batch, venue, time, or course"
-              >
-                <Pencil size={13} strokeWidth={2} />
-                <span>Edit Session</span>
-              </button>
+              <div className="strip-columns">
+                <div
+                  className="strip-col editable-col"
+                  role="button"
+                  tabIndex={0}
+                  onClick={handleOpenSessionEdit}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") handleOpenSessionEdit();
+                  }}
+                  title="Click to edit Batch / Section"
+                >
+                  <div className="col-label">Batch / Section</div>
+                  <div className="col-value">{currentActiveClass.section}</div>
+                  <div className="col-subtext">
+                    {currentActiveClass.department || "Computer Science & Eng."}
+                  </div>
+                </div>
+
+                <div className="strip-divider" />
+
+                <div
+                  className="strip-col editable-col"
+                  role="button"
+                  tabIndex={0}
+                  onClick={handleOpenSessionEdit}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") handleOpenSessionEdit();
+                  }}
+                  title="Click to edit Venue & Time"
+                >
+                  <div className="col-label">Venue &amp; Time</div>
+                  <div className="col-value">{currentActiveClass.room}</div>
+                  <div className="col-subtext">{currentActiveClass.timeRange}</div>
+                </div>
+
+                <div className="strip-divider" />
+
+                <div
+                  className="strip-col editable-col"
+                  role="button"
+                  tabIndex={0}
+                  onClick={handleOpenSessionEdit}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") handleOpenSessionEdit();
+                  }}
+                  title="Click to edit Course / Subject"
+                >
+                  <div className="col-label">Course / Subject</div>
+                  <div className="col-value">{currentActiveClass.title}</div>
+                  <div className="col-subtext">
+                    {currentActiveClass.code} · Prof. Jhonsy
+                  </div>
+                </div>
+              </div>
             </div>
-
-            <div className="strip-columns">
-              <div
-                className="strip-col editable-col"
-                role="button"
-                tabIndex={0}
-                onClick={handleOpenSessionEdit}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") handleOpenSessionEdit();
-                }}
-                title="Click to edit Batch / Section"
-              >
-                <div className="col-label">Batch / Section</div>
-                <div className="col-value">{activeClass.section}</div>
-                <div className="col-subtext">{activeClass.department || "Computer Science & Eng."}</div>
+          ) : (
+            <div className="current-class-strip no-active-strip">
+              <div className="strip-header">
+                <div className="strip-top-badge inactive-badge">
+                  <span className="dot-muted" />
+                  <span>No Active Session</span>
+                </div>
               </div>
-
-              <div className="strip-divider" />
-
-              <div
-                className="strip-col editable-col"
-                role="button"
-                tabIndex={0}
-                onClick={handleOpenSessionEdit}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") handleOpenSessionEdit();
-                }}
-                title="Click to edit Venue & Time"
-              >
-                <div className="col-label">Venue &amp; Time</div>
-                <div className="col-value">{activeClass.room}</div>
-                <div className="col-subtext">{activeClass.timeRange}</div>
-              </div>
-
-              <div className="strip-divider" />
-
-              <div
-                className="strip-col editable-col"
-                role="button"
-                tabIndex={0}
-                onClick={handleOpenSessionEdit}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") handleOpenSessionEdit();
-                }}
-                title="Click to edit Course / Subject"
-              >
-                <div className="col-label">Course / Subject</div>
-                <div className="col-value">{activeClass.title}</div>
-                <div className="col-subtext">{activeClass.code} · Prof. Jhonsy</div>
+              <div className="no-active-body">
+                <Clock size={20} strokeWidth={1.8} />
+                <p>
+                  No lecture is currently active. Select a class from <strong>Today&apos;s Classes</strong> below and click <strong>Start Class</strong> to begin live attendance.
+                </p>
               </div>
             </div>
-          </div>
+          )}
 
           {/* Mark Attendance Section */}
           <div className="section-header">
@@ -618,15 +730,14 @@ function Dashboard() {
               <h3>Photo Scan</h3>
               <p>
                 Upload classroom group photo to automatically detect and verify present students
-                using AI biometric recognition.
               </p>
 
               <input
-                ref={fileInputRef}
                 type="file"
-                accept="image/*"
-                className="file-input-hidden"
+                ref={fileInputRef}
                 onChange={handlePhotoSelect}
+                accept="image/*"
+                style={{ display: "none" }}
               />
 
               {!selectedPhoto ? (
@@ -649,25 +760,62 @@ function Dashboard() {
                     {isPhotoScanning && <div className="scanning-laser" />}
                   </div>
 
+                  {/* Compact Horizontal Result Bar (Instruction 6) */}
                   {photoScanSuccess && (
-                    <div className="photo-scan-success-bar">
-                      <div className="photo-scan-success-info">
-                        <CheckCircle2 size={20} strokeWidth={2} />
-                        <span>48 Students Identified &amp; Attendance Marked</span>
+                    <div className="attendance-result-bar">
+                      <div className="result-bar-info">
+                        <div className="result-chip present">
+                          <span className="result-chip-dot green" />
+                          <span className="result-chip-value">{verifiedStudents.length}</span>
+                          <span className="result-chip-label">Present</span>
+                        </div>
+                        <span className="result-bar-divider" />
+                        <div className="result-chip absent">
+                          <span className="result-chip-dot amber" />
+                          <span className="result-chip-value">{unverifiedStudents.length}</span>
+                          <span className="result-chip-label">Not Matched / Absent</span>
+                        </div>
+                        <span className="result-bar-meta">
+                          • {currentActiveClass ? `${currentActiveClass.section} ${currentActiveClass.title}` : "3C2 Data Structures"}
+                        </span>
                       </div>
-                      <button
-                        type="button"
-                        className="btn-scan-reset"
-                        onClick={handleResetPhoto}
-                      >
-                        Upload Another
-                      </button>
+
+                      <div className="result-bar-actions">
+                        <button
+                          type="button"
+                          className="btn-result-view-more"
+                          onClick={() =>
+                            navigate("/attendance", {
+                              state: {
+                                classData: currentActiveClass || {
+                                  title: "Data Structures",
+                                  code: "UCE301",
+                                  section: "3C2",
+                                  room: "LP402",
+                                  timeRange: "08:00 AM – 08:50 AM",
+                                },
+                              },
+                            })
+                          }
+                        >
+                          <span>View More</span>
+                          <ArrowRight size={15} strokeWidth={2.2} />
+                        </button>
+                        <button
+                          type="button"
+                          className="btn-scan-reset"
+                          onClick={handleResetPhoto}
+                          title="Upload another photo"
+                        >
+                          <RotateCcw size={14} />
+                        </button>
+                      </div>
                     </div>
                   )}
 
                   {!photoScanSuccess && isPhotoScanning && (
                     <p style={{ fontSize: 13, color: "var(--cs-crimson)", fontWeight: 600 }}>
-                      Scanning faces in {activeClass.section}...
+                      Scanning faces in {currentActiveClass ? currentActiveClass.section : "3C2"}...
                     </p>
                   )}
                 </div>
@@ -692,11 +840,11 @@ function Dashboard() {
 
               <button
                 type="button"
-                className={`btn-scan-nfc ${isNfcScanning ? "scanning" : ""}`}
+                className={`btn-scan-nfc ${isNfcModalOpen ? "scanning" : ""}`}
                 onClick={handleNfcScan}
               >
                 <Radio size={16} strokeWidth={2} />
-                <span>{isNfcScanning ? "Detecting NFC Card..." : "Scan"}</span>
+                <span>{isNfcModalOpen ? "Live Scanner Open" : "Scan"}</span>
               </button>
             </div>
           </div>
@@ -735,18 +883,14 @@ function Dashboard() {
                 </button>
               </div>
             ) : (
-              scheduleList.map((item) => {
-                const isCurrent = activeClass.id === item.id;
+              finalScheduleList.map((item) => {
+                const isCurrent = currentActiveClass?.id === item.id;
+                const status = item.computedStatus;
                 return (
                   <div
                     key={item.id}
                     className={`schedule-row ${isCurrent ? "active-row" : ""}`}
-                    onClick={() => setActiveClass(item)}
-                    role="button"
-                    tabIndex={0}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") setActiveClass(item);
-                    }}
+                    role="region"
                   >
                     <div className="row-left">
                       <div className="class-time">{item.time}</div>
@@ -767,49 +911,101 @@ function Dashboard() {
                     </div>
 
                     <div className="row-right">
-                      {item.status === "done" && (
+                      {status === "active" && (
+                        <span className="status-pill active-now">
+                          <span className="pulse-dot-green" />
+                          <span>Active / In Progress</span>
+                        </span>
+                      )}
+                      {status === "done" && (
                         <span className="status-pill done">
                           <Check size={14} strokeWidth={2.5} />
                           <span>Done</span>
                         </span>
                       )}
-                      {item.status === "next" && (
+                      {status === "next" && (
                         <span className="status-pill next">
                           <span className="dot-white" />
                           <span>Next</span>
                         </span>
                       )}
-                      {item.status === "upcoming" && (
+                      {status === "upcoming" && (
                         <span className="status-pill upcoming">
                           <Clock size={13} strokeWidth={2} />
                           <span>Upcoming</span>
                         </span>
                       )}
 
+                      <div className="class-action-buttons">
+                        {status === "active" ? (
+                          <>
+                            <button
+                              type="button"
+                              className="btn-row-action-pill btn-take-attendance"
+                              onClick={() =>
+                                navigate("/attendance", {
+                                  state: { classData: item },
+                                })
+                              }
+                            >
+                              <Camera size={13} strokeWidth={2} />
+                              <span>Take Attendance</span>
+                            </button>
+                            <button
+                              type="button"
+                              className="btn-row-action-pill btn-end-class"
+                              onClick={() => handleEndClass(item.id)}
+                            >
+                              <Square size={12} fill="currentColor" strokeWidth={0} />
+                              <span>End Class</span>
+                            </button>
+                          </>
+                        ) : status === "done" ? (
+                          <button
+                            type="button"
+                            className="btn-row-action-pill btn-take-attendance-done"
+                            onClick={() =>
+                              navigate("/attendance", {
+                                state: { classData: item },
+                              })
+                            }
+                          >
+                            <span>Review Attendance</span>
+                          </button>
+                        ) : (
+                          <>
+                            <button
+                              type="button"
+                              className="btn-row-action-pill btn-start-class"
+                              onClick={() => handleStartClass(item.id)}
+                            >
+                              <Play size={12} fill="currentColor" strokeWidth={0} />
+                              <span>Start Class</span>
+                            </button>
+                            <button
+                              type="button"
+                              className="btn-row-action-pill btn-take-attendance"
+                              onClick={() =>
+                                navigate("/attendance", {
+                                  state: { classData: item },
+                                })
+                              }
+                            >
+                              <span>Take Attendance</span>
+                            </button>
+                          </>
+                        )}
+                      </div>
+
                       <div className="row-actions">
                         <button
                           type="button"
                           className="btn-row-action"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleOpenEditClass(item);
-                          }}
+                          onClick={() => handleOpenEditClass(item)}
                           title="Edit class"
                           aria-label={`Edit ${item.title}`}
                         >
                           <Pencil size={15} strokeWidth={1.8} />
-                        </button>
-                        <button
-                          type="button"
-                          className="btn-row-action btn-row-delete"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleDeleteClass(item.id);
-                          }}
-                          title="Delete class"
-                          aria-label={`Delete ${item.title}`}
-                        >
-                          <Trash2 size={15} strokeWidth={1.8} />
                         </button>
                       </div>
                     </div>
@@ -1072,32 +1268,210 @@ function Dashboard() {
                 </select>
               </div>
 
-              <div className="cs-modal-actions">
-                <button
-                  type="button"
-                  className="btn-modal-cancel"
-                  onClick={() => setIsClassModalOpen(false)}
-                >
-                  Cancel
-                </button>
-                <button type="submit" className="btn-modal-submit">
-                  {editingClassId ? "Save Changes" : "Add to Schedule"}
-                </button>
+              <div className="cs-modal-actions-split">
+                {editingClassId && (
+                  <button
+                    type="button"
+                    className="btn-modal-delete"
+                    onClick={() => setConfirmDeleteClassId(editingClassId)}
+                  >
+                    <Trash2 size={15} strokeWidth={1.8} />
+                    <span>Delete Class</span>
+                  </button>
+                )}
+                <div className="cs-modal-actions-right">
+                  <button
+                    type="button"
+                    className="btn-modal-cancel"
+                    onClick={() => setIsClassModalOpen(false)}
+                  >
+                    Cancel
+                  </button>
+                  <button type="submit" className="btn-modal-submit">
+                    {editingClassId ? "Save Changes" : "Add to Schedule"}
+                  </button>
+                </div>
               </div>
             </form>
           </div>
         </div>
       )}
 
-      {/* Simulated NFC Detection Toast */}
-      {nfcToast && (
-        <div className="nfc-toast">
-          <div className="toast-icon">
-            <ShieldCheck size={20} strokeWidth={2} />
+      {/* Confirmation Modal for Delete Class (Instruction 3) */}
+      {confirmDeleteClassId && (
+        <div className="cs-modal-backdrop" onClick={() => setConfirmDeleteClassId(null)}>
+          <div className="cs-modal-card cs-modal-confirm" onClick={(e) => e.stopPropagation()}>
+            <div className="cs-modal-header">
+              <div className="confirm-icon-danger">
+                <AlertTriangle size={24} strokeWidth={2} />
+              </div>
+              <div>
+                <h3>Delete Class</h3>
+                <p className="cs-modal-subtitle">Are you sure you want to delete this class?</p>
+              </div>
+            </div>
+            <p className="confirm-body-text">
+              This class will be permanently removed from today&apos;s schedule list.
+            </p>
+            <div className="cs-modal-actions">
+              <button
+                type="button"
+                className="btn-modal-cancel"
+                onClick={() => setConfirmDeleteClassId(null)}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className="btn-modal-delete-confirm"
+                onClick={() => confirmDeleteClass(confirmDeleteClassId)}
+              >
+                Yes, Delete
+              </button>
+            </div>
           </div>
-          <div className="toast-text">
-            <h5>{nfcToast.name} ({nfcToast.roll})</h5>
-            <p>{nfcToast.status} in {activeClass.section}</p>
+        </div>
+      )}
+
+      {/* ================= NFC ATTENDANCE RESOLUTION MODAL (Task 2) ================= */}
+      {isNfcModalOpen && (
+        <div className="cs-modal-backdrop" onClick={() => setIsNfcModalOpen(false)}>
+          <div
+            className="cs-modal-card nfc-modal-card"
+            onClick={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="nfc-modal-title"
+          >
+            {/* Modal Header */}
+            <div className="nfc-modal-header">
+              <div className="nfc-header-title-group">
+                <div className="nfc-modal-icon-bubble">
+                  <Radio size={22} className="nfc-pulse-anim" strokeWidth={2.2} />
+                </div>
+                <div>
+                  <div className="nfc-title-row">
+                    <h3 id="nfc-modal-title">NFC Attendance Resolution</h3>
+                    <span className="nfc-live-badge">Live Reader Active</span>
+                  </div>
+                  <p className="cs-modal-subtitle">
+                    Section {currentActiveClass ? currentActiveClass.section : "3C2"} • Contactless Card Verification
+                  </p>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                className="cs-modal-close"
+                onClick={() => setIsNfcModalOpen(false)}
+                aria-label="Close modal"
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            {nfcSuccessAnimation ? (
+              <div className="nfc-modal-success-state">
+                <div className="nfc-success-circle">
+                  <CheckCircle2 size={48} strokeWidth={2.4} />
+                </div>
+                <h4>All Students Verified via NFC!</h4>
+                <p>All unverified detections have been resolved and added to verified present attendance records.</p>
+              </div>
+            ) : unverifiedStudents.length === 0 ? (
+              <div className="nfc-modal-empty-state">
+                <div className="nfc-success-circle">
+                  <CheckCircle2 size={44} strokeWidth={2.2} />
+                </div>
+                <h4>No Unresolved Students</h4>
+                <p>All students in this session have already been verified and confirmed present.</p>
+                <div className="nfc-modal-footer">
+                  <button
+                    type="button"
+                    className="btn-modal-cancel"
+                    onClick={() => setIsNfcModalOpen(false)}
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <>
+                <div className="nfc-count-strip">
+                  <div className="nfc-count-pill pending">
+                    <AlertCircle size={15} />
+                    <span>{unverifiedStudents.length} Unresolved Student{unverifiedStudents.length > 1 ? "s" : ""}</span>
+                  </div>
+                  <div className="nfc-count-pill verified">
+                    <Check size={15} />
+                    <span>{verifiedStudents.length} Verified Present</span>
+                  </div>
+                </div>
+
+                {/* List of currently unverified students detected from scan */}
+                <div className="nfc-student-list">
+                  {unverifiedStudents.map((student) => (
+                    <div key={student.id} className="nfc-student-row">
+                      <div className="nfc-student-avatar">
+                        {student.name.charAt(0)}
+                      </div>
+                      <div className="nfc-student-info">
+                        <div className="nfc-student-name-row">
+                          <span className="nfc-student-name">{student.name}</span>
+                          <span className="nfc-roll-pill">{student.roll}</span>
+                        </div>
+                        <span className="nfc-student-reason">
+                          {student.reason || "Detection issue • Card verification required"}
+                        </span>
+                      </div>
+
+                      <button
+                        type="button"
+                        className={`btn-nfc-tap ${resolvingStudentId === student.id ? "tapping" : ""}`}
+                        onClick={() => handleResolveViaNfc(student.id)}
+                        disabled={resolvingStudentId !== null}
+                        title={`Tap library card for ${student.name}`}
+                      >
+                        <Radio size={14} strokeWidth={2.2} />
+                        <span>
+                          {resolvingStudentId === student.id ? "Reading Card..." : "Tap Library Card"}
+                        </span>
+                      </button>
+                    </div>
+                  ))}
+                </div>
+
+                {/* EXACT REQUIRED MESSAGE (Task 2, Requirement 3) */}
+                <div className="nfc-instruction-banner">
+                  <div className="nfc-banner-icon">
+                    <Radio size={18} strokeWidth={2.2} />
+                  </div>
+                  <p className="nfc-banner-text">
+                    Tap the library card of the students listed above to resolve their attendance via NFC.
+                  </p>
+                </div>
+
+                {/* Modal Footer with Actions & Close Button (Task 2, Requirement 8) */}
+                <div className="nfc-modal-footer">
+                  <button
+                    type="button"
+                    className="btn-nfc-resolve-all"
+                    onClick={handleResolveAllNfc}
+                    disabled={resolvingStudentId !== null}
+                  >
+                    {resolvingStudentId === "all" ? "Reading All Cards..." : `Simulate Tap for All (${unverifiedStudents.length})`}
+                  </button>
+                  <button
+                    type="button"
+                    className="btn-modal-cancel"
+                    onClick={() => setIsNfcModalOpen(false)}
+                  >
+                    Close
+                  </button>
+                </div>
+              </>
+            )}
           </div>
         </div>
       )}
