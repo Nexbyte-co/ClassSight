@@ -1,0 +1,298 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{graphicx}
+\usepackage{xcolor}
+
+% -----------------------------------------------------
+% bvraghav-tiet-ucs503p-article.sty
+% -----------------------------------------------------
+
+% Variable: Lab Instructor
+\makeatletter \newcommand{\BvrSetLabInstructor}[1]{%
+  \gdef\Bvr@LabInstructor{#1}}
+% default
+\newcommand{\Bvr@LabInstructor}{Dr. Raghav %
+  B. Venkataramaiyer}
+% public accessor
+\newcommand{\BvrLabInstructorValue}{\Bvr@LabInstructor}
+\makeatother
+
+% Add subtitle
+\usepackage{titling}
+% -- Set title bold
+\pretitle{\begin{center}\bfseries\fontsize{18bp}{18bp}\selectfont}
+\makeatletter
+\newcommand{\BvrSubtitle}[1]{%
+  \posttitle{%
+    \par\end{center}
+    \begin{center}\large#1\end{center}
+    \vskip 0.5em}%
+}
+\makeatother
+
+% Hints in the section title(s)
+\newcommand{\BvrHint}[1]{%
+  {\normalfont\normalsize\itshape\hfill #1}}
+
+% -----------------------------------------------------
+
+\title{ClassSight: Smart Classroom Attendance \& Verification System}
+
+\BvrSetLabInstructor{Jhonsy Bansal}
+
+\BvrSubtitle{%
+  Project Proposal for UCS503P  \\
+  Submitted to: \BvrLabInstructorValue \\ \bfseries
+  Thapar Institute of Engineering and Technology% 
+}
+
+\author{
+  Manit Sharma, CSED%
+  \thanks{Roll No: \texttt{1024030331}, %
+    Email: \texttt{msharma2\_be24\@thapar.edu}}
+  \and 
+  Parv Rawat, CSED%
+  \thanks{Roll No: \texttt{1024030265}, %
+    Email: \texttt{prawat\_be24\@thapar.edu}}
+  \and 
+  Guransh Rally, CSED%
+  \thanks{Roll No: \texttt{1024030319}, %
+    Email: \texttt{grally\_be24\@thapar.edu}}
+}
+
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\section{Higher-order goal%
+  \BvrHint{\ldots secondary framing}}
+This project aims to improve classroom efficiency and academic
+accountability by reducing the time and effort required to record
+and verify student attendance. While the underlying technique
+(face recognition) is broadly applicable, the immediate engineering
+objective is to translate \emph{reliable, low-friction attendance
+  capture} into a measurable, deployable software solution.
+
+\section{Time-to-value %
+\BvrHint{\ldots primary heuristic}}
+\begin{itemize}[leftmargin=0.7cm]
+    \item We will deliver meaningful increments quickly by prototyping the core teacher workflow (upload photo $\rightarrow$ verify $\rightarrow$ save) and validating it within a short iteration window.
+    \item We will prioritize fast feedback over perfection by using weekly iterations to reduce release friction and surface integration issues early.
+    \item Success is defined by what can be delivered and measured in the first iteration, then improved based on teacher feedback.
+\end{itemize}
+
+\section{Problem Statement}
+Teachers in a typical classroom setting lose meaningful instructional
+time to manual roll-call, and paper- or spreadsheet-based attendance
+is prone to errors, proxy marking, and inconsistent record-keeping.
+Common pain points include:
+\begin{itemize}[leftmargin=0.7cm]
+    \item \textbf{Time loss:} manual roll-call consumes several minutes per class, compounding across sections and semesters.
+    \item \textbf{Proxy attendance:} verbal or paper-based roll-call is easy to circumvent.
+    \item \textbf{Fragmented records:} attendance data is scattered across registers/spreadsheets, making consolidated reporting difficult.
+    \item \textbf{No self-service visibility:} students cannot easily check their own attendance percentage or history.
+\end{itemize}
+
+\textbf{Why this matters now (contextual relevance):} With classroom
+sizes and course loads increasing, even a modest reduction in
+per-class administrative overhead compounds into significant
+recovered instructional time over a semester.
+
+\section{Proposed Solution %
+\BvrHint{\ldots Software Proposition}}
+\subsection{Overview}
+Build a \textbf{web-based} ``Photo-to-Attendance'' system with the
+following components:
+\begin{itemize}[leftmargin=0.7cm]
+    \item \textbf{Teacher capture workflow:} teacher starts a session and uploads a single classroom photograph.
+    \item \textbf{Automated recognition:} the system matches detected faces against pre-registered student embeddings and returns confidence-scored candidates.
+    \item \textbf{Manual verification:} teacher confirms, corrects, or manually adds students before the record is finalized.
+    \item \textbf{Fallback correction via NFC tap:} any student missed by face recognition (poor angle, occlusion, low confidence) can self-mark by tapping their library card on a phone-based NFC panel during the same verification step, instead of the teacher manually searching for and adding them.
+    \item \textbf{Status transparency:} students view their own attendance percentage and session-wise history.
+    \item \textbf{Admin/analytics dashboard:} classroom- and course-level attendance summaries and exportable reports.
+\end{itemize}
+Face-recognition remains the primary attendance mechanism; the NFC
+tap is a lightweight, secondary path for closing gaps in the same
+session rather than a separate attendance system.
+
+\subsection{Core workflow}
+\begin{enumerate}[leftmargin=0.7cm]
+    \item Teacher opens a classroom and starts an attendance session.
+    \item Teacher uploads a classroom photograph (JPG/PNG, up to 10\,MB).
+    \item System runs face recognition and returns identified students with confidence scores.
+    \item[3a.] For any student not recognized, the student (or teacher) taps the library card on the NFC scan panel; the system looks up \texttt{UID $\rightarrow$ roll\_number} and adds them to the current session's attendance list alongside the recognized students.
+    \item Teacher reviews the combined results (recognized + NFC-added), marks remaining absentees, adds any student manually if needed, and saves the final record.
+\end{enumerate}
+\textbf{One-time enrollment:} each student taps their card once during
+enrollment; the captured UID is mapped to their roll number by an
+admin/teacher and stored in the UID-mapping table.
+
+\subsection{Operational constraints for an educational setting}
+\begin{itemize}[leftmargin=0.7cm]
+    \item Keep the solution usable on standard classroom devices (laptop/tablet/phone) via responsive web design.
+    \item Avoid dependence on novel recognition research; use an established face-embedding approach and the browser-native Web NFC API, focusing on workflow, automation, and system correctness.
+    \item Design for deployability using a single low-cost cloud instance suitable for a student project (AWS free-tier friendly).
+    \item Web NFC scanning is currently supported only on Chrome for Android; since it is only used briefly for the occasional missed student during verification, a single designated Android phone is sufficient.
+\end{itemize}
+
+\section{Solution Approach %
+\BvrHint{\ldots Engineering focus}}
+This is an engineering course project, so we focus on the workflow,
+integration, and deployment aspects rather than novel algorithm
+research.
+
+\subsection{Recognition assistance %
+\BvrHint{\ldots non-research}}
+Face matching will use an established, off-the-shelf approach:
+\begin{itemize}[leftmargin=0.7cm]
+    \item Pre-register each student's face embedding at enrollment time.
+    \item Use an existing face-embedding library to detect and match faces in the uploaded photo against registered embeddings, with a confidence threshold.
+    \item Present all matches (including low-confidence ones) to the teacher for decision; the system never finalizes attendance without teacher confirmation.
+\end{itemize}
+
+\subsection{Fallback correction via NFC %
+\BvrHint{\ldots non-research}}
+The NFC tap is implemented as a correction step inside the existing
+verification screen, using browser-native and standard backend
+primitives, with no dedicated NFC hardware beyond the students'
+existing library cards and a single Android phone:
+\begin{itemize}[leftmargin=0.7cm]
+    \item \textbf{Scanning:} the \texttt{NDEFReader} interface of the Web NFC API reads the card UID on tap; no native app is required.
+    \item \textbf{Matching:} the backend performs a simple \texttt{UID $\rightarrow$ roll\_number} lookup against a pre-populated enrollment table and adds the student to the \emph{current session's} attendance list -- no fuzzy matching or inference is involved.
+    \item \textbf{Reflecting the tap:} the verification screen the teacher is already viewing re-fetches (or lightly polls) the session's attendance list so the newly tapped student appears alongside the recognized ones, without needing a separate live-dashboard view.
+    \item \textbf{Feedback:} client-side detection of a successful tap triggers a browser \texttt{Notification} confirming the student was added, giving immediate feedback without disrupting the verification flow.
+\end{itemize}
+
+\subsection{Web architecture %
+\BvrHint{\ldots web-based solution}}
+A typical 3-tier web architecture:
+\begin{itemize}[leftmargin=0.7cm]
+    \item \textbf{Frontend:} responsive React UI for login, classroom/session management, photo upload, the verification screen (including the NFC fallback panel), and analytics.
+    \item \textbf{Backend API:} FastAPI service handling authentication, session management, image upload, face recognition, NFC UID scan ingestion for fallback correction (\texttt{POST /api/session/\{id\}/scan}), and attendance confirmation.
+    \item \textbf{Database:} PostgreSQL (or SQLite for early prototyping) storing users, classrooms, students, sessions, attendance records, and the UID-to-roll-number enrollment mapping; Amazon S3 for classroom photograph storage.
+\end{itemize}
+
+\subsection{CI/CD and fast delivery enabler}
+CI/CD will be used to:
+\begin{itemize}[leftmargin=0.7cm]
+    \item Automatically build and run tests (authentication, attendance APIs, recognition functions) on every change.
+    \item Produce repeatable deployment artifacts to a staging environment on EC2.
+    \item Enable safe and frequent releases of incremental features across the five-week timeline.
+\end{itemize}
+
+\section{Evaluation Criterion %
+\BvrHint{\ldots measurable and attributable}}
+We define success using measurable metrics tied to the core
+workflow.
+
+\subsection{Primary evaluation metric}
+\textbf{Time-to-verified-attendance (TTVA):} time between photo
+upload and teacher-confirmed attendance record creation.
+\begin{itemize}[leftmargin=0.7cm]
+    \item Target: median TTVA $\le$ 60 seconds per session during pilot testing.
+    \item Attribution: measured from database timestamps (upload time vs. confirmation/save time).
+\end{itemize}
+
+\subsection{Secondary evaluation metrics}
+\begin{itemize}[leftmargin=0.7cm]
+    \item \textbf{Recognition accuracy:} percentage of students correctly identified without manual correction, compared against ground-truth roll-call.
+    \item \textbf{Correction rate:} percentage of recognized entries manually corrected by the teacher, tracked to gauge model reliability over time.
+    \item \textbf{Teacher-reported clarity:} simple 1--5 feedback question on ease of use of the verification interface.
+    \item \textbf{Fallback resolution time:} time taken to resolve all unmatched students after face recognition, via NFC tap or manual add, measured as part of the overall verification step.
+    \item \textbf{Reliability:} system availability for login, upload, and verification during class hours (target $\ge$ 99\% uptime in pilot).
+\end{itemize}
+
+\subsection{Pilot validation plan %
+\BvrHint{\ldots high-level}}
+\begin{itemize}[leftmargin=0.7cm]
+    \item Pilot with 2--3 classrooms and their respective teachers over multiple sessions.
+    \item Compare time spent and accuracy against manual roll-call, using teacher-reported baseline estimates for comparison.
+\end{itemize}
+
+\section{Scalability %
+\BvrHint{\ldots with foresight}}
+The proposition should scale in both theoretical and practical
+senses.
+
+\begin{enumerate}[leftmargin=0.7cm]
+    \item \textbf{Scalable (theoretically):} The system should support growth in number of classrooms, students, and concurrent teacher usage by:
+    \begin{itemize}[leftmargin=0.7cm]
+        \item decoupling components (frontend/backend/recognition module),
+        \item enabling indexed queries for attendance history and analytics,
+        \item using stateless, token-authenticated API design.
+    \end{itemize}
+    
+    \item \textbf{Operationally deployable (practically):} The system should run on common, low-cost cloud infrastructure:
+    \begin{itemize}[leftmargin=0.7cm]
+        \item a single managed compute instance for backend and database,
+        \item object storage for photographs,
+        \item CI/CD pipeline for staging/production deployment.
+    \end{itemize}
+\end{enumerate}
+
+\section{Engine availability heuristic}
+A mature set of ``engines'' (tooling/services) is available to
+implement this as a web-based project:
+\begin{itemize}[leftmargin=0.7cm]
+    \item Web framework (FastAPI) for REST APIs, and React for the frontend.
+    \item Managed relational database (PostgreSQL).
+    \item Token-based authentication (JWT) with bcrypt password hashing.
+    \item Object storage (Amazon S3) for classroom and registration photographs.
+    \item An established open-source face-recognition/embedding library.
+    \item Browser-native \textbf{Web NFC API} (\texttt{NDEFReader}, Chrome for Android) for the library-card fallback tap during verification, and the browser \texttt{Notification} API for confirming a successful tap -- no dedicated NFC SDK or native app required.
+    \item Test framework for backend unit/integration tests, and a CI runner for staging deployment.
+\end{itemize}
+We will use these mature components to focus on workflow design,
+correctness, and measurement rather than inventing new
+infrastructure, recognition algorithms, or NFC protocols.
+
+\section{Project scope and deliverables %
+\BvrHint{\ldots iteration-friendly}}
+\subsection{Initial deliverable %
+\BvrHint{\ldots first iteration}}
+\begin{itemize}[leftmargin=0.7cm]
+    \item Authentication and role-based dashboards (teacher, student, admin)
+    \item Classroom listing and attendance session creation
+    \item Photo upload and face recognition integration
+    \item Manual verification interface with confirm/correct/add-manually actions, including the NFC fallback tap for unmatched students
+    \item One-time NFC enrollment flow (tap-to-capture UID $\rightarrow$ map to roll number)
+    \item Basic logging and timestamps for TTVA and fallback-resolution-time measurement
+    \item CI: build + backend unit tests + linting
+\end{itemize}
+
+\subsection{Subsequent deliverables}
+\begin{itemize}[leftmargin=0.7cm]
+    \item Attendance history and CSV export for teachers/admins
+    \item Analytics dashboard (resolution/backlog-style summaries: attendance trends, low-attendance alerts)
+    \item AWS deployment (Vercel hosting for frontend, EC2 for backend and database)
+    \item Improved indexing/query performance for scale readiness
+\end{itemize}
+
+\section{Risks and mitigations}
+\begin{itemize}[leftmargin=0.7cm]
+    \item \textbf{Recognition accuracy in poor lighting/crowded photos:} mandatory manual verification step ensures no attendance record is finalized without teacher confirmation.
+    \item \textbf{Limited project timeline (4--5 weeks):} Agile iterative approach with weekly deliverables and early integration testing.
+    \item \textbf{AWS free-tier resource limits:} single EC2 instance hosting both backend and database to minimize resource usage.
+    \item \textbf{Student privacy concerns over face data:} store only embeddings (not raw comparison data) beyond registration photos, and restrict access via role-based authentication.
+    \item \textbf{Web NFC browser/device constraint:} Web NFC is currently supported only on Chrome for Android; since the tap is only used briefly for the occasional unmatched student during verification (not a primary, high-volume flow), a single designated Android phone is sufficient.
+    \item \textbf{Lost/unregistered/shared library cards:} taps with no matching UID are surfaced to the teacher as unmatched rather than silently dropped, and can be resolved with the existing manual-add option.
+\end{itemize}
+
+\section{Summary}
+This project proposes a deployable web platform to reduce the time
+and error associated with manual classroom attendance, using
+photo-based face recognition as the primary attendance mechanism
+and an NFC library-card tap as a lightweight fallback for closing
+gaps left by unrecognized students during the same verification
+step. It meets the course criteria by emphasizing time-to-value
+through rapid iterations, implementing CI/CD to support frequent
+safe releases, and using measurable evaluation criteria (especially
+time-to-verified-attendance and fallback resolution time). It
+remains focused on engineering workflow, integration, and
+deployment readiness rather than research-driven novelty in face
+recognition.
+
+\end{document}

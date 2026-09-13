@@ -1,0 +1,21 @@
+services:
+
+  postgres:
+    image: postgres:16
+
+    container_name: classsight-postgres
+
+    environment:
+      POSTGRES_DB: classsight
+      POSTGRES_USER: classsight
+      POSTGRES_PASSWORD: classsight_password
+
+    ports:
+      - "5432:5432"
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+
+volumes:
+  postgres_data:
