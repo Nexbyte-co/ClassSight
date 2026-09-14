@@ -23,6 +23,7 @@ import {
 import "./Dashboard.css";
 import "./Reports.css";
 import { useTheme } from "../context/ThemeContext";
+import { logout } from "../api/auth";
 
 function ReportDetails() {
   const navigate = useNavigate();
@@ -144,7 +145,10 @@ function ReportDetails() {
                 <button
                   type="button"
                   className="dropdown-item"
-                  onClick={() => navigate("/")}
+                  onClick={() => {
+                    logout();
+                    navigate("/");
+                  }}
                   style={{ color: "#dc2626" }}
                 >
                   <LogOut size={16} strokeWidth={1.8} />
@@ -193,7 +197,14 @@ function ReportDetails() {
               <span>CSE Dept. · Semester 6</span>
             </div>
 
-            <button type="button" className="sidebar-logout" onClick={() => navigate("/")}>
+            <button
+              type="button"
+              className="sidebar-logout"
+              onClick={() => {
+                logout();
+                navigate("/");
+              }}
+            >
               <LogOut size={17} strokeWidth={1.8} />
               <span>Log Out</span>
             </button>

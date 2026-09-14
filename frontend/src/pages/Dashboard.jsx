@@ -32,6 +32,7 @@ import "./Dashboard.css";
 import { useTheme } from "../context/ThemeContext";
 import { useAttendance } from "../context/AttendanceContext";
 import AppNavigationDrawer from "../components/AppNavigationDrawer";
+import { logout } from "../api/auth";
 
 function Dashboard() {
   const navigate = useNavigate();
@@ -325,6 +326,7 @@ function Dashboard() {
   };
 
   const handleSignOut = () => {
+    logout();
     navigate("/");
   };
 

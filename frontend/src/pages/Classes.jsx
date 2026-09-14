@@ -25,6 +25,7 @@ import "./Dashboard.css";
 import "./Classes.css";
 import { useTheme } from "../context/ThemeContext";
 import AppNavigationDrawer from "../components/AppNavigationDrawer";
+import { logout } from "../api/auth";
 
 // Mock course/class data the teacher is responsible for
 const mockClasses = [
@@ -178,6 +179,7 @@ function Classes() {
   );
 
   const handleSignOut = () => {
+    logout();
     navigate("/");
   };
 

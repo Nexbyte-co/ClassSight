@@ -2,6 +2,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { Eye, EyeOff, LockKeyhole, Mail, Moon, Sun } from "lucide-react";
 import { useTheme } from "../context/ThemeContext";
+import { login } from "../api/auth";
+import { ApiError } from "../api/client";
 import "./Login.css";
 
 function Login() {
@@ -10,12 +12,23 @@ function Login() {
 
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // Temporary navigation until backend authentication is connected
-    navigate("/dashboard");
+    setError("");
+    setIsSubmitting(true);
+    try {
+      await login(email, password);
+      navigate("/dashboard");
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : "Unable to sign in. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -59,6 +72,8 @@ function Login() {
                 id="email"
                 type="text"
                 placeholder="Enter your college ID or email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 required
               />
             </div>
@@ -74,6 +89,8 @@ function Login() {
                 id="password"
                 type={showPassword ? "text" : "password"}
                 placeholder="Enter your password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 required
               />
 
@@ -115,8 +132,14 @@ function Login() {
 
           </div>
 
-          <button type="submit" className="login-submit">
-            Sign In
+          {error && (
+            <p className="login-error" role="alert">
+              {error}
+            </p>
+          )}
+
+          <button type="submit" className="login-submit" disabled={isSubmitting}>
+            {isSubmitting ? "Signing In..." : "Sign In"}
           </button>
 
         </form>

@@ -30,6 +30,12 @@
 }
 
 
+.login-error {
+  color: #b91c1c;
+  font-size: 13px;
+  margin: -4px 0 4px;
+}
+
 /* Header */
 
 .login-header {

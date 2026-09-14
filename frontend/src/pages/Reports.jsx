@@ -23,6 +23,7 @@ import "./Dashboard.css";
 import "./Reports.css";
 import { useTheme } from "../context/ThemeContext";
 import AppNavigationDrawer from "../components/AppNavigationDrawer";
+import { logout } from "../api/auth";
 
 function Reports() {
   const navigate = useNavigate();
@@ -325,7 +326,10 @@ function Reports() {
                 <button
                   type="button"
                   className="dropdown-item"
-                  onClick={() => navigate("/")}
+                  onClick={() => {
+                    logout();
+                    navigate("/");
+                  }}
                   style={{ color: "#dc2626" }}
                 >
                   <LogOut size={16} strokeWidth={1.8} />

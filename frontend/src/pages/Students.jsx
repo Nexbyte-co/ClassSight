@@ -31,6 +31,7 @@ import "./Dashboard.css";
 import "./Students.css";
 import { useTheme } from "../context/ThemeContext";
 import AppNavigationDrawer from "../components/AppNavigationDrawer";
+import { logout } from "../api/auth";
 import {
   availableClasses,
   initialStudents,
@@ -260,7 +261,10 @@ function Students() {
                 <button
                   type="button"
                   className="dropdown-item text-danger"
-                  onClick={() => navigate("/")}
+                  onClick={() => {
+                    logout();
+                    navigate("/");
+                  }}
                 >
                   <LogOut size={16} strokeWidth={1.8} />
                   <span>Sign Out</span>

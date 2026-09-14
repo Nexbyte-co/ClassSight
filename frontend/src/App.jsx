@@ -15,6 +15,7 @@ import { ThemeProvider } from "./context/ThemeContext";
 import { AttendanceProvider } from "./context/AttendanceContext";
 import UnverifiedStudents from "./pages/UnverifiedStudents";
 import VerifiedStudents from "./pages/VerifiedStudents";
+import RequireAuth from "./components/RequireAuth";
 
 function App() {
   return (
@@ -24,17 +25,94 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/classes" element={<Classes />} />
-            <Route path="/attendance" element={<Attendance />} />
-            <Route path="/attendance/unverified" element={<UnverifiedStudents />} />
-            <Route path="/attendance/verified" element={<VerifiedStudents />} />
-            <Route path="/students" element={<Students />} />
-            <Route path="/reports" element={<Reports />} />
-            <Route path="/Reports" element={<Reports />} />
-            <Route path="/reports/all" element={<AllReports />} />
-            <Route path="/reports/details" element={<ReportDetails />} />
-            <Route path="/settings" element={<Settings />} />
+            <Route
+              path="/dashboard"
+              element={
+                <RequireAuth>
+                  <Dashboard />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/classes"
+              element={
+                <RequireAuth>
+                  <Classes />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/attendance"
+              element={
+                <RequireAuth>
+                  <Attendance />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/attendance/unverified"
+              element={
+                <RequireAuth>
+                  <UnverifiedStudents />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/attendance/verified"
+              element={
+                <RequireAuth>
+                  <VerifiedStudents />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/students"
+              element={
+                <RequireAuth>
+                  <Students />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/reports"
+              element={
+                <RequireAuth>
+                  <Reports />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/Reports"
+              element={
+                <RequireAuth>
+                  <Reports />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/reports/all"
+              element={
+                <RequireAuth>
+                  <AllReports />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/reports/details"
+              element={
+                <RequireAuth>
+                  <ReportDetails />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/settings"
+              element={
+                <RequireAuth>
+                  <Settings />
+                </RequireAuth>
+              }
+            />
           </Routes>
         </BrowserRouter>
       </AttendanceProvider>

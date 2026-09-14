@@ -16,6 +16,8 @@ class Settings(BaseSettings):
     s3_bucket_name: str = "classsight-attendance-photos"
     aws_region: str = "us-east-1"
 
+    cors_allowed_origins: list[str] = ["http://localhost:5173"]
+
 
 @lru_cache
 def get_settings() -> Settings:
