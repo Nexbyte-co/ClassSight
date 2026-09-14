@@ -78,6 +78,7 @@
 
 .reports-main {
   flex: 1;
+  min-width: 0;
   padding: 32px 36px 80px;
   max-width: 1200px;
   margin: 0 auto;

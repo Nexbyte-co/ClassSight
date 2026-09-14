@@ -1,0 +1,8 @@
+{
+  "name": "ClassSight",
+  "description": "Smart classroom attendance system featuring automated AI facial recognition verification, NFC tap verification, manual resolution, and comprehensive class session reports.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

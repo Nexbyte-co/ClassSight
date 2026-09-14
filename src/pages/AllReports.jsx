@@ -269,6 +269,15 @@ function AllReports() {
 
       {/* ================= MAIN SHELL ================= */}
       <div className="dashboard-body">
+        {/* Mobile Backdrop */}
+        {isMobileMenuOpen && (
+          <div
+            className="sidebar-backdrop"
+            onClick={() => setIsMobileMenuOpen(false)}
+            aria-hidden="true"
+          />
+        )}
+
         {/* Sidebar */}
         <aside className={`dashboard-sidebar ${isMobileMenuOpen ? "mobile-open" : ""}`}>
           <nav className="sidebar-nav">

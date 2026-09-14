@@ -1,37 +1,9 @@
-# ClassSight
+# ClassSight Frontend
 
-AI-assisted classroom attendance and verification system.
+React based frontend application.
 
-## Overview
+## Run
 
-ClassSight enables teachers to:
+npm install
 
-- Manage classrooms
-- Start attendance sessions
-- Upload classroom photographs
-- Identify students using face recognition
-- Verify attendance manually
-- Maintain attendance records and analytics
-
-## Tech Stack
-
-### Frontend
-- React
-- JavaScript
-- Vite
-
-### Backend
-- FastAPI
-- Python
-
-### Database
-- PostgreSQL
-
-### Storage
-- Amazon S3
-
-### Deployment
-- AWS EC2
-- Docker
-
-## Repository Structure
+npm run dev
