@@ -6,6 +6,11 @@ class StudentCreate(BaseModel):
     name: str = Field(min_length=1, max_length=120)
 
 
+class FaceEnrollmentOut(BaseModel):
+    student_id: int
+    photos_used: int
+
+
 class StudentOut(BaseModel):
     id: int
     roll_number: str

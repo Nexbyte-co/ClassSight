@@ -1,13 +1,17 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, status
 from sqlalchemy.orm import Session
 
 from app.core.deps import get_owned_classroom, require_roles
 from app.db.session import get_db
 from app.models import Classroom, Student, User, UserRole
 from app.schemas.classroom import ClassroomCreate, ClassroomOut
-from app.schemas.student import StudentCreate, StudentOut
+from app.schemas.student import FaceEnrollmentOut, StudentCreate, StudentOut
+from app.services import face_recognition
 
 router = APIRouter(prefix="/classrooms", tags=["classrooms"])
+
+MAX_ENROLLMENT_PHOTOS = 5
+MAX_ENROLLMENT_PHOTO_BYTES = 10 * 1024 * 1024
 
 
 @router.get("", response_model=list[ClassroomOut])
@@ -105,3 +109,50 @@ def create_student(
     db.commit()
     db.refresh(student)
     return student
+
+
+@router.post("/{classroom_id}/students/{student_id}/face", response_model=FaceEnrollmentOut)
+def enroll_student_face(
+    student_id: int,
+    files: list[UploadFile],
+    db: Session = Depends(get_db),
+    classroom: Classroom = Depends(get_owned_classroom),
+) -> FaceEnrollmentOut:
+    student = (
+        db.query(Student)
+        .filter(Student.id == student_id, Student.classroom_id == classroom.id)
+        .first()
+    )
+    if student is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Student not found")
+
+    if not 1 <= len(files) <= MAX_ENROLLMENT_PHOTOS:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=f"Upload between 1 and {MAX_ENROLLMENT_PHOTOS} photos",
+        )
+
+    images: list[bytes] = []
+    for upload in files:
+        if upload.content_type not in {"image/jpeg", "image/png"}:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail="Only JPEG and PNG images are supported",
+            )
+        content = upload.file.read(MAX_ENROLLMENT_PHOTO_BYTES + 1)
+        if len(content) > MAX_ENROLLMENT_PHOTO_BYTES:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail="Each photo must be 10 MB or smaller",
+            )
+        images.append(content)
+
+    try:
+        student.face_embedding = face_recognition.build_enrollment_embedding(images)
+    except face_recognition.EnrollmentError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(exc)
+        ) from exc
+
+    db.commit()
+    return FaceEnrollmentOut(student_id=student.id, photos_used=len(images))

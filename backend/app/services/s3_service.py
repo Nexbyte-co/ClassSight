@@ -29,3 +29,14 @@ def upload_session_photo(classroom_id: int, session_id: int, content: bytes, con
         ContentType=content_type,
     )
     return f"https://{settings.s3_bucket_name}.s3.{settings.aws_region}.amazonaws.com/{key}"
+
+
+def key_from_url(photo_url: str) -> str:
+    """Extract the object key from a URL returned by `upload_session_photo`."""
+    return photo_url.split(".amazonaws.com/", 1)[1]
+
+
+def get_object_bytes(key: str) -> bytes:
+    settings = get_settings()
+    response = _client().get_object(Bucket=settings.s3_bucket_name, Key=key)
+    return response["Body"].read()

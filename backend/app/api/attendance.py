@@ -130,9 +130,18 @@ def process_session(
     students = db.query(Student).filter(Student.classroom_id == classroom.id).all()
     students_by_id = {student.id: student for student in students}
 
-    result = face_recognition.recognize_faces(
-        photo_url=session.photo_url, candidate_student_ids=list(students_by_id)
-    )
+    candidates = [
+        (student.id, student.face_embedding)
+        for student in students
+        if student.face_embedding is not None
+    ]
+    if candidates:
+        image_bytes = s3_service.get_object_bytes(
+            s3_service.key_from_url(session.photo_url)
+        )
+        result = face_recognition.recognize_faces(image_bytes, candidates)
+    else:
+        result = face_recognition.RecognitionResult(matches=[], unrecognized_face_count=0)
 
     recognized = [
         RecognizedStudent(
