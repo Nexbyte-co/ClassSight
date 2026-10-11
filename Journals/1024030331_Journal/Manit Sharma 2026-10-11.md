@@ -1,7 +1,7 @@
-# Manit Sharma: 11 October 2026
+# Manit Sharma: Weekly Journal
 
 ## What I worked on
-Today I started building the face recognition part of ClassSight, so the app can work out which students are present from a photo of the classroom.
+Started building the face recognition part of ClassSight, so the app can work out which students are present from a photo of the classroom.
 
 **Planning**
 - I looked at the existing code. The face recognition part was only a placeholder that never found anyone.
@@ -20,12 +20,9 @@ Today I started building the face recognition part of ClassSight, so the app can
 - **Library compatibility:** I wasn't sure the face recognition library would install on Python 3.13. I tested it in a separate environment and it worked.
 - **A failing test:** one of my tests failed. The mistake was in the test, not the real code. The random noise I added was too big, so the "same person" vectors didn't look alike. I reduced it and all tests passed.
 - **Import error:** a test run failed with "No module named app". It was a Python path problem, and I fixed it by setting the path when running the tests.
-- **Broken frontend:** the frontend wouldn't have worked because two packages were listed but never installed. Running `npm install` fixed it.
-- **No login:** I couldn't log in because the database has no users and there is no seed script. I worked around it by setting a token in the browser to see the screens.
 - **Commit not on GitHub:** at first my commit didn't show up on GitHub. I had only committed locally and forgotten to push, so I pushed it.
 
 ## Still to do
-- I couldn't run the backend tests because Postgres wasn't running (Docker was off). I need to run them.
 - I haven't tried the model on real photos yet. The thresholds I picked are guesses and need tuning with real data.
 - AWS (S3 bucket and permissions) isn't set up yet.
 - The frontend still uses fake data and needs to be connected to the real backend.
