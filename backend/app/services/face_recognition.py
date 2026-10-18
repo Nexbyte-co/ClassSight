@@ -13,15 +13,26 @@ Phase 0 evaluation set.
 
 from __future__ import annotations
 
+import logging
 import threading
 from dataclasses import dataclass
 
 import numpy as np
 from scipy.optimize import linear_sum_assignment
 
+logger = logging.getLogger(__name__)
+
 MATCH_THRESHOLD = 0.5
 AMBIGUITY_MARGIN = 0.05
 EMBEDDING_DIM = 512
+
+# Decision reasons, shared by group matching and single-face verification.
+MATCHED = "matched"
+BELOW_THRESHOLD = "below_threshold"
+AMBIGUOUS = "ambiguous"
+
+# Light enrollment augmentation: a mirror copy plus one copy per brightness offset.
+AUGMENT_BRIGHTNESS_SHIFTS = (40, -40)
 
 _model = None
 _model_lock = threading.Lock()
@@ -37,6 +48,19 @@ class RecognitionMatch:
 class RecognitionResult:
     matches: list[RecognitionMatch]
     unrecognized_face_count: int
+
+
+@dataclass
+class Identification:
+    """Outcome for one face. `student_id` is set only when `reason` is MATCHED."""
+
+    student_id: int | None
+    confidence: float
+    reason: str
+
+
+class InvalidImageError(ValueError):
+    """The uploaded bytes could not be decoded as an image."""
 
 
 def _normalize(vectors: np.ndarray) -> np.ndarray:
@@ -55,6 +79,18 @@ def embedding_from_bytes(data: bytes) -> np.ndarray:
 def mean_embedding(embeddings: list[np.ndarray]) -> np.ndarray:
     """Average several photos of one student into a single enrollment embedding."""
     return _normalize(_normalize(np.stack(embeddings)).mean(axis=0))
+
+
+def _decide(score: float, runner_up: float | None, threshold: float, margin: float) -> str:
+    if score < threshold:
+        return BELOW_THRESHOLD
+    if runner_up is not None and runner_up > score - margin:
+        return AMBIGUOUS
+    return MATCHED
+
+
+def _confidence(score: float) -> float:
+    return min(max(score, 0.0), 1.0)
 
 
 def match_embeddings(
@@ -76,19 +112,58 @@ def match_embeddings(
     matches: list[RecognitionMatch] = []
     for face_idx, cand_idx in zip(rows, cols):
         score = float(similarity[face_idx, cand_idx])
-        if score < threshold:
-            continue
         others = np.delete(similarity[face_idx], cand_idx)
-        if others.size and float(others.max()) > score - margin:
-            continue
-        matches.append(
-            RecognitionMatch(
-                student_id=candidates[cand_idx][0],
-                confidence=min(max(score, 0.0), 1.0),
-            )
+        runner_up = float(others.max()) if others.size else None
+        reason = _decide(score, runner_up, threshold, margin)
+        logger.info(
+            "face %d: best=%.3f runner_up=%s -> %s",
+            face_idx,
+            score,
+            f"{runner_up:.3f}" if runner_up is not None else "none",
+            reason,
         )
+        if reason == MATCHED:
+            matches.append(
+                RecognitionMatch(
+                    student_id=candidates[cand_idx][0], confidence=_confidence(score)
+                )
+            )
+    logger.info(
+        "matched %d of %d face(s) against %d candidate(s)",
+        len(matches),
+        face_count,
+        len(candidates),
+    )
     return RecognitionResult(
         matches=matches, unrecognized_face_count=face_count - len(matches)
+    )
+
+
+def identify_face(
+    face_embedding: np.ndarray,
+    candidates: list[tuple[int, np.ndarray]],
+    threshold: float = MATCH_THRESHOLD,
+    margin: float = AMBIGUITY_MARGIN,
+) -> Identification:
+    """Decide which candidate (if any) a single face belongs to. Needs >= 1 candidate."""
+    face = _normalize(np.asarray(face_embedding, dtype=np.float32))
+    enrolled = _normalize(np.stack([emb for _, emb in candidates]).astype(np.float32))
+    scores = enrolled @ face
+    order = np.argsort(scores)[::-1]
+    best = float(scores[order[0]])
+    runner_up = float(scores[order[1]]) if len(order) > 1 else None
+    reason = _decide(best, runner_up, threshold, margin)
+    logger.info(
+        "verify: best=%.3f runner_up=%s candidates=%d -> %s",
+        best,
+        f"{runner_up:.3f}" if runner_up is not None else "none",
+        len(candidates),
+        reason,
+    )
+    return Identification(
+        student_id=candidates[order[0]][0] if reason == MATCHED else None,
+        confidence=_confidence(best),
+        reason=reason,
     )
 
 
@@ -104,24 +179,54 @@ def _get_model():
     return _model
 
 
-def extract_face_embeddings(image_bytes: bytes) -> np.ndarray:
-    """Detect every face in an image and return their embeddings (F x 512)."""
+def decode_image(image_bytes: bytes) -> np.ndarray:
     import cv2
 
     image = cv2.imdecode(np.frombuffer(image_bytes, np.uint8), cv2.IMREAD_COLOR)
     if image is None:
-        raise ValueError("Could not decode image")
+        raise InvalidImageError("Could not decode image")
+    return image
+
+
+def embed_image(image: np.ndarray) -> np.ndarray:
+    """Detect every face in a decoded image and return their embeddings (F x 512)."""
     faces = _get_model().get(image)
     if not faces:
         return np.empty((0, EMBEDDING_DIM), dtype=np.float32)
     return np.stack([face.normed_embedding for face in faces]).astype(np.float32)
 
 
+def extract_face_embeddings(image_bytes: bytes) -> np.ndarray:
+    """Detect every face in an image and return their embeddings (F x 512)."""
+    return embed_image(decode_image(image_bytes))
+
+
+def augment_variants(image: np.ndarray) -> list[np.ndarray]:
+    """Mirror copy plus brighter/darker copies; mild on purpose so identity is preserved."""
+    import cv2
+
+    variants = [cv2.flip(image, 1)]
+    for shift in AUGMENT_BRIGHTNESS_SHIFTS:
+        variants.append(cv2.convertScaleAbs(image, alpha=1.0, beta=shift))
+    return variants
+
+
+def _augmented_embeddings(image_bytes: bytes, position: int) -> list[np.ndarray]:
+    """Embeddings of the augmented copies; a copy where the face is lost is skipped."""
+    kept: list[np.ndarray] = []
+    for variant in augment_variants(decode_image(image_bytes)):
+        faces = embed_image(variant)
+        if len(faces) == 1:
+            kept.append(faces[0])
+    logger.info("enroll photo %d: %d augmented copies used", position, len(kept))
+    return kept
+
+
 class EnrollmentError(ValueError):
     """An enrollment photo can't be used (undecodable, no face, or several faces)."""
 
 
-def build_enrollment_embedding(images: list[bytes]) -> bytes:
+def build_enrollment_embedding(images: list[bytes], augment: bool = False) -> bytes:
     """Turn 1+ close-up photos of one student into the bytes stored on the student.
 
     Every photo must contain exactly one face so a group shot can't be enrolled
@@ -133,11 +238,14 @@ def build_enrollment_embedding(images: list[bytes]) -> bytes:
             faces = extract_face_embeddings(image_bytes)
         except ValueError as exc:
             raise EnrollmentError(f"Photo {position}: {exc}") from exc
+        logger.info("enroll photo %d: %d face(s) found", position, len(faces))
         if len(faces) != 1:
             raise EnrollmentError(
                 f"Photo {position}: expected exactly one face, found {len(faces)}"
             )
         embeddings.append(faces[0])
+        if augment:
+            embeddings.extend(_augmented_embeddings(image_bytes, position))
     return embedding_to_bytes(mean_embedding(embeddings))
 
 

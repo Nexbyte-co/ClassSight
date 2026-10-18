@@ -8,13 +8,15 @@ services:
     environment:
       POSTGRES_DB: classsight
       POSTGRES_USER: classsight
-      POSTGRES_PASSWORD: classsight_password
+      POSTGRES_PASSWORD: classsight
 
     ports:
       - "5432:5432"
 
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      # Runs only when the volume is first created: adds the pytest database.
+      - ./init-test-db.sql:/docker-entrypoint-initdb.d/init-test-db.sql:ro
 
 
 volumes:

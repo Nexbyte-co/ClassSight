@@ -1,5 +1,7 @@
 import numpy as np
+import pytest
 
+from app.services import face_recognition
 from app.services.face_recognition import (
     embedding_from_bytes,
     embedding_to_bytes,
@@ -74,3 +76,26 @@ def test_embedding_bytes_roundtrip_and_mean():
     avg = mean_embedding([_noisy(vec, 1), _noisy(vec, 2), _noisy(vec, 3)])
     assert np.isclose(np.linalg.norm(avg), 1.0, atol=1e-5)
     assert float(avg @ vec) > 0.95
+
+
+def test_identify_face_reports_reason():
+    candidates = [(1, _unit(0)), (2, _unit(1))]
+    matched = face_recognition.identify_face(_unit(1), candidates)
+    assert (matched.student_id, matched.reason) == (2, face_recognition.MATCHED)
+
+    stranger = face_recognition.identify_face(_unit(5), candidates)
+    assert (stranger.student_id, stranger.reason) == (None, face_recognition.BELOW_THRESHOLD)
+
+    between = face_recognition._normalize(_unit(0) + _unit(1))
+    ambiguous = face_recognition.identify_face(between, candidates)
+    assert (ambiguous.student_id, ambiguous.reason) == (None, face_recognition.AMBIGUOUS)
+
+
+def test_identify_face_with_single_candidate_has_no_runner_up():
+    result = face_recognition.identify_face(_unit(0), [(1, _unit(0))])
+    assert (result.student_id, result.reason) == (1, face_recognition.MATCHED)
+
+
+def test_undecodable_bytes_raise_invalid_image():
+    with pytest.raises(face_recognition.InvalidImageError):
+        face_recognition.decode_image(b"not an image")

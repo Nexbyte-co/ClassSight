@@ -1,12 +1,19 @@
+import logging
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api import attendance, auth, classrooms, users
 from app.core.config import get_settings
 
+settings = get_settings()
+
+# App loggers only; images and embeddings are never logged, only counts/scores/keys.
+logging.basicConfig(format="%(asctime)s %(levelname)s %(name)s: %(message)s")
+logging.getLogger("app").setLevel(settings.log_level.upper())
+
 app = FastAPI(title="ClassSight API")
 
-settings = get_settings()
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.cors_allowed_origins,

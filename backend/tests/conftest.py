@@ -116,3 +116,44 @@ def auth_headers(client: TestClient, email: str, password: str) -> dict[str, str
     assert response.status_code == 200, response.text
     token = response.json()["access_token"]
     return {"Authorization": f"Bearer {token}"}
+
+
+class FakeS3Client:
+    """In-memory stand-in for the boto3 S3 client used by app.services.s3_service."""
+
+    def __init__(self):
+        self.objects: dict[str, bytes] = {}
+        self.fail = False
+
+    def _check(self):
+        if self.fail:
+            from botocore.exceptions import EndpointConnectionError
+
+            raise EndpointConnectionError(endpoint_url="http://fake-s3")
+
+    def put_object(self, Bucket, Key, Body, ContentType):
+        self._check()
+        self.objects[Key] = Body
+
+    def get_object(self, Bucket, Key):
+        self._check()
+        import io
+
+        return {"Body": io.BytesIO(self.objects[Key])}
+
+    def delete_objects(self, Bucket, Delete):
+        self._check()
+        for item in Delete["Objects"]:
+            self.objects.pop(item["Key"], None)
+
+    def generate_presigned_url(self, ClientMethod, Params, ExpiresIn):
+        return f"https://fake-s3/{Params['Key']}?expires={ExpiresIn}"
+
+
+@pytest.fixture
+def fake_s3(monkeypatch):
+    from app.services import s3_service
+
+    client = FakeS3Client()
+    monkeypatch.setattr(s3_service, "_client", lambda: client)
+    return client

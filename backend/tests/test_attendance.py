@@ -2,6 +2,9 @@ import io
 from datetime import date
 from unittest.mock import patch
 
+import numpy as np
+
+from app.models import AttendanceSession
 from tests.conftest import auth_headers
 
 
@@ -86,6 +89,55 @@ def test_upload_process_confirm_flow(client, teacher_user, classroom, student):
     assert body["average_attendance_rate"] == 1.0
 
 
+def test_process_matches_enrolled_students_from_s3_photo(
+    client, teacher_user, classroom, student, db_session
+):
+    from app.models import Student
+    from app.services import face_recognition
+
+    def unit(index):
+        return np.eye(1, face_recognition.EMBEDDING_DIM, index, dtype=np.float32)[0]
+
+    student.face_embedding = face_recognition.embedding_to_bytes(unit(0))
+    bob = Student(
+        roll_number="R002",
+        name="Bob",
+        classroom_id=classroom.id,
+        face_embedding=face_recognition.embedding_to_bytes(unit(1)),
+    )
+    carol = Student(roll_number="R003", name="Carol", classroom_id=classroom.id)
+    db_session.add_all([bob, carol])
+    db_session.commit()
+
+    headers = auth_headers(client, "teacher1@classsight.example", "teacherpass123")
+    session = _create_session(client, headers, classroom.id)
+    photo_url = "https://bucket.s3.us-east-1.amazonaws.com/classrooms/1/sessions/1/a.jpg"
+    db_session.get(AttendanceSession, session["id"]).photo_url = photo_url
+    db_session.commit()
+
+    # Alice, Bob, and a stranger are in the photo; Carol is not enrolled.
+    faces = np.stack([unit(0), unit(1), unit(5)])
+    with (
+        patch(
+            "app.services.s3_service.get_object_bytes", return_value=b"photo-bytes"
+        ) as get_object,
+        patch.object(
+            face_recognition, "extract_face_embeddings", return_value=faces
+        ) as extract,
+    ):
+        process = client.post(
+            f"/attendance/process?session_id={session['id']}", headers=headers
+        )
+
+    assert process.status_code == 200, process.text
+    get_object.assert_called_once_with("classrooms/1/sessions/1/a.jpg")
+    extract.assert_called_once_with(b"photo-bytes")
+    body = process.json()
+    assert {s["name"] for s in body["recognized_students"]} == {"Alice", "Bob"}
+    assert all(s["confidence"] > 0.99 for s in body["recognized_students"])
+    assert body["unrecognized_face_count"] == 1
+
+
 def test_process_requires_uploaded_photo(client, teacher_user, classroom):
     headers = auth_headers(client, "teacher1@classsight.example", "teacherpass123")
     session = _create_session(client, headers, classroom.id)
@@ -123,3 +175,26 @@ def test_other_teacher_cannot_view_logs(client, classroom, other_teacher_user):
     headers = auth_headers(client, "teacher2@classsight.example", "teacherpass123")
     response = client.get(f"/attendance/logs?classroom_id={classroom.id}", headers=headers)
     assert response.status_code == 403
+
+
+def test_process_with_undecodable_photo_returns_422(
+    client, teacher_user, classroom, student, db_session, fake_s3
+):
+    from app.services import face_recognition
+
+    student.face_embedding = face_recognition.embedding_to_bytes(
+        np.eye(1, face_recognition.EMBEDDING_DIM, 0, dtype=np.float32)[0]
+    )
+    db_session.commit()
+
+    headers = auth_headers(client, "teacher1@classsight.example", "teacherpass123")
+    session = _create_session(client, headers, classroom.id)
+    fake_s3.objects["attendance/1/1/broken.jpg"] = b"not an image"
+    db_session.get(AttendanceSession, session["id"]).photo_url = (
+        "https://bucket.s3.us-east-1.amazonaws.com/attendance/1/1/broken.jpg"
+    )
+    db_session.commit()
+
+    response = client.post(f"/attendance/process?session_id={session['id']}", headers=headers)
+    assert response.status_code == 422
+    assert "could not be read" in response.json()["detail"]

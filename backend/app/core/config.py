@@ -15,6 +15,12 @@ class Settings(BaseSettings):
 
     s3_bucket_name: str = "classsight-attendance-photos"
     aws_region: str = "us-east-1"
+    # Set only for an S3-compatible store such as local MinIO; unset means real AWS S3.
+    s3_endpoint_url: str | None = None
+
+    # Also embed flipped/brighter/darker copies of each enrollment photo.
+    enroll_augment: bool = False
+    log_level: str = "INFO"
 
     cors_allowed_origins: list[str] = ["http://localhost:5173"]
 

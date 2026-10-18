@@ -1,3 +1,5 @@
+import logging
+
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, status
 from sqlalchemy import func
 from sqlalchemy.orm import Session
@@ -25,6 +27,8 @@ from app.schemas.attendance import (
     RecognizedStudent,
 )
 from app.services import face_recognition, s3_service
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/attendance", tags=["attendance"])
 
@@ -135,11 +139,23 @@ def process_session(
         for student in students
         if student.face_embedding is not None
     ]
+    logger.info(
+        "process session %d: %d student(s), %d enrolled",
+        session.id,
+        len(students),
+        len(candidates),
+    )
     if candidates:
         image_bytes = s3_service.get_object_bytes(
             s3_service.key_from_url(session.photo_url)
         )
-        result = face_recognition.recognize_faces(image_bytes, candidates)
+        try:
+            result = face_recognition.recognize_faces(image_bytes, candidates)
+        except face_recognition.InvalidImageError as exc:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail="The uploaded session photo could not be read as an image",
+            ) from exc
     else:
         result = face_recognition.RecognitionResult(matches=[], unrecognized_face_count=0)
 

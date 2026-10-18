@@ -45,3 +45,19 @@ Pipeline: detect -> align -> embed -> cosine match against enrolled student embe
 - Frontend dev server runs at http://localhost:5173 (`npm run dev` in `frontend/`). `react-router-dom` and `lucide-react` were declared but not installed; `npm install` fixed it (node_modules only). `npm install` reported 1 high-severity vulnerability, not investigated.
 - Without a backend, bypass the route guard with `localStorage.setItem("classsight_access_token", "dev")`.
 - Scratch venv with the ML deps was created outside the repo; nothing project-side depends on it.
+
+## Session 2026-10-18 (Phase A of the MVP plan)
+Decisions changed since 2026-10-11: **enrollment photos ARE now stored** (private S3, `students/{roll}/`, deletable via `DELETE …/face`), and `roll_number` is the college roll no., unique college-wide. MVP scope: one classroom, one teacher.
+
+Done:
+- Postgres compose password aligned to `classsight`; `deployment/init-test-db.sql` creates `classsight_test` on a fresh volume. `session.py` now reads `get_settings()` (was ignoring `.env`).
+- `app/db/seed.py`: first admin only (`SEED_ADMIN_EMAIL`); no fake data by user request.
+- `face_enrolled` on `StudentOut`; `StudentPhoto` model; migration `b7d2e4f1a903` (checked with `alembic check` + down/up).
+- `POST /classrooms/{id}/verify` (one face, reasons `matched|below_threshold|ambiguous|no_enrolled_students`); profile `GET …/students/{sid}` with presigned URLs; `DELETE …/face`; `/process` returns 422 on undecodable photo.
+- `ENROLL_AUGMENT` (mirror + ±40 brightness copies, off by default), `S3_ENDPOINT_URL`, `LOG_LEVEL`; step logging (scores/keys/counts only).
+- 59 tests pass (model + S3 faked via `fake_s3`). Mutation check: forcing `_decide` to always match fails 6 safety tests.
+- Real-model smoke (insightface sample `t1.jpg`, 6 people, margin crops): 6/6 identified from darker mirrored copies (conf 0.91–0.96), non-enrolled person rejected (0.04), group photo rejected for enrollment. Not an accuracy measurement (probes derived from the same photo).
+
+Observed: a 112×112 tightly-cropped face (`Tom_Hanks_54745.png`) gives **0 detections** — the detector needs margin around the face. Tightly cropped / tiny enrollment photos (e.g. ID-card crops) will fail; possible fix is padding before detection. Check during Phase C.
+
+Next: Phases B–E (containers, local MinIO e2e with real photos, EC2, frontend plan) on a new branch from this one. Plan: `~/.claude/plans/abundant-orbiting-octopus.md`.
