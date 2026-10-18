@@ -78,22 +78,43 @@ def test_embedding_bytes_roundtrip_and_mean():
     assert float(avg @ vec) > 0.95
 
 
-def test_identify_face_reports_reason():
-    candidates = [(1, _unit(0)), (2, _unit(1))]
-    matched = face_recognition.identify_face(_unit(1), candidates)
-    assert (matched.student_id, matched.reason) == (2, face_recognition.MATCHED)
-
-    stranger = face_recognition.identify_face(_unit(5), candidates)
-    assert (stranger.student_id, stranger.reason) == (None, face_recognition.BELOW_THRESHOLD)
-
+def test_every_face_gets_a_decision_with_reason():
+    # As many candidates as faces, so no face is left UNASSIGNED.
+    candidates = [(1, _unit(0)), (2, _unit(1)), (3, _unit(2))]
     between = face_recognition._normalize(_unit(0) + _unit(1))
-    ambiguous = face_recognition.identify_face(between, candidates)
-    assert (ambiguous.student_id, ambiguous.reason) == (None, face_recognition.AMBIGUOUS)
+    faces = np.stack([_unit(1), _unit(5), between])
+
+    decisions = match_embeddings(faces, candidates).decisions
+    assert [d.face_index for d in decisions] == [0, 1, 2]
+    assert (decisions[0].student_id, decisions[0].reason) == (2, face_recognition.MATCHED)
+    assert (decisions[1].student_id, decisions[1].reason) == (
+        None,
+        face_recognition.BELOW_THRESHOLD,
+    )
+    assert (decisions[2].student_id, decisions[2].reason) == (None, face_recognition.AMBIGUOUS)
+    assert all(d.confidence is not None for d in decisions)
 
 
-def test_identify_face_with_single_candidate_has_no_runner_up():
-    result = face_recognition.identify_face(_unit(0), [(1, _unit(0))])
-    assert (result.student_id, result.reason) == (1, face_recognition.MATCHED)
+def test_single_face_single_candidate_has_no_runner_up():
+    decision = match_embeddings(np.stack([_unit(0)]), [(1, _unit(0))]).decisions[0]
+    assert (decision.student_id, decision.reason) == (1, face_recognition.MATCHED)
+
+
+def test_faces_beyond_candidate_count_are_unassigned():
+    faces = np.stack([_unit(0), _unit(1), _unit(2)])
+    result = match_embeddings(faces, [(1, _unit(1))])
+
+    assert len(result.decisions) == 3
+    reasons = [d.reason for d in result.decisions]
+    assert reasons.count(face_recognition.UNASSIGNED) == 2
+    assert [m.student_id for m in result.matches] == [1]
+    assert result.unrecognized_face_count == 2
+
+
+def test_no_candidates_leaves_every_face_unassigned():
+    result = match_embeddings(np.stack([_unit(0), _unit(1)]), [])
+    assert [d.reason for d in result.decisions] == [face_recognition.UNASSIGNED] * 2
+    assert all(d.confidence is None for d in result.decisions)
 
 
 def test_undecodable_bytes_raise_invalid_image():

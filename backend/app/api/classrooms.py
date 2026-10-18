@@ -288,13 +288,14 @@ def verify_student(
             detail=f"Expected exactly one face in the photo, found {len(faces)}",
         )
 
-    result = face_recognition.identify_face(faces[0], candidates)
-    student = db.get(Student, result.student_id) if result.student_id is not None else None
+    # One face and >= 1 candidate, so the face is always assigned (never UNASSIGNED).
+    decision = face_recognition.match_embeddings(faces, candidates).decisions[0]
+    student = db.get(Student, decision.student_id) if decision.student_id is not None else None
     return VerificationOut(
         verified=student is not None,
         student=VerifiedStudent.model_validate(student, from_attributes=True)
         if student is not None
         else None,
-        confidence=result.confidence,
-        reason=result.reason,
+        confidence=decision.confidence,
+        reason=decision.reason,
     )

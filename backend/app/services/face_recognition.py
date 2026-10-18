@@ -30,6 +30,7 @@ EMBEDDING_DIM = 512
 MATCHED = "matched"
 BELOW_THRESHOLD = "below_threshold"
 AMBIGUOUS = "ambiguous"
+UNASSIGNED = "unassigned"  # more faces than candidates; no student left to compare with
 
 # Light enrollment augmentation: a mirror copy plus one copy per brightness offset.
 AUGMENT_BRIGHTNESS_SHIFTS = (40, -40)
@@ -39,24 +40,26 @@ _model_lock = threading.Lock()
 
 
 @dataclass
-class RecognitionMatch:
-    student_id: int
-    confidence: float
+class FaceDecision:
+    """Outcome for one detected face. `student_id` is set only when `reason` is MATCHED."""
+
+    face_index: int
+    student_id: int | None
+    confidence: float | None  # best score clamped to [0, 1]; None if no candidate was left
+    reason: str
 
 
 @dataclass
 class RecognitionResult:
-    matches: list[RecognitionMatch]
-    unrecognized_face_count: int
+    decisions: list[FaceDecision]  # exactly one per detected face, in face order
 
+    @property
+    def matches(self) -> list[FaceDecision]:
+        return [d for d in self.decisions if d.reason == MATCHED]
 
-@dataclass
-class Identification:
-    """Outcome for one face. `student_id` is set only when `reason` is MATCHED."""
-
-    student_id: int | None
-    confidence: float
-    reason: str
+    @property
+    def unrecognized_face_count(self) -> int:
+        return len(self.decisions) - len(self.matches)
 
 
 class InvalidImageError(ValueError):
@@ -99,17 +102,25 @@ def match_embeddings(
     threshold: float = MATCH_THRESHOLD,
     margin: float = AMBIGUITY_MARGIN,
 ) -> RecognitionResult:
-    """Match detected faces (F x d) to candidate students, one face per student."""
+    """Decide every detected face (F x d) against candidate students, one face per student.
+
+    Group photos (/process) and single-face verification (/verify) both use this,
+    so they share one scoring path and one accept/reject rule.
+    """
     face_count = len(face_embeddings)
+    decisions = [
+        FaceDecision(face_index=i, student_id=None, confidence=None, reason=UNASSIGNED)
+        for i in range(face_count)
+    ]
     if face_count == 0 or not candidates:
-        return RecognitionResult(matches=[], unrecognized_face_count=face_count)
+        return RecognitionResult(decisions=decisions)
 
     faces = _normalize(np.asarray(face_embeddings, dtype=np.float32))
     enrolled = _normalize(np.stack([emb for _, emb in candidates]).astype(np.float32))
     similarity = faces @ enrolled.T
 
+    # With more faces than candidates, the faces left over stay UNASSIGNED.
     rows, cols = linear_sum_assignment(-similarity)
-    matches: list[RecognitionMatch] = []
     for face_idx, cand_idx in zip(rows, cols):
         score = float(similarity[face_idx, cand_idx])
         others = np.delete(similarity[face_idx], cand_idx)
@@ -122,49 +133,21 @@ def match_embeddings(
             f"{runner_up:.3f}" if runner_up is not None else "none",
             reason,
         )
-        if reason == MATCHED:
-            matches.append(
-                RecognitionMatch(
-                    student_id=candidates[cand_idx][0], confidence=_confidence(score)
-                )
-            )
+        decisions[face_idx] = FaceDecision(
+            face_index=int(face_idx),
+            student_id=candidates[cand_idx][0] if reason == MATCHED else None,
+            confidence=_confidence(score),
+            reason=reason,
+        )
+
+    result = RecognitionResult(decisions=decisions)
     logger.info(
         "matched %d of %d face(s) against %d candidate(s)",
-        len(matches),
+        len(result.matches),
         face_count,
         len(candidates),
     )
-    return RecognitionResult(
-        matches=matches, unrecognized_face_count=face_count - len(matches)
-    )
-
-
-def identify_face(
-    face_embedding: np.ndarray,
-    candidates: list[tuple[int, np.ndarray]],
-    threshold: float = MATCH_THRESHOLD,
-    margin: float = AMBIGUITY_MARGIN,
-) -> Identification:
-    """Decide which candidate (if any) a single face belongs to. Needs >= 1 candidate."""
-    face = _normalize(np.asarray(face_embedding, dtype=np.float32))
-    enrolled = _normalize(np.stack([emb for _, emb in candidates]).astype(np.float32))
-    scores = enrolled @ face
-    order = np.argsort(scores)[::-1]
-    best = float(scores[order[0]])
-    runner_up = float(scores[order[1]]) if len(order) > 1 else None
-    reason = _decide(best, runner_up, threshold, margin)
-    logger.info(
-        "verify: best=%.3f runner_up=%s candidates=%d -> %s",
-        best,
-        f"{runner_up:.3f}" if runner_up is not None else "none",
-        len(candidates),
-        reason,
-    )
-    return Identification(
-        student_id=candidates[order[0]][0] if reason == MATCHED else None,
-        confidence=_confidence(best),
-        reason=reason,
-    )
+    return result
 
 
 def _get_model():

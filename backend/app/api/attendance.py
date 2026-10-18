@@ -157,7 +157,7 @@ def process_session(
                 detail="The uploaded session photo could not be read as an image",
             ) from exc
     else:
-        result = face_recognition.RecognitionResult(matches=[], unrecognized_face_count=0)
+        result = face_recognition.RecognitionResult(decisions=[])
 
     recognized = [
         RecognizedStudent(
