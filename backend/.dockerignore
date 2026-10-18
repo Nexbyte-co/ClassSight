@@ -1,0 +1,11 @@
+# Keep the image small and free of local secrets/state.
+.venv/
+venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.env
+.env.*
+tests/
+package.json
+README.md
