@@ -1,23 +1,134 @@
+# ClassSight containers.
+#
+#   docker compose -f deployment/docker-compose.yml up -d
+#       Postgres only (local backend dev + pytest), as before.
+#
+#   docker compose -f deployment/docker-compose.yml --profile app --profile local up -d --build
+#       Whole app locally: Postgres + backend + frontend + SeaweedFS (S3 stand-in).
+#
+#   On EC2 add docker-compose.ec2.yml (real S3, no local S3); see deployment/README.md.
+#
+# Settings come from deployment/.env (copy deployment/.env.example).
+
 services:
 
   postgres:
     image: postgres:16
-
     container_name: classsight-postgres
-
     environment:
       POSTGRES_DB: classsight
       POSTGRES_USER: classsight
-      POSTGRES_PASSWORD: classsight
-
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-classsight}
     ports:
       - "5432:5432"
-
     volumes:
       - postgres_data:/var/lib/postgresql/data
       # Runs only when the volume is first created: adds the pytest database.
       - ./init-test-db.sql:/docker-entrypoint-initdb.d/init-test-db.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U classsight -d classsight"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
 
+  backend:
+    profiles: ["app"]
+    build:
+      context: ../backend
+    container_name: classsight-backend
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql+psycopg://classsight:${POSTGRES_PASSWORD:-classsight}@postgres:5432/classsight
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY:?set JWT_SECRET_KEY in deployment/.env}
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-["http://localhost"]}
+      S3_BUCKET_NAME: ${S3_BUCKET_NAME:-classsight-photos}
+      AWS_REGION: ${AWS_REGION:-us-east-1}
+      S3_ENDPOINT_URL: ${S3_ENDPOINT_URL:-}
+      S3_PUBLIC_ENDPOINT_URL: ${S3_PUBLIC_ENDPOINT_URL:-}
+      # Only used with local S3; on EC2 these stay empty and the instance's IAM role is used.
+      AWS_ACCESS_KEY_ID: ${LOCAL_S3_ACCESS_KEY:-}
+      AWS_SECRET_ACCESS_KEY: ${LOCAL_S3_SECRET_KEY:-}
+      ENROLL_AUGMENT: ${ENROLL_AUGMENT:-false}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+    ports:
+      - "8000:8000"
+    volumes:
+      - insightface_models:/home/app/.insightface
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      # The first start downloads ~280 MB of model weights.
+      start_period: 300s
+
+  frontend:
+    profiles: ["app"]
+    build:
+      context: ..
+      dockerfile: deployment/frontend.Dockerfile
+      args:
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL:-http://localhost:8000}
+    container_name: classsight-frontend
+    depends_on:
+      - backend
+    ports:
+      - "80:80"
+
+  # ---- local only: S3-compatible storage (SeaweedFS) so the flow runs without AWS ----
+  s3:
+    profiles: ["local"]
+    image: chrislusf/seaweedfs:4.48
+    container_name: classsight-s3
+    environment:
+      LOCAL_S3_ACCESS_KEY: ${LOCAL_S3_ACCESS_KEY:-classsight}
+      LOCAL_S3_SECRET_KEY: ${LOCAL_S3_SECRET_KEY:-classsight-local-s3}
+    # One identity, so anonymous access is refused (private, like the real bucket).
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        cat > /tmp/s3.json <<EOF
+        {"identities":[{"name":"classsight","credentials":[{"accessKey":"$$LOCAL_S3_ACCESS_KEY","secretKey":"$$LOCAL_S3_SECRET_KEY"}],"actions":["Admin","Read","Write","List","Tagging"]}]}
+        EOF
+        exec weed server -dir=/data -s3 -s3.port=8333 -s3.config=/tmp/s3.json
+    ports:
+      - "8333:8333"   # S3 API
+    volumes:
+      - local_s3_data:/data
+
+  s3-init:
+    profiles: ["local"]
+    # Reuses the backend image for boto3; creates the bucket once, then exits.
+    build:
+      context: ../backend
+    depends_on:
+      - s3
+    environment:
+      S3_BUCKET_NAME: ${S3_BUCKET_NAME:-classsight-photos}
+      AWS_ACCESS_KEY_ID: ${LOCAL_S3_ACCESS_KEY:-classsight}
+      AWS_SECRET_ACCESS_KEY: ${LOCAL_S3_SECRET_KEY:-classsight-local-s3}
+      AWS_REGION: ${AWS_REGION:-us-east-1}
+    entrypoint: ["python", "-c"]
+    command:
+      - |
+        import os, time, boto3
+        s3 = boto3.client("s3", endpoint_url="http://s3:8333", region_name=os.environ["AWS_REGION"])
+        bucket = os.environ["S3_BUCKET_NAME"]
+        for attempt in range(60):
+            try:
+                if bucket not in [b["Name"] for b in s3.list_buckets()["Buckets"]]:
+                    s3.create_bucket(Bucket=bucket)
+                print("bucket ready:", bucket)
+                break
+            except Exception as exc:
+                print("waiting for s3:", type(exc).__name__)
+                time.sleep(2)
+        else:
+            raise SystemExit("local s3 never became ready")
 
 volumes:
   postgres_data:
+  insightface_models:
+  local_s3_data:

@@ -1,0 +1,9 @@
+# Used automatically by BuildKit for deployment/frontend.Dockerfile (context: repo root).
+# Send only the frontend sources and the nginx config.
+*
+!frontend/
+!deployment/nginx/
+frontend/node_modules/
+frontend/dist/
+**/.env
+**/.env.*

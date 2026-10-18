@@ -12,7 +12,7 @@ AI classroom attendance. Teachers manage classrooms, upload photos, face recogni
 backend/    FastAPI + Python
 frontend/   React + Vite (JS)
 database/   Schema docs
-deployment/ Docker Compose (Postgres only)
+deployment/ Docker Compose: Postgres by default; full app (backend, frontend, local S3) via profiles. See deployment/README.md
 ```
 
 ## Backend
@@ -24,7 +24,7 @@ uvicorn app.main:app --reload        # http://localhost:8000
 # API docs: http://localhost:8000/docs
 ```
 
-**Postgres via Docker:**
+**Postgres via Docker** (no profiles = Postgres only; `--profile app --profile local` = whole app, see `deployment/README.md`):
 ```bash
 docker compose -f deployment/docker-compose.yml up -d
 alembic upgrade head
@@ -55,7 +55,7 @@ CORS_ALLOWED_ORIGINS=["http://localhost:5173"]
 - `app/api/` — route handlers: auth, users, classrooms, attendance
 - `app/models/` — SQLAlchemy ORM, typed `Mapped`/`mapped_column` style
 - `app/schemas/` — Pydantic request/response shapes
-- `app/services/s3_service.py` — private S3: session photos, student enrollment photos (`students/{roll}/`), presigned URLs. `S3_ENDPOINT_URL` for MinIO
+- `app/services/s3_service.py` — private S3: session photos, student enrollment photos (`students/{roll}/`), presigned URLs. `S3_ENDPOINT_URL` / `S3_PUBLIC_ENDPOINT_URL` for local S3 (SeaweedFS)
 - `app/services/face_recognition.py` — InsightFace `buffalo_l` (detect → embed → cosine match). `_decide` is the single accept/reject rule (`MATCH_THRESHOLD` 0.5, `AMBIGUITY_MARGIN` 0.05, untuned). A wrong match is worse than a miss. Model loads lazily (~280 MB download on first use); tests fake it
 - `app/core/deps.py` — shared dependencies: `get_current_user`, `require_roles(*roles)`, `get_owned_classroom`
 - `app/core/config.py` — settings via pydantic-settings + `.env`

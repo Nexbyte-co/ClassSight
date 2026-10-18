@@ -21,10 +21,12 @@ PRESIGNED_URL_SECONDS = 300
 _EXTENSIONS = {"image/jpeg": "jpg", "image/png": "png"}
 
 
-def _client():
+def _client(endpoint_url: str | None = None):
     settings = get_settings()
     return boto3.client(
-        "s3", region_name=settings.aws_region, endpoint_url=settings.s3_endpoint_url
+        "s3",
+        region_name=settings.aws_region,
+        endpoint_url=endpoint_url or settings.s3_endpoint_url,
     )
 
 
@@ -68,7 +70,8 @@ def delete_objects(keys: list[str]) -> None:
 
 def presign(key: str, expires_in: int = PRESIGNED_URL_SECONDS) -> str:
     settings = get_settings()
-    return _client().generate_presigned_url(
+    # Signing is local (no network call), so a client pointed at the public address is fine.
+    return _client(settings.s3_public_endpoint_url).generate_presigned_url(
         "get_object",
         Params={"Bucket": settings.s3_bucket_name, "Key": key},
         ExpiresIn=expires_in,

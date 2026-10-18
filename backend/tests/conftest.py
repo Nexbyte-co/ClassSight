@@ -155,5 +155,5 @@ def fake_s3(monkeypatch):
     from app.services import s3_service
 
     client = FakeS3Client()
-    monkeypatch.setattr(s3_service, "_client", lambda: client)
+    monkeypatch.setattr(s3_service, "_client", lambda endpoint_url=None: client)
     return client
