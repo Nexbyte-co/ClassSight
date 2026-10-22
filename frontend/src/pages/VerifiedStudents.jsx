@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import {
   ScanFace,
   Sun,
@@ -14,16 +14,24 @@ import {
   X,
 } from "lucide-react";
 import { useTheme } from "../context/ThemeContext";
-import { useAttendance } from "../context/AttendanceContext";
+import TeacherProfileMenu from "../components/TeacherProfileMenu";
+import { useAttendanceSession } from "../context/AttendanceContext";
+import { useSessionRoute } from "../context/ScheduleContext";
 import "./Attendance.css";
 
 function VerifiedStudents() {
   const navigate = useNavigate();
   const { isDarkMode, toggleDarkMode } = useTheme();
-  const { sessionData, verifiedStudents, totalStudentsCount } = useAttendance();
+  const { sessionId, sessionClass: scheduledClass, redirectTo } = useSessionRoute("/verified");
+  const { verifiedStudents, totalStudentsCount, returnVerifiedStudent, classSnapshot } =
+    useAttendanceSession(sessionId, scheduledClass);
+
+  // Recorded sessions show the class details from when attendance was taken
+  const sessionClass = classSnapshot || scheduledClass;
 
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedMethodFilter, setSelectedMethodFilter] = useState("all");
+  const [toastMessage, setToastMessage] = useState(null);
 
   const filteredStudents = useMemo(() => {
     return verifiedStudents.filter((student) => {
@@ -42,8 +50,21 @@ function VerifiedStudents() {
     });
   }, [verifiedStudents, searchQuery, selectedMethodFilter]);
 
+  // Undo a verified-present decision: the student returns to the unverified queue
+  const handleMoveToUnverified = (student) => {
+    returnVerifiedStudent(student.id);
+    setToastMessage(`Moved ${student.name} back to Unverified`);
+    setTimeout(() => {
+      setToastMessage(null);
+    }, 3500);
+  };
+
+  if (redirectTo) {
+    return <Navigate to={redirectTo} replace />;
+  }
+
   return (
-    <div className={`attendance-page-root ${isDarkMode ? "dark-mode" : ""}`}>
+    <div className={`attendance-page-root teacher-ui ${isDarkMode ? "dark-mode" : ""}`}>
       {/* ================= HEADER ================= */}
       <header className="attendance-top-header">
         <div className="header-left">
@@ -54,7 +75,7 @@ function VerifiedStudents() {
             <span className="brand-name">ClassSight</span>
           </Link>
           <span className="header-crumb-sep">/</span>
-          <Link to="/attendance" className="header-crumb-current" style={{ textDecoration: "none" }}>
+          <Link to={`/attendance/${sessionId}`} className="header-crumb-current" style={{ textDecoration: "none" }}>
             Attendance
           </Link>
           <span className="header-crumb-sep">/</span>
@@ -69,10 +90,7 @@ function VerifiedStudents() {
           >
             {isDarkMode ? <Sun size={19} strokeWidth={1.8} /> : <Moon size={19} strokeWidth={1.8} />}
           </button>
-          <div className="profile-pill">
-            <div className="profile-avatar">PJ</div>
-            <span className="profile-name">Prof. Jhonsy</span>
-          </div>
+          <TeacherProfileMenu />
         </div>
       </header>
 
@@ -83,21 +101,21 @@ function VerifiedStudents() {
             <button
               type="button"
               className="btn-back-dashboard"
-              onClick={() => navigate("/attendance")}
+              onClick={() => navigate(`/attendance/${sessionId}`)}
             >
               <ArrowLeft size={16} strokeWidth={2.2} />
               <span>Back to Attendance Overview</span>
             </button>
             <div className="session-title-block">
               <div className="session-badge-row">
-                <span className="badge-section">{sessionData.section}</span>
-                <span className="badge-course-code">{sessionData.courseCode}</span>
+                <span className="badge-section">{sessionClass.section}</span>
+                <span className="badge-course-code">{sessionClass.code}</span>
                 <span className="count-pill green">
                   {verifiedStudents.length} of {totalStudentsCount} Present
                 </span>
               </div>
               <h1 className="session-main-title">
-                Complete Verified Attendance Roster &bull; {sessionData.classTitle}
+                Complete Verified Attendance Roster &bull; {sessionClass.title}
               </h1>
             </div>
           </div>
@@ -231,10 +249,11 @@ function VerifiedStudents() {
               <table className="cs-table attendance-table">
                 <thead>
                   <tr>
-                    <th style={{ width: "35%" }}>Student Name</th>
-                    <th style={{ width: "20%" }}>Roll No.</th>
-                    <th style={{ width: "22%" }}>Status</th>
-                    <th style={{ width: "23%", textAlign: "right" }}>Verification Method</th>
+                    <th style={{ width: "28%" }}>Student Name</th>
+                    <th style={{ width: "16%" }}>Roll No.</th>
+                    <th style={{ width: "18%" }}>Status</th>
+                    <th style={{ width: "20%", textAlign: "right" }}>Verification Method</th>
+                    <th style={{ width: "18%", textAlign: "right" }}>Action</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -271,6 +290,16 @@ function VerifiedStudents() {
                           <span>{student.method}</span>
                         </span>
                       </td>
+                      <td style={{ textAlign: "right" }}>
+                        <button
+                          type="button"
+                          className="btn-resolve-action"
+                          onClick={() => handleMoveToUnverified(student)}
+                          title={`Return ${student.name} to the unverified queue`}
+                        >
+                          Move to Unverified
+                        </button>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -280,12 +309,19 @@ function VerifiedStudents() {
 
           <div className="table-card-footer">
             <span>Showing {filteredStudents.length} of {verifiedStudents.length} verified students</span>
-            <Link to="/attendance" className="footer-read-more-btn">
+            <Link to={`/attendance/${sessionId}`} className="footer-read-more-btn">
               <span>← Back to Attendance Overview</span>
             </Link>
           </div>
         </section>
       </main>
+
+      {toastMessage && (
+        <div className="attendance-floating-toast" role="status" aria-live="polite">
+          <CheckCircle2 size={18} strokeWidth={2.2} color="#16a34a" />
+          <span>{toastMessage}</span>
+        </div>
+      )}
     </div>
   );
 }

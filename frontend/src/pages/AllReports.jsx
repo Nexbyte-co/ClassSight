@@ -1,35 +1,34 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
-  LayoutDashboard,
-  Camera,
-  GraduationCap,
   BarChart3,
-  Settings,
-  Bell,
   Sun,
   Moon,
-  ChevronDown,
-  LogOut,
   Search,
   ChevronRight,
   ArrowLeft,
   X,
   ScanFace,
   Menu,
-  User,
   AlertCircle,
 } from "lucide-react";
 import "./Dashboard.css";
 import "./Reports.css";
 import { useTheme } from "../context/ThemeContext";
+import { useSettings } from "../context/SettingsContext";
+import AppNavigationDrawer from "../components/AppNavigationDrawer";
+import TeacherProfileMenu from "../components/TeacherProfileMenu";
+import TeacherNotificationsMenu from "../components/TeacherNotificationsMenu";
+import { useDialogA11y } from "../hooks/useDialogA11y";
 
 function AllReports() {
   const navigate = useNavigate();
 
   // Dark mode state
   const { isDarkMode, toggleDarkMode } = useTheme();
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  // Attendance requirement from Settings (default 75%)
+  const { attendanceThreshold } = useSettings();
+  const [isNavOpen, setIsNavOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
 
@@ -154,17 +153,23 @@ function AllReports() {
     );
   };
 
+  // Accessible modal behaviour (focus in, Tab trapped, Escape closes, focus returned)
+  const studentDialogRef = useDialogA11y(Boolean(activeModalLecture), () => setActiveModalLecture(null));
+
   return (
-    <div className={`reports-root ${isDarkMode ? "dark-mode" : ""}`}>
+    <div className={`reports-root teacher-ui ${isDarkMode ? "dark-mode" : ""}`}>
       {/* ================= HEADER ================= */}
       <header className="dashboard-header">
         <div className="header-left">
           <button
-            className="mobile-menu-toggle"
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            aria-label="Toggle navigation"
+            type="button"
+            className="hamburger-nav-btn"
+            aria-expanded={isNavOpen}
+            onClick={() => setIsNavOpen(!isNavOpen)}
+            aria-label={isNavOpen ? "Close navigation menu" : "Open navigation menu"}
+            title={isNavOpen ? "Close navigation" : "Open navigation"}
           >
-            {isMobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
+            <Menu size={22} aria-hidden="true" />
           </button>
 
           <Link to="/dashboard" className="brand-link">
@@ -184,132 +189,34 @@ function AllReports() {
             {isDarkMode ? <Sun size={19} strokeWidth={1.8} /> : <Moon size={19} strokeWidth={1.8} />}
           </button>
 
-          <div style={{ position: "relative" }}>
-            <button
-              className="header-icon-btn"
-              onClick={() => {
-                setIsNotificationsOpen(!isNotificationsOpen);
-                setIsProfileOpen(false);
-              }}
-              aria-label="Notifications"
-            >
-              <Bell size={19} strokeWidth={1.8} />
-              <span className="notification-badge" />
-            </button>
+          {/* Notifications (demo content) */}
+          <TeacherNotificationsMenu
+            items={[{ id: 1, title: "Monthly Report Ready", text: "August attendance consolidated for 3C2." }]}
+            open={isNotificationsOpen}
+            onOpenChange={(open) => {
+              setIsNotificationsOpen(open);
+              if (open) setIsProfileOpen(false);
+            }}
+          />
 
-            {isNotificationsOpen && (
-              <div className="dropdown-menu">
-                <div className="dropdown-user-header">
-                  <div className="dropdown-user-name">Notifications</div>
-                  <div className="dropdown-user-email">Classroom attendance alerts</div>
-                </div>
-                <div className="dropdown-item" style={{ flexDirection: "column", alignItems: "flex-start" }}>
-                  <div style={{ fontWeight: 600, color: "var(--cs-text-primary)", fontSize: 13 }}>
-                    Monthly Report Ready
-                  </div>
-                  <div style={{ fontSize: 12, color: "var(--cs-text-secondary)", marginTop: 2 }}>
-                    August attendance consolidated for 3C2.
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-
-          <div className="user-profile-wrapper">
-            <button
-              className="profile-trigger"
-              onClick={() => {
-                setIsProfileOpen(!isProfileOpen);
-                setIsNotificationsOpen(false);
-              }}
-              aria-label="User menu"
-            >
-              <div className="profile-avatar">PJ</div>
-              <span className="profile-name">Professor Jhonsy</span>
-              <ChevronDown
-                size={16}
-                strokeWidth={2}
-                className={`profile-chevron ${isProfileOpen ? "open" : ""}`}
-              />
-            </button>
-
-            {isProfileOpen && (
-              <div className="dropdown-menu">
-                <div className="dropdown-user-header">
-                  <div className="dropdown-user-name">Professor Jhonsy</div>
-                  <div className="dropdown-user-email">Jhonsy.Bansal@thapar.edu</div>
-                </div>
-
-                <Link to="/settings" className="dropdown-item" onClick={() => setIsProfileOpen(false)}>
-                  <User size={16} strokeWidth={1.8} />
-                  <span>Profile Overview</span>
-                </Link>
-
-                <Link to="/settings" className="dropdown-item" onClick={() => setIsProfileOpen(false)}>
-                  <Settings size={16} strokeWidth={1.8} />
-                  <span>Account Settings</span>
-                </Link>
-
-                <div className="dropdown-divider" />
-
-                <button
-                  type="button"
-                  className="dropdown-item"
-                  onClick={() => navigate("/")}
-                  style={{ color: "#dc2626" }}
-                >
-                  <LogOut size={16} strokeWidth={1.8} />
-                  <span>Sign Out</span>
-                </button>
-              </div>
-            )}
-          </div>
+          <TeacherProfileMenu
+            open={isProfileOpen}
+            onOpenChange={(open) => {
+              setIsProfileOpen(open);
+              if (open) setIsNotificationsOpen(false);
+            }}
+          />
         </div>
       </header>
 
       {/* ================= MAIN SHELL ================= */}
       <div className="dashboard-body">
-        {/* Sidebar */}
-        <aside className={`dashboard-sidebar ${isMobileMenuOpen ? "mobile-open" : ""}`}>
-          <nav className="sidebar-nav">
-            <Link to="/dashboard" className="nav-link" onClick={() => setIsMobileMenuOpen(false)}>
-              <LayoutDashboard size={19} strokeWidth={1.8} />
-              <span>Dashboard</span>
-            </Link>
-
-            <Link to="/attendance" className="nav-link" onClick={() => setIsMobileMenuOpen(false)}>
-              <Camera size={19} strokeWidth={1.8} />
-              <span>Attendance</span>
-            </Link>
-
-            <Link to="/students" className="nav-link" onClick={() => setIsMobileMenuOpen(false)}>
-              <GraduationCap size={19} strokeWidth={1.8} />
-              <span>Students</span>
-            </Link>
-
-            <Link to="/reports" className="nav-link active" onClick={() => setIsMobileMenuOpen(false)}>
-              <BarChart3 size={19} strokeWidth={2} />
-              <span>Reports</span>
-            </Link>
-
-            <Link to="/settings" className="nav-link" onClick={() => setIsMobileMenuOpen(false)}>
-              <Settings size={19} strokeWidth={1.8} />
-              <span>Settings</span>
-            </Link>
-          </nav>
-
-          <div className="sidebar-footer">
-            <div className="term-info-badge">
-              <strong>Spring Term 2026</strong>
-              <span>CSE Dept. · Semester 6</span>
-            </div>
-
-            <button type="button" className="sidebar-logout" onClick={() => navigate("/")}>
-              <LogOut size={17} strokeWidth={1.8} />
-              <span>Log Out</span>
-            </button>
-          </div>
-        </aside>
+        {/* Navigation Drawer */}
+        <AppNavigationDrawer
+          isOpen={isNavOpen}
+          onClose={() => setIsNavOpen(false)}
+          activePage="reports"
+        />
 
         {/* Content */}
         <main className="reports-main">
@@ -439,7 +346,7 @@ function AllReports() {
       {/* Student Breakdown Modal */}
       {activeModalLecture && (
         <div className="cs-modal-backdrop" onClick={() => setActiveModalLecture(null)}>
-          <div className="student-modal-card" onClick={(e) => e.stopPropagation()}>
+          <div className="student-modal-card" ref={studentDialogRef} role="dialog" aria-modal="true" tabIndex={-1} aria-label={`${activeModalLecture.course} student attendance`} onClick={(e) => e.stopPropagation()}>
             <div className="cs-modal-header">
               <div>
                 <h3>
@@ -448,7 +355,7 @@ function AllReports() {
                 <p>Enrolled Student Attendance Breakdown</p>
                 <div className="criteria-pill">
                   <AlertCircle size={14} />
-                  <span>Criteria: Students below 75% attendance are Detained</span>
+                  <span>Criteria: Students below {attendanceThreshold}% attendance are Detained</span>
                 </div>
               </div>
               <button
@@ -492,7 +399,7 @@ function AllReports() {
                     )
                     .map((student) => {
                       const pct = Math.round((student.attended / student.total) * 100);
-                      const isDetained = pct < 75;
+                      const isDetained = pct < attendanceThreshold;
                       return (
                         <tr key={student.roll}>
                           <td style={{ fontWeight: 600 }}>{student.roll}</td>

@@ -1,0 +1,1098 @@
+/* ==========================================================================
+   src/styles/teacher.css
+   Teacher interface design system.
+
+   Every rule is scoped to `.teacher-ui` (added to the root element of each
+   teacher page) or to the teacher-only navigation drawer, so the public
+   landing page, login and the student portal are not affected even though
+   the page stylesheets are global and partly shared.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. Design tokens (light) — warm whites, soft greys, refined burgundy.
+      Contrast-checked: body/muted text >= 4.5:1, focus/boundaries >= 3:1.
+   -------------------------------------------------------------------------- */
+html .teacher-ui {
+  --cs-crimson: #7a1515;
+  --cs-crimson-hover: #651111;
+  --cs-crimson-active: #520d0d;
+  --cs-crimson-light: rgba(122, 21, 21, 0.08);
+  --cs-crimson-border: rgba(122, 21, 21, 0.22);
+  --cs-crimson-text: #7a1515; /* burgundy used as text */
+
+  --cs-bg: #f5f3ef;
+  --cs-card-bg: #ffffff;
+  --cs-card-hover: #faf8f5;
+  --cs-sidebar-bg: #fffdfb;
+  --cs-header-bg: #ffffff;
+
+  --cs-border: #e2dcd3;
+  --cs-border-subtle: #eee9e2;
+
+  --cs-text-primary: #1f1b18;
+  --cs-text-secondary: #4f4842;
+  --cs-text-muted: #6e6660;
+  --cs-text-faint: #9a928b;
+
+  --cs-shadow-sm: 0 1px 2px rgba(31, 27, 24, 0.05), 0 1px 3px rgba(31, 27, 24, 0.04);
+  --cs-shadow-md: 0 6px 18px rgba(31, 27, 24, 0.08);
+  --cs-shadow-lg: 0 14px 36px rgba(31, 27, 24, 0.12);
+
+  --cs-success: #17703a;
+  --cs-success-bg: #e7f3ec;
+  --cs-warning: #9a4a06;
+  --cs-warning-bg: #fbf0e1;
+  --cs-danger: #b42318;
+  --cs-danger-bg: #fdecea;
+  --cs-info: #1e4f9c;
+  --cs-info-bg: #e9f0fb;
+  --cs-absent: #565656; /* confirmed absent: true neutral grey (text) */
+  --cs-absent-bg: #efefef;
+  --cs-absent-mark: #8a8a8a; /* confirmed absent: chart segment / dot */
+
+  --cs-focus: #7a1515;
+  --cs-radius-card: 12px;
+  --cs-radius-control: 8px;
+
+  /* Attendance pages use their own --att-* names: map them onto the same tokens */
+  --att-bg: var(--cs-bg);
+  --att-card-bg: var(--cs-card-bg);
+  --att-border: var(--cs-border);
+  --att-text-primary: var(--cs-text-primary);
+  --att-text-secondary: var(--cs-text-secondary);
+  --att-crimson: var(--cs-crimson);
+  --att-crimson-hover: var(--cs-crimson-hover);
+  --att-crimson-light: var(--cs-crimson-light);
+  --att-green: #1e8a48; /* chart/indicator green (graphics >= 3:1) */
+  --att-green-hover: var(--cs-success);
+  --att-green-light: var(--cs-success-bg);
+  --att-amber: #c25d07;
+  --att-amber-light: var(--cs-warning-bg);
+  --att-hover-row: var(--cs-card-hover);
+
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background-color: var(--cs-bg);
+  color: var(--cs-text-primary);
+}
+
+/* Dark — deep surfaces with clearly separated cards, readable burgundy accents */
+html .teacher-ui.dark-mode {
+  --cs-crimson: #a83232; /* fills: white text on it >= 6.6:1 */
+  --cs-crimson-hover: #bb3d3d;
+  --cs-crimson-active: #c94a4a;
+  --cs-crimson-light: rgba(241, 154, 154, 0.12);
+  --cs-crimson-border: rgba(241, 154, 154, 0.32);
+  --cs-crimson-text: #f19a9a; /* burgundy as text on dark surfaces (8:1) */
+
+  --cs-bg: #0f0e0d;
+  --cs-card-bg: #1d1b19;
+  --cs-card-hover: #262320;
+  --cs-sidebar-bg: #171513;
+  --cs-header-bg: #171513;
+
+  --cs-border: #3a3531;
+  --cs-border-subtle: #2c2825;
+
+  --cs-text-primary: #f3efeb;
+  --cs-text-secondary: #cbc3bb;
+  --cs-text-muted: #a69d95;
+  --cs-text-faint: #7d756e;
+
+  --cs-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5);
+  --cs-shadow-md: 0 8px 22px rgba(0, 0, 0, 0.55);
+  --cs-shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.6);
+
+  --cs-success: #5fd28b;
+  --cs-success-bg: #17301f;
+  --cs-warning: #f2b85b;
+  --cs-warning-bg: #33260f;
+  --cs-danger: #f59a92;
+  --cs-danger-bg: #3a1a17;
+  --cs-info: #8db4f2;
+  --cs-info-bg: #18243a;
+  --cs-absent: #d0d0d0;
+  --cs-absent-bg: #2c2c2c;
+  --cs-absent-mark: #9a9a9a;
+
+  --cs-focus: #f19a9a;
+
+  --att-green: #4cc47c;
+  --att-amber: #f0a43a;
+}
+
+/* --------------------------------------------------------------------------
+   2. Base: focus indicators, selection
+   -------------------------------------------------------------------------- */
+.teacher-ui :is(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: 2px solid var(--cs-focus);
+  outline-offset: 2px;
+}
+
+.teacher-ui :is(input, select, textarea):focus-visible {
+  outline-offset: 0;
+}
+
+.teacher-ui ::selection {
+  background: var(--cs-crimson-light);
+}
+
+/* Visually hidden text for screen readers */
+.teacher-ui .sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* --------------------------------------------------------------------------
+   3. Header (same height, padding and controls on every teacher page)
+   -------------------------------------------------------------------------- */
+.teacher-ui :is(.dashboard-header, .attendance-top-header) {
+  height: 64px;
+  padding: 0 24px;
+  background: var(--cs-header-bg);
+  border-bottom: 1px solid var(--cs-border);
+  box-shadow: none;
+}
+
+.teacher-ui :is(.dashboard-header, .attendance-top-header) .header-left {
+  gap: 14px;
+  min-width: 0;
+}
+
+.teacher-ui :is(.dashboard-header, .attendance-top-header) .header-right {
+  gap: 10px;
+}
+
+.teacher-ui .brand-link {
+  gap: 10px;
+  color: var(--cs-text-primary);
+}
+
+.teacher-ui .brand-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: var(--cs-crimson);
+  box-shadow: none;
+}
+
+.teacher-ui .brand-name {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.4px;
+  color: var(--cs-text-primary);
+}
+
+.teacher-ui .header-crumb-sep {
+  color: var(--cs-text-faint);
+}
+
+.teacher-ui .header-crumb-current {
+  color: var(--cs-text-secondary);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.teacher-ui .header-icon-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: var(--cs-radius-control);
+  border: 1px solid var(--cs-border);
+  background: transparent;
+  color: var(--cs-text-secondary);
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.teacher-ui .header-icon-btn:hover {
+  background: var(--cs-crimson-light);
+  border-color: var(--cs-crimson-border);
+  color: var(--cs-crimson-text);
+}
+
+.teacher-ui .hamburger-nav-btn {
+  border-color: var(--cs-border);
+  color: var(--cs-text-primary);
+  border-radius: var(--cs-radius-control);
+}
+
+.teacher-ui .hamburger-nav-btn:hover {
+  background: var(--cs-crimson-light);
+  border-color: var(--cs-crimson-border);
+  color: var(--cs-crimson-text);
+}
+
+.teacher-ui .notification-badge {
+  background: var(--cs-crimson);
+  border-color: var(--cs-header-bg);
+}
+
+/* --------------------------------------------------------------------------
+   4. Profile control — identical on every teacher page
+   -------------------------------------------------------------------------- */
+.teacher-ui .teacher-profile-menu {
+  position: relative;
+}
+
+.teacher-ui .teacher-profile-menu .profile-trigger {
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  height: 40px;
+  padding: 4px 10px 4px 4px;
+  border: 1px solid var(--cs-border);
+  border-radius: 999px;
+  background: var(--cs-card-bg);
+  color: var(--cs-text-primary);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.teacher-ui .teacher-profile-menu .profile-trigger:hover,
+.teacher-ui .teacher-profile-menu .profile-trigger[aria-expanded="true"] {
+  background: var(--cs-card-hover);
+  border-color: var(--cs-crimson-border);
+}
+
+.teacher-ui .teacher-profile-menu .profile-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--cs-crimson);
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.teacher-ui .teacher-profile-menu .profile-name {
+  display: inline;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--cs-text-primary);
+}
+
+.teacher-ui .teacher-profile-menu .profile-chevron {
+  color: var(--cs-text-muted);
+  transition: transform 0.2s ease;
+}
+
+.teacher-ui .teacher-profile-menu .profile-chevron.open {
+  transform: rotate(180deg);
+}
+
+/* --------------------------------------------------------------------------
+   5. Dropdown menus (profile, notifications)
+   -------------------------------------------------------------------------- */
+.teacher-ui .dropdown-menu {
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 248px;
+  max-width: calc(100vw - 24px);
+  padding: 6px;
+  background: var(--cs-card-bg);
+  border: 1px solid var(--cs-border);
+  border-radius: 10px;
+  box-shadow: var(--cs-shadow-md);
+  z-index: 200;
+}
+
+.teacher-ui .dropdown-user-header {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--cs-border-subtle);
+  margin-bottom: 4px;
+}
+
+.teacher-ui .dropdown-user-name {
+  color: var(--cs-text-primary);
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.teacher-ui .dropdown-user-email {
+  color: var(--cs-text-muted);
+  font-size: 12px;
+}
+
+.teacher-ui .dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 9px 12px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--cs-text-secondary);
+  font-size: 14px;
+  font-weight: 500;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.teacher-ui .dropdown-item:hover,
+.teacher-ui .dropdown-item:focus-visible {
+  background: var(--cs-crimson-light);
+  color: var(--cs-crimson-text);
+}
+
+.teacher-ui .dropdown-item-danger {
+  color: var(--cs-danger);
+}
+
+.teacher-ui .dropdown-item-danger:hover,
+.teacher-ui .dropdown-item-danger:focus-visible {
+  background: var(--cs-danger-bg);
+  color: var(--cs-danger);
+}
+
+.teacher-ui .dropdown-divider {
+  background: var(--cs-border-subtle);
+}
+
+/* --------------------------------------------------------------------------
+   6. Page headings & section labels
+   -------------------------------------------------------------------------- */
+.teacher-ui :is(.greeting-text h1, .reports-title, .students-page-title, .classes-page-title, .session-main-title) {
+  font-size: 26px;
+  line-height: 1.25;
+  font-weight: 700;
+  letter-spacing: -0.4px;
+  color: var(--cs-text-primary);
+}
+
+.teacher-ui :is(.greeting-text p, .reports-subtitle, .students-page-subtitle, .classes-page-subtitle) {
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--cs-text-secondary);
+}
+
+.teacher-ui .reports-title svg {
+  width: 24px;
+  height: 24px;
+  color: var(--cs-crimson-text);
+}
+
+.teacher-ui .section-title-tag {
+  color: var(--cs-crimson-text);
+  font-size: 12px;
+  letter-spacing: 0.8px;
+}
+
+.teacher-ui :is(.section-desc, .section-subtitle, .table-card-subtitle) {
+  color: var(--cs-text-secondary);
+}
+
+.teacher-ui .section-title {
+  color: var(--cs-text-primary);
+  font-size: 18px;
+  letter-spacing: -0.2px;
+}
+
+.teacher-ui .reports-divider {
+  background: var(--cs-border);
+}
+
+/* --------------------------------------------------------------------------
+   7. Cards & surfaces — clear boundaries, restrained shadows
+   -------------------------------------------------------------------------- */
+.teacher-ui :is(
+    .reports-table-card,
+    .report-scope-card,
+    .lecture-breakdown-card,
+    .custom-report-section .calendar-widget-container,
+    .reports-controls-bar,
+    .stat-card,
+    .schedule-card,
+    .photo-scan-card,
+    .nfc-scan-card,
+    .current-class-strip,
+    .students-controls-card,
+    .students-table-card,
+    .cohort-card,
+    .class-card,
+    .classes-metric-card,
+    .attendance-card-section,
+    .interactive-chart-card,
+    .attendance-bottom-save-strip
+  ) {
+  background: var(--cs-card-bg);
+  border: 1px solid var(--cs-border);
+  border-radius: var(--cs-radius-card);
+  box-shadow: var(--cs-shadow-sm);
+}
+
+.teacher-ui .session-context-bar {
+  background: var(--cs-header-bg);
+  border-bottom: 1px solid var(--cs-border);
+}
+
+/* --------------------------------------------------------------------------
+   8. Buttons
+   -------------------------------------------------------------------------- */
+.teacher-ui :is(
+    .btn-modal-submit,
+    .btn-save-record-primary,
+    .btn-generate-report,
+    .btn-add-class,
+    .btn-upload-photo,
+    .btn-modal-save-confirm,
+    .btn-take-session-attendance
+  ) {
+  background: var(--cs-crimson);
+  color: #ffffff;
+  border: 1px solid var(--cs-crimson);
+  border-radius: var(--cs-radius-control);
+  font-weight: 600;
+  box-shadow: none;
+  transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
+}
+
+.teacher-ui :is(
+    .btn-modal-submit,
+    .btn-save-record-primary,
+    .btn-generate-report,
+    .btn-add-class,
+    .btn-upload-photo,
+    .btn-modal-save-confirm,
+    .btn-take-session-attendance
+  ):hover:not(:disabled) {
+  background: var(--cs-crimson-hover);
+  border-color: var(--cs-crimson-hover);
+}
+
+.teacher-ui :is(
+    .btn-modal-submit,
+    .btn-save-record-primary,
+    .btn-generate-report,
+    .btn-add-class,
+    .btn-upload-photo,
+    .btn-modal-save-confirm
+  ):active:not(:disabled) {
+  background: var(--cs-crimson-active);
+}
+
+.teacher-ui :is(
+    .btn-modal-cancel,
+    .btn-view-session,
+    .btn-view-details,
+    .btn-read-more,
+    .btn-back-breadcrumb,
+    .btn-result-view-more,
+    .btn-class-detail-close,
+    .btn-reset-filters,
+    .btn-edit-session
+  ) {
+  background: var(--cs-card-bg);
+  color: var(--cs-text-primary);
+  border: 1px solid var(--cs-border);
+  border-radius: var(--cs-radius-control);
+  font-weight: 600;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.teacher-ui :is(
+    .btn-modal-cancel,
+    .btn-view-session,
+    .btn-view-details,
+    .btn-read-more,
+    .btn-back-breadcrumb,
+    .btn-result-view-more,
+    .btn-class-detail-close,
+    .btn-reset-filters,
+    .btn-edit-session
+  ):hover:not(:disabled) {
+  background: var(--cs-crimson-light);
+  border-color: var(--cs-crimson-border);
+  color: var(--cs-crimson-text);
+}
+
+.teacher-ui :is(.btn-back-dashboard, .link-read-more, .footer-read-more-btn) {
+  color: var(--cs-crimson-text);
+}
+
+.teacher-ui button:disabled,
+.teacher-ui button[aria-disabled="true"] {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* --------------------------------------------------------------------------
+   9. Form controls
+   -------------------------------------------------------------------------- */
+.teacher-ui :is(.picker-select, .picker-date-input, .cs-form-group input, .cs-form-group select, .reports-controls-bar select, .control-item select) {
+  background: var(--cs-card-bg);
+  color: var(--cs-text-primary);
+  border: 1px solid var(--cs-border);
+  border-radius: var(--cs-radius-control);
+}
+
+.teacher-ui :is(.picker-select, .picker-date-input, .cs-form-group input, .cs-form-group select):focus {
+  border-color: var(--cs-crimson);
+  box-shadow: 0 0 0 3px var(--cs-crimson-light);
+}
+
+.teacher-ui :is(.reports-search-input, .search-input, .classes-search-input) {
+  background: var(--cs-card-bg);
+  color: var(--cs-text-primary);
+  border-color: var(--cs-border);
+  border-radius: var(--cs-radius-control);
+}
+
+.teacher-ui :is(.picker-field-label, .cs-form-group label) {
+  color: var(--cs-text-secondary);
+  font-weight: 600;
+}
+
+.teacher-ui [aria-invalid="true"] {
+  border-color: var(--cs-danger);
+}
+
+/* --------------------------------------------------------------------------
+   10. Tables — compact, easy to scan
+   -------------------------------------------------------------------------- */
+.teacher-ui .reports-table-header,
+.teacher-ui :is(.cs-table, .student-list-table, .students-table, .student-history-table) th {
+  background: var(--cs-card-hover);
+  color: var(--cs-text-muted);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--cs-border);
+}
+
+.teacher-ui .reports-table-row,
+.teacher-ui :is(.cs-table, .student-list-table, .students-table, .student-history-table) td {
+  border-bottom-color: var(--cs-border-subtle);
+}
+
+.teacher-ui .reports-table-row:hover,
+.teacher-ui :is(.cs-table, .students-table) tbody tr:hover td {
+  background: var(--cs-card-hover);
+}
+
+/* Contained horizontal scrolling for wide tables (never the whole page) */
+.teacher-ui :is(.table-responsive-wrapper, .students-table-wrapper, .student-list-container) {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* --------------------------------------------------------------------------
+   11. Status badges — consistent semantics, always with text
+       present = green · unverified = amber · error = red · confirmed absent = grey
+   -------------------------------------------------------------------------- */
+.teacher-ui :is(.badge-eligible, .status-badge-present, .badge-status-safe, .badge-status-saved, .count-pill.green) {
+  background: var(--cs-success-bg);
+  color: var(--cs-success);
+}
+
+.teacher-ui :is(.status-badge-unverified, .badge-status-warning, .badge-status-review, .count-pill.amber) {
+  background: var(--cs-warning-bg);
+  color: var(--cs-warning);
+}
+
+.teacher-ui :is(.badge-detained, .badge-status-critical) {
+  background: var(--cs-danger-bg);
+  color: var(--cs-danger);
+}
+
+.teacher-ui :is(.badge-status-safe, .badge-status-warning, .badge-status-critical) {
+  border-color: transparent;
+}
+
+.teacher-ui :is(.badge-section, .section-chip) {
+  background: var(--cs-crimson-light);
+  color: var(--cs-crimson-text);
+}
+
+.teacher-ui .badge-course-code {
+  background: var(--cs-card-hover);
+  color: var(--cs-text-secondary);
+  border-color: var(--cs-border);
+}
+
+.teacher-ui .roll-badge {
+  background: var(--cs-card-hover);
+  color: var(--cs-text-primary);
+  border-color: var(--cs-border);
+}
+
+.teacher-ui .btn-resolve-action {
+  border-color: var(--att-amber);
+  background: var(--cs-warning-bg);
+  color: var(--cs-warning);
+}
+
+.teacher-ui .btn-resolve-action:hover {
+  background: var(--att-amber);
+  color: #ffffff;
+}
+
+.teacher-ui.dark-mode .btn-resolve-action:hover {
+  color: #1d1b19;
+}
+
+/* --------------------------------------------------------------------------
+   12. Dark mode: burgundy used as text must stay readable
+   -------------------------------------------------------------------------- */
+.teacher-ui.dark-mode :is(.calendar-month-title, .active-hint, .badge-section, .criteria-pill, .scope-title svg, .scope-badge),
+.teacher-ui.dark-mode .course-section-btn:hover .course-title-text {
+  color: var(--cs-crimson-text);
+}
+
+/* Burgundy icons on dark surfaces (graphics need >= 3:1) */
+.teacher-ui.dark-mode :is(
+    .photo-scan-icon-bubble,
+    .nfc-icon-bubble,
+    .meta-pill svg,
+    .stat-icon,
+    .icon-badge:not(.unverified-badge):not(.verified-badge),
+    .confirm-icon-danger,
+    .greeting-date svg,
+    .nfc-modal-icon-bubble
+  ) {
+  color: var(--cs-crimson-text);
+}
+
+.teacher-ui.dark-mode .student-avatar-letter:not(.green) {
+  background: var(--cs-crimson-light);
+  color: var(--cs-crimson-text);
+}
+
+/* --------------------------------------------------------------------------
+   13. Modals, toasts and empty states
+   -------------------------------------------------------------------------- */
+.teacher-ui :is(.cs-modal-card, .student-modal-card) {
+  background: var(--cs-card-bg);
+  color: var(--cs-text-primary);
+  border: 1px solid var(--cs-border);
+  border-radius: 14px;
+  box-shadow: var(--cs-shadow-lg);
+}
+
+.teacher-ui :is(.cs-modal-card, .student-modal-card):focus {
+  outline: none;
+}
+
+.teacher-ui .attendance-floating-toast {
+  background: var(--cs-card-bg);
+  color: var(--cs-text-primary);
+  border: 1px solid var(--cs-border);
+  border-radius: 10px;
+  box-shadow: var(--cs-shadow-md);
+}
+
+.teacher-ui .teacher-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 32px 20px;
+  text-align: center;
+  color: var(--cs-text-muted);
+}
+
+.teacher-ui .teacher-empty-state svg {
+  color: var(--cs-text-faint);
+  margin-bottom: 4px;
+}
+
+.teacher-ui .teacher-empty-state strong {
+  color: var(--cs-text-primary);
+  font-size: 15px;
+}
+
+/* Inline save/status messages */
+.teacher-ui .teacher-inline-success {
+  color: var(--cs-success);
+  font-weight: 600;
+}
+
+/* Small progress bar (attendance review progress) */
+.teacher-ui .teacher-progress {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--cs-border-subtle);
+  overflow: hidden;
+}
+
+.teacher-ui .teacher-progress > span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--att-green);
+}
+
+/* --------------------------------------------------------------------------
+   14. Teacher navigation drawer (rendered only on teacher pages)
+   -------------------------------------------------------------------------- */
+.teacher-ui .app-nav-drawer {
+  background: var(--cs-sidebar-bg);
+  border-right: 1px solid var(--cs-border);
+  box-shadow: none;
+}
+
+.teacher-ui .app-nav-drawer:not(.open) {
+  visibility: hidden; /* no shadow/edge leaking while closed; keeps closed links out of Tab order */
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), visibility 0s linear 0.28s;
+}
+
+.teacher-ui .app-nav-drawer.open {
+  visibility: visible;
+  box-shadow: var(--cs-shadow-md);
+}
+
+.teacher-ui :is(.app-nav-header, .app-nav-footer) {
+  border-color: var(--cs-border);
+}
+
+.teacher-ui .app-nav-link {
+  color: var(--cs-text-secondary);
+  border-radius: var(--cs-radius-control);
+}
+
+.teacher-ui .app-nav-link:hover {
+  background: var(--cs-crimson-light);
+  color: var(--cs-crimson-text);
+}
+
+.teacher-ui .app-nav-link.active {
+  background: var(--cs-crimson);
+  color: #ffffff;
+  box-shadow: none;
+}
+
+.teacher-ui .app-nav-term-badge {
+  background: var(--cs-card-hover);
+  border-color: var(--cs-border-subtle);
+  color: var(--cs-text-muted);
+}
+
+/* --------------------------------------------------------------------------
+   15. Responsive header: keep the full profile name visible on phones
+   -------------------------------------------------------------------------- */
+@media (max-width: 768px) {
+  .teacher-ui :is(.dashboard-header, .attendance-top-header) {
+    padding: 0 14px;
+  }
+
+  .teacher-ui :is(.header-crumb-sep, .header-crumb-current) {
+    display: none;
+  }
+}
+
+@media (max-width: 520px) {
+  .teacher-ui :is(.dashboard-header, .attendance-top-header) {
+    padding: 0 10px;
+  }
+
+  .teacher-ui :is(.dashboard-header, .attendance-top-header) .header-left,
+  .teacher-ui :is(.dashboard-header, .attendance-top-header) .header-right {
+    gap: 6px;
+  }
+
+  .teacher-ui .brand-name {
+    display: none; /* the logo mark stays; frees room for the full profile name */
+  }
+
+  .teacher-ui .teacher-profile-menu .profile-trigger {
+    padding-right: 8px;
+    gap: 6px;
+  }
+
+  .teacher-ui .teacher-profile-menu .profile-name {
+    font-size: 13px;
+  }
+
+  .teacher-ui :is(.greeting-text h1, .reports-title, .students-page-title, .classes-page-title, .session-main-title) {
+    font-size: 22px;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   16. Reduced motion
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .teacher-ui,
+  .teacher-ui *,
+  .teacher-ui *::before,
+  .teacher-ui *::after {
+    transition-duration: 0.01ms !important;
+    transition-delay: 0s !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   17. Reports: session summary + toolbar
+   -------------------------------------------------------------------------- */
+.teacher-ui .session-summary-grid {
+  margin: 4px 0 16px;
+}
+
+.teacher-ui .session-summary-grid .stat-value {
+  font-size: 22px;
+}
+
+.teacher-ui .sessions-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.teacher-ui .sessions-toolbar .sessions-search {
+  flex: 1 1 280px;
+  margin-bottom: 0;
+}
+
+.teacher-ui .sessions-presets {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.teacher-ui .session-preset[aria-pressed="true"] {
+  background: var(--cs-crimson);
+  border-color: var(--cs-crimson);
+  color: #ffffff;
+}
+
+.teacher-ui .session-custom-range {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--cs-text-muted);
+}
+
+.teacher-ui .session-custom-range .picker-date-input {
+  height: 34px;
+  width: auto;
+  font-size: 13px;
+}
+
+.teacher-ui .sessions-filter-toggle {
+  display: none;
+}
+
+@media (max-width: 640px) {
+  .teacher-ui .sessions-filter-toggle {
+    display: inline-flex;
+  }
+
+  .teacher-ui .sessions-presets[data-collapsed="true"] {
+    display: none;
+  }
+
+  .teacher-ui .sessions-presets {
+    flex: 1 1 100%;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   18. Report Details: back link + breadcrumb
+   -------------------------------------------------------------------------- */
+.teacher-ui .teacher-page-nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+  margin-bottom: 20px;
+}
+
+.teacher-ui .teacher-breadcrumb ol {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-size: 13px;
+  color: var(--cs-text-muted);
+}
+
+.teacher-ui .teacher-breadcrumb li + li::before {
+  content: "/";
+  margin: 0 8px;
+  color: var(--cs-text-faint);
+}
+
+.teacher-ui .teacher-breadcrumb a {
+  color: var(--cs-crimson-text);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.teacher-ui .teacher-breadcrumb a:hover {
+  text-decoration: underline;
+}
+
+.teacher-ui .teacher-breadcrumb [aria-current="page"] {
+  color: var(--cs-text-secondary);
+  font-weight: 500;
+}
+
+.teacher-ui h1.scope-title {
+  font-size: 22px;
+  line-height: 1.3;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+  color: var(--cs-text-primary);
+}
+
+/* --------------------------------------------------------------------------
+   19. Settings: grouped sections with more breathing room
+   -------------------------------------------------------------------------- */
+.teacher-ui .settings-group {
+  padding-top: 8px;
+  margin-bottom: 12px;
+}
+
+.teacher-ui .settings-group + .settings-group {
+  border-top: 1px solid var(--cs-border);
+  padding-top: 24px;
+}
+
+.teacher-ui .settings-group-title {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.2px;
+  color: var(--cs-text-primary);
+  margin-bottom: 16px;
+}
+
+.teacher-ui .settings-section .reports-table-card {
+  padding: 22px 24px;
+}
+
+/* --------------------------------------------------------------------------
+   20. Attendance layout: let wide tables scroll inside their card instead of
+       stretching the page (grid columns default to min-width: auto)
+   -------------------------------------------------------------------------- */
+.teacher-ui .attendance-grid-layout {
+  grid-template-columns: minmax(0, 1fr) 360px;
+}
+
+.teacher-ui :is(.attendance-tables-column, .attendance-sidebar-column, .attendance-card-section) {
+  min-width: 0;
+}
+
+@media (max-width: 1024px) {
+  .teacher-ui .attendance-grid-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 680px) {
+  /* Keep columns readable; the card's wrapper scrolls horizontally instead */
+  .teacher-ui .attendance-table {
+    min-width: 600px;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   21. Status text utilities (Students page) use the shared semantic tokens
+       (the page CSS sets them with !important, so these need it too)
+   -------------------------------------------------------------------------- */
+.teacher-ui .text-safe {
+  color: var(--cs-success) !important;
+}
+
+.teacher-ui .text-warning {
+  color: var(--cs-warning) !important;
+}
+
+.teacher-ui .text-critical {
+  color: var(--cs-danger) !important;
+}
+
+@media (max-width: 520px) {
+  /* Compact header controls on phones so the full profile name fits with breathing room */
+  .teacher-ui :is(.header-icon-btn, .hamburger-nav-btn) {
+    width: 34px;
+    height: 34px;
+  }
+
+  .teacher-ui .brand-icon {
+    width: 30px;
+    height: 30px;
+  }
+
+  .teacher-ui :is(.dashboard-header, .attendance-top-header) .header-left {
+    margin-right: 8px;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   22. Notifications menu (shared TeacherNotificationsMenu)
+   -------------------------------------------------------------------------- */
+.teacher-ui .teacher-notification-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.teacher-ui .teacher-notification-item {
+  padding: 10px 12px;
+  border-radius: 6px;
+}
+
+.teacher-ui .teacher-notification-item + .teacher-notification-item {
+  border-top: 1px solid var(--cs-border-subtle);
+}
+
+.teacher-ui .teacher-notification-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--cs-text-primary);
+}
+
+.teacher-ui .teacher-notification-text {
+  font-size: 12px;
+  color: var(--cs-text-secondary);
+  margin-top: 2px;
+}
+
+.teacher-ui .teacher-notification-time {
+  font-size: 11px;
+  color: var(--cs-text-muted);
+  margin-top: 4px;
+}
+
+.teacher-ui .teacher-notification-empty {
+  padding: 12px;
+  font-size: 13px;
+  color: var(--cs-text-muted);
+}
+
+@media (max-width: 520px) {
+  /* Header dropdowns span the viewport under the header so they never run off-screen */
+  .teacher-ui :is(.dashboard-header, .attendance-top-header) .dropdown-menu {
+    position: fixed;
+    top: 68px;
+    left: 12px;
+    right: 12px;
+    width: auto;
+    min-width: 0;
+    max-width: none;
+    max-height: calc(100vh - 84px);
+    overflow-y: auto;
+  }
+}

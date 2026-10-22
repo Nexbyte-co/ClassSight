@@ -1,0 +1,98 @@
+/* src/pages/ClassSchedule.css — weekly timetable (inside the shared teacher shell) */
+
+.db-page.teacher-ui .sc-page { display: grid; gap: 24px; align-content: start; }
+.db-page.teacher-ui .sc-hd { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.db-page.teacher-ui .sc-hl { display: flex; align-items: center; gap: 14px; min-width: 0; }
+.db-page.teacher-ui .sc-hico {
+  width: 48px; height: 48px; flex: none; border-radius: 12px; display: flex; align-items: center; justify-content: center;
+  background: var(--db-pink); color: var(--db-mr-text);
+}
+.db-page.teacher-ui h1.sc-title { margin: 0; font-size: 26px; letter-spacing: -0.02em; }
+.db-page.teacher-ui .sc-sub { margin: 2px 0 0; font-size: 14px; color: var(--db-muted); }
+
+.db-page.teacher-ui .sc-wk { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.db-page.teacher-ui .sc-ib {
+  width: 40px; height: 40px; border-radius: 10px; border: 1px solid var(--db-line); background: var(--db-card); color: var(--db-muted);
+  display: inline-flex; align-items: center; justify-content: center;
+}
+.db-page.teacher-ui .sc-ib:hover { border-color: var(--db-hover-line); background: var(--db-nav-hover); color: var(--db-ink); }
+.db-page.teacher-ui .sc-wl {
+  height: 40px; min-width: 130px; padding: 0 14px; display: inline-flex; align-items: center; justify-content: center;
+  border: 1px solid var(--db-line); border-radius: 10px; background: var(--db-card); color: var(--db-ink); font-size: 13px; font-weight: 600;
+}
+.db-page.teacher-ui .sc-today {
+  height: 40px; padding: 0 18px; border-radius: 10px; border: 1px solid var(--db-mr); background: var(--db-mr); color: #fff;
+  font-size: 13px; font-weight: 600; transition: box-shadow 0.2s, transform 0.2s;
+}
+.db-page.teacher-ui .sc-today:hover { box-shadow: 0 4px 12px rgba(123, 17, 19, 0.25); transform: translateY(-1px); }
+
+.db-page.teacher-ui .sc-grid {
+  display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 24px; align-items: stretch;
+  height: calc(100vh - 232px); min-height: 460px;
+}
+.db-page.teacher-ui .sc-tt {
+  border: 1px solid var(--db-card-line); border-radius: 16px; background: var(--db-card); box-shadow: var(--db-shadow);
+  overflow: auto; min-height: 0; scrollbar-width: thin; scrollbar-color: transparent transparent;
+}
+.db-page.teacher-ui .sc-tt:hover { scrollbar-color: var(--db-scroll) transparent; }
+.db-page.teacher-ui .sc-tti { min-width: 820px; }
+.db-page.teacher-ui .sc-tth,
+.db-page.teacher-ui .sc-ttb { display: grid; grid-template-columns: 64px repeat(7, minmax(0, 1fr)); }
+.db-page.teacher-ui .sc-tth { position: sticky; top: 0; z-index: 3; background: var(--db-card); border-bottom: 1px solid var(--db-card-line); }
+.db-page.teacher-ui .sc-tth > div { padding: 12px 4px; text-align: center; border-left: 1px solid var(--db-row-line); }
+.db-page.teacher-ui .sc-tth > div:first-child { border-left: 0; }
+.db-page.teacher-ui .sc-tth b { display: block; font-size: 16px; font-weight: 700; color: var(--db-ink); line-height: 1.2; }
+.db-page.teacher-ui .sc-tth span { font-size: 11px; font-weight: 500; color: var(--db-muted); }
+.db-page.teacher-ui .sc-tth .td { background: var(--db-pink); }
+.db-page.teacher-ui .sc-tth .td b, .db-page.teacher-ui .sc-tth .td span { color: var(--db-mr-text); }
+
+.db-page.teacher-ui .sc-ttb { padding: 12px 0; position: relative; }
+.db-page.teacher-ui .sc-tlab { position: relative; }
+.db-page.teacher-ui .sc-tlab span { position: absolute; right: 10px; transform: translateY(-50%); font-size: 11px; font-weight: 500; color: var(--db-muted); }
+.db-page.teacher-ui .sc-tcol {
+  position: relative; border-left: 1px solid var(--db-row-line);
+  background-image: repeating-linear-gradient(to bottom, transparent 0, transparent 79px, var(--db-row-line) 79px, var(--db-row-line) 80px);
+}
+.db-page.teacher-ui .sc-tcol.td { background-color: var(--db-pink); }
+
+.db-page.teacher-ui .sc-blk {
+  position: absolute; left: 0; right: 0; padding: 7px 9px; overflow: hidden; cursor: default;
+  border-left: 3px solid var(--c); background: var(--b); display: flex; flex-direction: column; gap: 4px;
+  transition: opacity 0.2s, filter 0.2s;
+}
+.db-page.teacher-ui .sc-blk:hover { filter: brightness(0.97); z-index: 2; }
+.db-page.teacher-ui .sc-blk:focus-visible { outline: 2px solid var(--db-mr); outline-offset: -2px; z-index: 2; }
+.db-page.teacher-ui .sc-blk.dim { opacity: 0.28; filter: saturate(0.6); }
+.db-page.teacher-ui .sc-blk.hi { box-shadow: inset 0 0 0 1px var(--br); }
+.db-page.teacher-ui .sc-blk .n {
+  font-size: 12px; font-weight: 600; line-height: 1.25; color: var(--c);
+  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; flex: none;
+}
+.db-page.teacher-ui .sc-blk .t { font-size: 11px; font-weight: 500; color: var(--c); opacity: 0.8; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: none; }
+
+.db-page.teacher-ui .sc-spn {
+  display: flex; flex-direction: column; min-height: 0; padding: 16px;
+  border: 1px solid var(--db-card-line); border-radius: 14px; background: var(--db-card); box-shadow: var(--db-shadow);
+}
+.db-page.teacher-ui .sc-spn h4 { margin: 0 0 12px; font-size: 15px; font-weight: 700; letter-spacing: -0.01em; }
+.db-page.teacher-ui .sc-cl {
+  display: grid; gap: 4px; align-content: start; flex: 1 1 0; min-height: 0; overflow-y: auto; overscroll-behavior: contain;
+  padding-right: 6px; scrollbar-width: thin; scrollbar-color: transparent transparent;
+}
+.db-page.teacher-ui .sc-cl:hover { scrollbar-color: var(--db-scroll) transparent; }
+.db-page.teacher-ui .sc-cr { display: flex; align-items: center; gap: 10px; padding: 8px; border-radius: 10px; cursor: pointer; transition: background-color 0.2s; }
+.db-page.teacher-ui .sc-cr:hover { background: var(--db-nav-hover); }
+.db-page.teacher-ui .sc-cr.on { background: var(--db-nav-hover); box-shadow: inset 0 0 0 1px var(--db-hover-line); }
+.db-page.teacher-ui .sc-cr:focus-visible { outline: 2px solid var(--db-mr); outline-offset: -2px; }
+.db-page.teacher-ui .sc-cr .cdt { width: 10px; height: 10px; border-radius: 50%; background: var(--c); flex: none; }
+.db-page.teacher-ui .sc-cr b { display: block; font-size: 13px; font-weight: 600; line-height: 1.3; color: var(--db-ink); }
+.db-page.teacher-ui .sc-cr small { font-size: 11px; color: var(--db-muted); }
+
+@media (max-width: 1100px) {
+  .db-page.teacher-ui .sc-grid { grid-template-columns: 1fr; height: auto; }
+  .db-page.teacher-ui .sc-tt { max-height: 70vh; }
+  .db-page.teacher-ui .sc-spn { max-height: 380px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .db-page.teacher-ui .sc-blk, .db-page.teacher-ui .sc-cr, .db-page.teacher-ui .sc-today { transition: none; }
+}

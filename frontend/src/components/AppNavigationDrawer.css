@@ -273,3 +273,34 @@ body.dark-mode .app-nav-logout-btn:hover {
   background: rgba(239, 68, 68, 0.15);
 }
 
+
+/* ==========================================================================
+   Push-aside layout
+   While the drawer is open, the page (the route's root element) makes room for
+   it instead of being covered, using the same timing as the drawer's slide.
+   Below 1024px the remaining width is too narrow for some pages (Classes grid,
+   Attendance layout), so the drawer overlays the page instead (still without
+   any dimming or blocking layer).
+   ========================================================================== */
+#root > * {
+  /* keeps the page roots' existing theme transitions */
+  transition: padding-left 0.28s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.25s ease,
+    color 0.25s ease;
+}
+
+@media (min-width: 1024px) {
+  body.app-nav-open #root > * {
+    padding-left: 275px;
+  }
+}
+
+/* Classes sub-links */
+.app-nav-sublinks { display: flex; flex-direction: column; gap: 2px; margin: -2px 0 2px 18px; padding-left: 14px; border-left: 1px solid var(--cs-border, #e4e2de); }
+.app-nav-sublink {
+  display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 8px;
+  color: var(--cs-text-secondary, #555555); text-decoration: none; font-size: 13px; font-weight: 500;
+  transition: background-color 0.2s, color 0.2s;
+}
+.app-nav-sublink:hover { background: var(--cs-crimson-light, rgba(122, 21, 21, 0.08)); color: var(--cs-crimson, #7a1515); }
+.app-nav-sublink.active { color: var(--cs-crimson, #7a1515); font-weight: 600; background: var(--cs-crimson-light, rgba(122, 21, 21, 0.08)); }
+.app-nav-link.parent { color: var(--cs-crimson, #7a1515); font-weight: 600; }

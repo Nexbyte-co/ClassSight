@@ -320,7 +320,7 @@
    ========================================================================== */
 .dashboard-body {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   flex: 1;
   width: 100%;
   min-height: calc(100vh - 72px);
@@ -2076,3 +2076,788 @@
   line-height: 1.45;
   margin: 0 0 16px;
 }
+
+
+/* ==========================================================================
+   Dashboard — "ClassSight Dashboard" design
+   Values mirror the design file; dark mode swaps the tokens below.
+   Selectors start with `.db-page.teacher-ui` so they outrank teacher.css.
+   ========================================================================== */
+.db-page.teacher-ui {
+  --db-mr: #7b1113;
+  --db-mr-hover: #540b0c;
+  --db-mr-text: #7b1113;
+  --db-ink: #0f172a;
+  --db-muted: #64748b;
+  --db-line: #cbd5e1;
+  --db-bg: #f5f5f4;
+  --db-card: #ffffff;
+  --db-soft: #f1f5f9;
+  --db-panel: #f4f6f8;
+  --db-panel-act: #fcfafa;
+  --db-panel-done: #f2faf8;
+  --db-top-bg: #f8fafc;
+  --db-top-line: #d1d5db;
+  --db-side-bg: #fffdf9;
+  --db-nav-hover: #f6e9ea;
+  --db-card-line: #e0ddd9;
+  --db-row-line: #e7e5e4;
+  --db-drop-line: #d6d3d1;
+  --db-hover-line: #b8a3a7;
+  --db-pink: #ebcdd1;
+  --db-badge-bg: #fef2f2;
+  --db-badge-line: #f8cfd4;
+  --db-active-tag: #fee2e2;
+  --db-tm-sub: #fecdd3;
+  --db-green-bg: #ecfdf5;
+  --db-green: #047857;
+  --db-green-line: #a7f3d0;
+  --db-green-ok: #059669;
+  --db-chk-bg: #d1fae5;
+  --db-chk: #065f46;
+  --db-amber-bg: #fffbeb;
+  --db-amber: #b45309;
+  --db-amber-line: #fde68a;
+  --db-red-bg: #fef2f2;
+  --db-red: #b91c1c;
+  --db-red-line: #fecaca;
+  --db-scroll: #b8a3a7;
+  --db-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
+  --db-lift: 0 4px 12px rgba(15, 23, 42, 0.07);
+
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  font-family: "Inter", system-ui, sans-serif;
+  font-size: 14px;
+  color: var(--db-ink);
+  background: var(--db-bg);
+}
+
+.db-page.teacher-ui.dark-mode {
+  --db-mr: #a83232;
+  --db-mr-hover: #bb3d3d;
+  --db-mr-text: #f19a9a;
+  --db-ink: #f3efeb;
+  --db-muted: #a69d95;
+  --db-line: #3a3531;
+  --db-bg: #0f0e0d;
+  --db-card: #1d1b19;
+  --db-soft: #262320;
+  --db-panel: #22201e;
+  --db-panel-act: #28211f;
+  --db-panel-done: #1f2623;
+  --db-top-bg: #171513;
+  --db-top-line: #3a3531;
+  --db-side-bg: #171513;
+  --db-nav-hover: rgba(241, 154, 154, 0.1);
+  --db-card-line: #34302c;
+  --db-row-line: #34302c;
+  --db-drop-line: #4a443f;
+  --db-hover-line: #6b5a5c;
+  --db-pink: #4a2f2f;
+  --db-badge-bg: rgba(241, 154, 154, 0.12);
+  --db-badge-line: rgba(241, 154, 154, 0.32);
+  --db-active-tag: rgba(241, 154, 154, 0.16);
+  --db-tm-sub: #fecdd3;
+  --db-green-bg: #17301f;
+  --db-green: #5fd28b;
+  --db-green-line: #2a5a3a;
+  --db-green-ok: #5fd28b;
+  --db-chk-bg: #17301f;
+  --db-chk: #5fd28b;
+  --db-amber-bg: #33260f;
+  --db-amber: #f2b85b;
+  --db-amber-line: #5c4515;
+  --db-red-bg: #3a1a17;
+  --db-red: #f59a92;
+  --db-red-line: #6b2a24;
+  --db-scroll: #5a4c4e;
+  --db-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+  --db-lift: 0 4px 12px rgba(0, 0, 0, 0.45);
+}
+
+.db-page.teacher-ui *,
+.db-page.teacher-ui *::before,
+.db-page.teacher-ui *::after { box-sizing: border-box; }
+.db-page.teacher-ui button {
+  font: inherit;
+  cursor: pointer;
+  transition: transform 0.12s ease, background-color 0.2s, border-color 0.2s;
+}
+.db-page.teacher-ui button:active:not(:disabled) { transform: scale(0.97); }
+.db-page.teacher-ui button:disabled { cursor: not-allowed; opacity: 0.6; }
+
+.db-page.teacher-ui .db-row { display: flex; align-items: center; gap: 12px; }
+.db-page.teacher-ui .db-wrap { flex-wrap: wrap; }
+.db-page.teacher-ui .db-between { justify-content: space-between; }
+.db-page.teacher-ui .db-center { justify-content: center; gap: 8px; }
+.db-page.teacher-ui .db-sm { font-size: 12px; color: var(--db-muted); margin: 2px 0 0; }
+
+/* Shared hover lift */
+.db-page.teacher-ui :is(.db-stat, .db-ci, .db-scan, .db-g3, .db-btn, .db-pill, .db-top .header-icon-btn, .db-ib-sm) {
+  transition: transform 0.2s cubic-bezier(0.2, 0.7, 0.2, 1), border-color 0.2s, box-shadow 0.2s, background-color 0.2s;
+}
+.db-page.teacher-ui :is(.db-stat, .db-ci, .db-scan, .db-g3, .db-btn, .db-pill, .db-top .header-icon-btn, .db-ib-sm):hover {
+  transform: translateY(-2px);
+  box-shadow: var(--db-lift);
+}
+.db-page.teacher-ui :is(.db-ci:not(.act), .db-stat, .db-scan, .db-g3, .db-btn, .db-pill, .db-top .header-icon-btn, .db-ib-sm):hover {
+  border-color: var(--db-hover-line);
+}
+
+/* ---------- Header ---------- */
+.db-page.teacher-ui .db-top {
+  height: 64px;
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  background: var(--db-top-bg);
+  border-bottom: 2px solid var(--db-top-line);
+  position: sticky;
+  top: 0;
+  z-index: 40;
+}
+.db-page.teacher-ui .db-ib {
+  width: 40px;
+  height: 40px;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  color: var(--db-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.db-page.teacher-ui .db-ib:hover { background: var(--db-soft); }
+.db-page.teacher-ui :is(.db-ib-sm, .db-top .header-icon-btn) {
+  width: 32px;
+  height: 32px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--db-line);
+  border-radius: 8px;
+  background: var(--db-card);
+  color: var(--db-muted);
+}
+.db-page.teacher-ui :is(.db-ib-sm, .db-top .header-icon-btn):hover { background: var(--db-card); color: var(--db-muted); }
+.db-page.teacher-ui .db-top .header-icon-btn svg { width: 16px; height: 16px; stroke-width: 2; }
+.db-page.teacher-ui .db-top .notification-badge {
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  width: 8px;
+  height: 8px;
+  box-sizing: content-box;
+  border: 2px solid var(--db-top-bg);
+  border-radius: 50%;
+  background: var(--db-mr);
+}
+.db-page.teacher-ui .db-brand-link { gap: 10px; text-decoration: none; color: inherit; }
+.db-page.teacher-ui .db-logo {
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  background: var(--db-mr);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.db-page.teacher-ui .db-brand { font-size: 20px; line-height: 36px; font-weight: 700; letter-spacing: -0.02em; color: var(--db-ink); }
+.db-page.teacher-ui .db-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--db-line);
+  font-size: 12px;
+  font-weight: 500;
+}
+.db-page.teacher-ui .db-pill svg { color: var(--db-mr-text); }
+
+/* Profile card */
+.db-page.teacher-ui .teacher-profile-menu .profile-trigger {
+  height: auto;
+  gap: 12px;
+  padding: 5px 14px 5px 5px;
+  border: 1.5px solid var(--db-line);
+  border-radius: 14px;
+  background: var(--db-card);
+  color: var(--db-ink);
+  transition: border-color 0.2s, transform 0.12s;
+}
+.db-page.teacher-ui .teacher-profile-menu .profile-trigger:hover,
+.db-page.teacher-ui .teacher-profile-menu .profile-trigger[aria-expanded="true"] {
+  background: var(--db-card);
+  border-color: var(--db-mr);
+}
+.db-page.teacher-ui .teacher-profile-menu .profile-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: var(--db-mr);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+.db-page.teacher-ui .profile-stack { display: flex; flex-direction: column; align-items: flex-start; text-align: left; line-height: 1.25; }
+.db-page.teacher-ui .profile-stack-name { font-size: 14px; font-weight: 600; color: var(--db-ink); }
+.db-page.teacher-ui .profile-stack-dept { font-size: 12px; color: var(--db-muted); }
+.db-page.teacher-ui .teacher-profile-menu .profile-chevron { display: block; margin-left: 4px; color: var(--db-muted); }
+
+/* ---------- Sidebar ---------- */
+.db-page.teacher-ui .db-body { display: flex; align-items: stretch; flex: 1; min-height: 760px; }
+.db-page.teacher-ui .db-side {
+  width: 256px;
+  flex: none;
+  position: sticky;
+  top: 64px;
+  height: calc(100vh - 64px);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+  background: var(--db-side-bg);
+  border-right: 1px solid var(--db-line);
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.db-page.teacher-ui .db-side.c { width: 72px; }
+.db-page.teacher-ui .db-nav { padding: 20px 12px; display: grid; gap: 10px; align-content: start; }
+.db-page.teacher-ui .db-ni {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  color: var(--db-muted);
+  font-weight: 500;
+  text-decoration: none;
+  white-space: nowrap;
+  overflow: hidden;
+  transition: color 0.25s, background-color 0.2s;
+}
+.db-page.teacher-ui .db-ni:not(.on):hover { background: var(--db-nav-hover); color: var(--db-ink); }
+.db-page.teacher-ui .db-ni.on { background: var(--db-mr); color: #fff; }
+.db-page.teacher-ui .db-ni svg { flex: none; }
+.db-page.teacher-ui .db-live {
+  margin-left: auto;
+  max-width: 60px;
+  overflow: hidden;
+  white-space: nowrap;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 99px;
+  background: var(--db-green-bg);
+  color: var(--db-green);
+  border: 1px solid var(--db-green-line);
+  transition: max-width 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s ease 0.1s, padding 0.3s, border-width 0.3s, margin 0.3s;
+}
+.db-page.teacher-ui .db-tx {
+  display: inline-block;
+  max-width: 200px;
+  overflow: hidden;
+  white-space: nowrap;
+  transition: max-width 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s ease 0.1s, margin 0.3s;
+}
+.db-page.teacher-ui .db-bot { padding: 12px; border-top: 1px solid var(--db-line); display: grid; gap: 8px; }
+.db-page.teacher-ui .db-term {
+  border: 1px solid var(--db-line);
+  border-radius: 12px;
+  padding: 12px 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  transition: opacity 0.2s ease 0.1s;
+}
+.db-page.teacher-ui .db-term b {
+  display: block;
+  color: var(--db-mr-text);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.db-page.teacher-ui .db-term span { display: block; font-size: 12px; font-weight: 600; margin-top: 4px; }
+.db-page.teacher-ui .db-term i { display: block; font-size: 11px; color: var(--db-muted); font-style: normal; margin-top: 2px; }
+.db-page.teacher-ui .db-logout {
+  border: 0;
+  background: transparent;
+  color: var(--db-muted);
+  font-size: 12px;
+  font-weight: 500;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.db-page.teacher-ui .db-logout .db-tx { margin-left: 8px; }
+.db-page.teacher-ui .db-side.c .db-tx,
+.db-page.teacher-ui .db-side.c .db-live {
+  max-width: 0;
+  opacity: 0;
+  transition: max-width 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.12s ease, padding 0.3s, border-width 0.3s, margin 0.3s;
+}
+.db-page.teacher-ui .db-side.c .db-live { padding-left: 0; padding-right: 0; border-width: 0; margin-left: 0; }
+.db-page.teacher-ui .db-side.c .db-logout .db-tx { margin-left: 0; }
+.db-page.teacher-ui .db-side.c .db-term { opacity: 0; transition: opacity 0.12s ease; pointer-events: none; }
+
+/* ---------- Main ---------- */
+.db-page.teacher-ui .db-main { flex: 1; min-width: 0; padding: 24px; display: grid; gap: 24px; align-content: start; }
+.db-page.teacher-ui .db-hd { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; align-items: center; }
+.db-page.teacher-ui h1 { font-size: 40px; font-weight: 700; letter-spacing: -0.03em; line-height: 1.1; margin: 0; color: var(--db-ink); }
+.db-page.teacher-ui .db-lead { font-size: 14px; }
+.db-page.teacher-ui h2 { font-size: 24px; font-weight: 700; letter-spacing: -0.02em; margin: 0; color: var(--db-ink); }
+
+.db-page.teacher-ui .db-btn,
+.db-page.teacher-ui .db-b1,
+.db-page.teacher-ui .db-bm,
+.db-page.teacher-ui .db-be {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 500;
+  border-radius: 8px;
+  white-space: nowrap;
+}
+.db-page.teacher-ui .db-btn { border: 1px solid var(--db-line); background: var(--db-card); color: var(--db-ink); }
+.db-page.teacher-ui .db-b1 { border: 1px solid var(--db-line); background: transparent; color: var(--db-ink); }
+.db-page.teacher-ui .db-b1:hover:not(:disabled) { background: var(--db-soft); }
+.db-page.teacher-ui .db-bm { border: 0; background: var(--db-mr); color: #fff; }
+.db-page.teacher-ui .db-bm:hover { background: var(--db-mr-hover); }
+.db-page.teacher-ui .db-bm-lg { margin-top: 16px; padding: 10px 16px; border-radius: 12px; }
+.db-page.teacher-ui .db-be { padding: 6px 10px; border: 1px solid var(--db-red-line); background: var(--db-red-bg); color: var(--db-red); }
+.db-page.teacher-ui .db-link { font-size: 12px; font-weight: 500; color: var(--db-mr-text); text-decoration: none; }
+.db-page.teacher-ui .db-link:hover { text-decoration: underline; }
+
+.db-page.teacher-ui .db-card {
+  background: var(--db-card);
+  border: 1px solid var(--db-card-line);
+  border-radius: 16px;
+  box-shadow: var(--db-shadow);
+}
+.db-page.teacher-ui .db-pad { padding: 20px; display: grid; gap: 16px; }
+
+/* Two-column layout: active session + attendance on the left, schedule on the right */
+.db-page.teacher-ui .db-cols {
+  display: grid;
+  grid-template-columns: minmax(0, 2.94fr) minmax(0, 2.06fr);
+  gap: 24px;
+  align-items: stretch;
+}
+.db-page.teacher-ui .db-lcol { display: grid; gap: 24px; align-content: start; min-width: 0; }
+
+/* Active session banner */
+.db-page.teacher-ui .db-banner { border-left: 3px solid var(--db-mr); padding: 20px; display: grid; gap: 14px; }
+.db-page.teacher-ui .db-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 10px;
+  border-radius: 99px;
+  font-size: 12px;
+  font-weight: 600;
+  background: var(--db-badge-bg);
+  color: var(--db-mr-text);
+  border: 1px solid var(--db-badge-line);
+}
+.db-page.teacher-ui .db-ago { margin: 0; }
+.db-page.teacher-ui .db-badge-idle { background: var(--db-soft); color: var(--db-muted); border-color: var(--db-line); }
+.db-page.teacher-ui .db-dot-idle { width: 8px; height: 8px; border-radius: 50%; background: var(--db-muted); }
+.db-page.teacher-ui .db-idle-text { margin: 0; font-size: 14px; }
+.db-page.teacher-ui .db-pulse {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #dc2626;
+  animation: db-pulse 2s infinite ease-in-out;
+}
+@keyframes db-pulse { 50% { opacity: 0.5; transform: scale(1.15); } }
+.db-page.teacher-ui .db-col {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  border: 0;
+  border-radius: 0;
+  padding: 0;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+}
+.db-page.teacher-ui .db-col:active:not(:disabled) { transform: none; }
+.db-page.teacher-ui .db-k {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--db-muted);
+}
+.db-page.teacher-ui .db-asn .db-k { font-size: 10px; }
+.db-page.teacher-ui .db-course { font-size: 27.5px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.2; }
+.db-page.teacher-ui .db-code { font-size: 12px; font-weight: 600; color: var(--db-mr-text); margin-top: 2px; }
+.db-page.teacher-ui .db-g3 {
+  background: var(--db-panel);
+  display: grid;
+  grid-template-columns: 1fr 0.8fr 1.35fr;
+  border: 1px solid var(--db-card-line);
+  border-radius: 12px;
+  overflow: hidden;
+}
+.db-page.teacher-ui .db-g3 > .db-col { padding: 10px 14px; min-width: 0; }
+.db-page.teacher-ui .db-g3 > .db-col + .db-col { border-left: 1px solid var(--db-card-line); }
+.db-page.teacher-ui .db-v { font-size: 17px; font-weight: 700; letter-spacing: -0.02em; margin-top: 2px; }
+.db-page.teacher-ui .db-v-time { font-size: 15px; white-space: nowrap; }
+.db-page.teacher-ui .db-g3-sub { font-size: 11px; font-weight: 500; color: var(--db-muted); margin-top: 2px; }
+
+/* Schedule card */
+.db-page.teacher-ui .db-sched { display: flex; flex-direction: column; gap: 16px; min-height: 0; flex: 1 1 0; padding-top: 12px; }
+.db-page.teacher-ui .db-rcol { display: flex; flex-direction: column; gap: 24px; min-height: 0; }
+.db-page.teacher-ui .db-ovw { padding-top: 12px; }
+.db-page.teacher-ui .db-shd.db-lh { align-items: flex-end; }
+.db-page.teacher-ui .db-cap2 { font-size: 12px; color: var(--db-muted); }
+.db-page.teacher-ui .db-shd { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap; }
+.db-page.teacher-ui .db-stats { display: grid; grid-template-columns: 1fr 1.3fr 1fr; gap: 12px; }
+.db-page.teacher-ui .db-stat { border: 1px solid var(--db-row-line); border-radius: 12px; padding: 12px; background: var(--db-card); }
+.db-page.teacher-ui .db-big { font-size: 18px; font-weight: 700; letter-spacing: -0.02em; margin-top: 2px; }
+.db-page.teacher-ui .db-nl-name { font-size: 14px; font-weight: 600; margin-top: 4px; line-height: 1.3; }
+.db-page.teacher-ui .db-nl-name span { font-size: 12px; font-weight: 500; color: var(--db-mr-text); margin-left: 6px; }
+.db-page.teacher-ui .db-cap { font-size: 12px; color: var(--db-muted); display: flex; justify-content: space-between; }
+
+.db-page.teacher-ui .db-list {
+  flex: 1 1 0;
+  min-height: 260px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 3px 6px 0 0;
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+}
+.db-page.teacher-ui .db-list:hover { scrollbar-color: var(--db-scroll) transparent; }
+.db-page.teacher-ui .db-list::-webkit-scrollbar { width: 6px; }
+.db-page.teacher-ui .db-list::-webkit-scrollbar-thumb { background: transparent; border-radius: 99px; transition: background 0.3s; }
+.db-page.teacher-ui .db-list:hover::-webkit-scrollbar-thumb { background: var(--db-scroll); }
+
+.db-page.teacher-ui .db-ci {
+  flex: none;
+  border: 1px solid var(--db-row-line);
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  background: var(--db-card);
+}
+.db-page.teacher-ui .db-ci.act { border: 1.5px solid var(--db-mr); position: relative; overflow: hidden; }
+.db-page.teacher-ui .db-ci.act::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 5px;
+  background: var(--db-mr);
+}
+.db-page.teacher-ui .db-info { display: flex; gap: 14px; align-items: flex-start; }
+.db-page.teacher-ui .db-tm {
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: var(--db-soft);
+  font-weight: 600;
+  font-size: 12px;
+  text-align: center;
+  line-height: 1.2;
+}
+.db-page.teacher-ui .db-tm i { display: block; font-size: 10px; font-weight: 500; font-style: normal; color: var(--db-muted); }
+.db-page.teacher-ui .db-ci.act .db-tm { background: var(--db-mr); color: #fff; }
+.db-page.teacher-ui .db-ci.act .db-tm i { color: var(--db-tm-sub); }
+.db-page.teacher-ui .db-nm { font-size: 14px; font-weight: 600; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.db-page.teacher-ui .db-tag { font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 6px; }
+.db-page.teacher-ui .db-tag.t-done { background: var(--db-green-bg); color: var(--db-green); border: 1px solid var(--db-green-line); }
+.db-page.teacher-ui .db-tag.t-active { background: var(--db-active-tag); color: var(--db-mr-text); }
+.db-page.teacher-ui .db-tag.t-next { background: var(--db-amber-bg); color: var(--db-amber); border: 1px solid var(--db-amber-line); }
+.db-page.teacher-ui .db-tag.t-upcoming,
+.db-page.teacher-ui .db-tag.t-unstarted { background: var(--db-soft); color: var(--db-muted); }
+.db-page.teacher-ui .db-ok { color: var(--db-green-ok); font-size: 11px; font-weight: 500; margin-top: 4px; }
+.db-page.teacher-ui .db-warn { color: var(--db-amber); font-size: 11px; font-weight: 500; margin-top: 4px; }
+.db-page.teacher-ui .db-acts { gap: 8px; }
+
+/* Mark attendance */
+.db-page.teacher-ui .db-ok2 {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 99px;
+  background: var(--db-green-bg);
+  color: var(--db-green);
+  border: 1px solid var(--db-green-line);
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.db-page.teacher-ui .db-ok2 i,
+.db-page.teacher-ui .db-green-dot { width: 8px; height: 8px; border-radius: 50%; background: #10b981; }
+
+/* Tabs with a sliding burgundy pill */
+.db-page.teacher-ui .db-tabs { position: relative; display: flex; padding: 4px; border-radius: 12px; background: var(--db-soft); }
+.db-page.teacher-ui .db-tpill {
+  position: absolute;
+  left: 4px;
+  top: 4px;
+  bottom: 4px;
+  width: calc(50% - 4px);
+  border-radius: 8px;
+  background: var(--db-mr);
+  transition: transform 0.38s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.db-page.teacher-ui .db-tpill.right { transform: translateX(100%); }
+.db-page.teacher-ui .db-tabs button {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  border: 0;
+  padding: 6px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  background: transparent;
+  color: var(--db-muted);
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+  align-items: center;
+  transition: color 0.3s, transform 0.12s;
+}
+.db-page.teacher-ui .db-tabs button.on { color: #fff; }
+
+/* Both panes share one grid cell; switching slides and fades them */
+.db-page.teacher-ui .db-pw { display: grid; }
+.db-page.teacher-ui .db-pn {
+  grid-area: 1 / 1;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  transition: opacity 0.3s ease, visibility 0.3s, transform 0.38s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.db-page.teacher-ui .db-pn.off { visibility: hidden; pointer-events: none; opacity: 0; }
+.db-page.teacher-ui .db-pn-photo.off { transform: translateX(-32px); }
+.db-page.teacher-ui .db-pn-nfc.off { transform: translateX(32px); }
+.db-page.teacher-ui .db-drop {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  border: 1.5px dashed var(--db-drop-line);
+  border-radius: 16px;
+  padding: 35px 24px 13px;
+  text-align: center;
+  background: var(--db-card);
+}
+.db-page.teacher-ui .db-drop h3 { font-size: 14px; font-weight: 600; margin: 0; color: var(--db-ink); }
+.db-page.teacher-ui .db-drop-text { max-width: 20rem; margin: 4px auto 0; line-height: 1.5; }
+.db-page.teacher-ui .db-drop-meta { margin-top: 12px; }
+.db-page.teacher-ui .db-emb {
+  position: relative;
+  width: 56px;
+  height: 56px;
+  margin: 0 auto 12px;
+  border-radius: 16px;
+  background: var(--db-card);
+  border: 1px solid var(--db-pink);
+  color: var(--db-mr-text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Photo icon: corner brackets lock on, the box flashes, the camera turns into a tick */
+.db-page.teacher-ui .db-seq { overflow: hidden; animation: db-seqbox 6s infinite; }
+.db-page.teacher-ui .db-cn {
+  position: absolute;
+  width: 11px;
+  height: 11px;
+  border: 2px solid var(--db-mr);
+  animation: db-seqcn 6s infinite;
+}
+.db-page.teacher-ui .db-cn.a { top: 5px; left: 5px; border-right: 0; border-bottom: 0; }
+.db-page.teacher-ui .db-cn.b { top: 5px; right: 5px; border-left: 0; border-bottom: 0; }
+.db-page.teacher-ui .db-cn.d { bottom: 5px; left: 5px; border-right: 0; border-top: 0; }
+.db-page.teacher-ui .db-cn.e { bottom: 5px; right: 5px; border-left: 0; border-top: 0; }
+.db-page.teacher-ui .db-cam { animation: db-seqcam 6s infinite; }
+.db-page.teacher-ui .db-tick { position: absolute; opacity: 0; animation: db-seqok 6s infinite; }
+@keyframes db-seqcn {
+  0% { opacity: 0; transform: scale(1.5); }
+  25% { opacity: 1; transform: scale(0.85); }
+  35%, 100% { opacity: 0; transform: scale(0.85); }
+}
+@keyframes db-seqbox {
+  0%, 38%, 46%, 100% { background: var(--db-card); color: var(--db-mr-text); }
+  40% { background: var(--db-mr); color: #fff; }
+}
+@keyframes db-seqcam {
+  0%, 44% { opacity: 1; transform: scale(1); }
+  50%, 90% { opacity: 0; transform: scale(0.6); }
+  96%, 100% { opacity: 1; transform: scale(1); }
+}
+@keyframes db-seqok {
+  0%, 44% { opacity: 0; transform: scale(0.4); }
+  52% { opacity: 1; transform: scale(1.2); }
+  58%, 88% { opacity: 1; transform: scale(1); }
+  94%, 100% { opacity: 0; transform: scale(0.4); }
+}
+
+/* NFC icon: rings pulse while the reader waits for a card */
+.db-page.teacher-ui .db-wait { overflow: hidden; }
+.db-page.teacher-ui .db-wait::before,
+.db-page.teacher-ui .db-wait::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: 16px;
+  border: 2px solid var(--db-mr);
+  opacity: 0;
+  animation: db-ring 2s ease-out infinite;
+}
+.db-page.teacher-ui .db-wait::after { animation-delay: 1s; }
+@keyframes db-ring {
+  0% { transform: scale(0.45); opacity: 0.5; }
+  100% { transform: scale(1); opacity: 0; }
+}
+
+.db-page.teacher-ui .db-photo-result { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 12px; }
+.db-page.teacher-ui .db-photo-result .photo-preview-container { margin: 0; }
+.db-page.teacher-ui .db-scanning { margin: 0; font-size: 13px; font-weight: 600; color: var(--db-mr-text); }
+
+.db-page.teacher-ui .db-scan {
+  border: 1px solid var(--db-row-line);
+  border-radius: 12px;
+  padding: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  background: var(--db-card);
+}
+.db-page.teacher-ui .db-scan-title { font-size: 12px; font-weight: 600; }
+.db-page.teacher-ui .db-chk {
+  flex: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: var(--db-chk-bg);
+  color: var(--db-chk);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.db-page.teacher-ui .db-chk.idle { background: var(--db-soft); color: var(--db-muted); }
+.db-page.teacher-ui .db-b1-wide { width: 100%; padding: 10px; }
+
+.db-page.teacher-ui .db-nst {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 14px;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 6px 12px;
+  border-radius: 99px;
+  border: 1px solid var(--db-green-line);
+  background: var(--db-card);
+  color: var(--db-green);
+}
+.db-page.teacher-ui .db-nst i { width: 8px; height: 8px; border-radius: 50%; background: #10b981; }
+.db-page.teacher-ui .db-nst.det { border-color: var(--db-amber-line); color: var(--db-amber); }
+.db-page.teacher-ui .db-nst.det i { background: #f59e0b; }
+.db-page.teacher-ui .db-nst.rec { border-color: var(--db-mr); color: var(--db-mr-text); }
+.db-page.teacher-ui .db-nst.rec i { background: var(--db-mr); }
+
+/* ---------- Motion ---------- */
+@keyframes db-rise { from { opacity: 0; transform: translateY(14px); } }
+@keyframes db-slidein { from { opacity: 0; transform: translateX(-18px); } }
+@keyframes db-pop { 0% { transform: scale(0.5); } 60% { transform: scale(1.25); } 100% { transform: scale(1); } }
+@keyframes db-flash {
+  0% { border-color: #10b981; box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.28); }
+  100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+}
+.db-page.teacher-ui .db-rise { animation: db-rise 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) backwards; }
+.db-page.teacher-ui .db-slidein { animation: db-slidein 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) backwards; }
+.db-page.teacher-ui .db-pop { animation: db-pop 0.4s cubic-bezier(0.3, 1.5, 0.5, 1); }
+.db-page.teacher-ui .db-flash { animation: db-flash 1.1s ease-out; }
+
+@media (prefers-reduced-motion: reduce) {
+  .db-page.teacher-ui *,
+  .db-page.teacher-ui *::before,
+  .db-page.teacher-ui *::after { animation: none !important; transition: none !important; }
+  .db-page.teacher-ui .db-list { scroll-behavior: auto; }
+}
+
+@media (max-width: 1100px) {
+  .db-page.teacher-ui .db-cols { grid-template-columns: 1fr; }
+  .db-page.teacher-ui .db-sched { flex: none; }
+  .db-page.teacher-ui .db-list { flex: none; max-height: 480px; }
+}
+
+@media (max-width: 700px) {
+  .db-page.teacher-ui .db-side { display: none; }
+  .db-page.teacher-ui .db-main { padding: 16px; }
+  .db-page.teacher-ui .db-stats { grid-template-columns: 1fr; }
+  .db-page.teacher-ui .db-pill { display: none; }
+  .db-page.teacher-ui .profile-stack,
+  .db-page.teacher-ui .teacher-profile-menu .profile-chevron { display: none; }
+  .db-page.teacher-ui .teacher-profile-menu .profile-trigger { padding: 3px; }
+  .db-page.teacher-ui h1 { font-size: 28px; }
+  .db-page.teacher-ui .db-g3 { grid-template-columns: 1fr 1fr; }
+  .db-page.teacher-ui .db-g3 > .db-col:nth-child(3) { grid-column: 1 / -1; border-left: 0; border-top: 1px solid var(--db-card-line); }
+}
+
+/* Panel surfaces (declared last so they win over the base card rules) */
+.db-page.teacher-ui .db-stat, .db-page.teacher-ui .db-ci, .db-page.teacher-ui .db-scan { background: var(--db-panel); }
+.db-page.teacher-ui .db-ci.act { background: var(--db-panel-act); }
+.db-page.teacher-ui .db-ci.dn { background: var(--db-panel-done); }
+.db-page.teacher-ui .db-drop { background: var(--db-panel); }
+
+/* Classes submenu in the sidebar */
+.db-page.teacher-ui .db-grp { position: relative; display: grid; }
+.db-page.teacher-ui .db-chv {
+  position: absolute; right: 8px; top: 7px; width: 28px; height: 28px; padding: 6px;
+  border: 0; border-radius: 8px; background: transparent; color: var(--db-muted); cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.2s;
+}
+.db-page.teacher-ui .db-grp.open .db-chv { transform: rotate(180deg); }
+.db-page.teacher-ui .db-subl {
+  display: grid; grid-template-rows: 0fr; opacity: 0;
+  transition: grid-template-rows 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s ease;
+}
+.db-page.teacher-ui .db-subl > .db-subi { overflow: hidden; min-height: 0; display: grid; gap: 2px; }
+.db-page.teacher-ui .db-grp.open .db-subl { grid-template-rows: 1fr; opacity: 1; margin-top: 6px; }
+.db-page.teacher-ui .db-si {
+  display: block; padding: 10px 14px; border-radius: 12px; color: var(--db-muted); text-decoration: none;
+  transition: background-color 0.2s, color 0.2s;
+}
+.db-page.teacher-ui .db-si:hover { background: var(--db-nav-hover); color: var(--db-ink); }
+.db-page.teacher-ui .db-st { display: flex; align-items: center; gap: 12px; font-size: 14px; font-weight: 500; }
+.db-page.teacher-ui .db-side.c .db-subl { display: none; }
+.db-page.teacher-ui .db-si.cur { color: var(--db-mr-text); font-weight: 600; background: var(--db-nav-hover); }
+.db-page.teacher-ui .db-ni-btn { width: 100%; border: 0; background: transparent; font: inherit; text-align: left; }
+.db-page.teacher-ui .db-ni-btn.on { background: var(--db-mr); color: #fff; }
+.db-page.teacher-ui .db-chv { pointer-events: none; }
+.db-page.teacher-ui .db-grp.open > .db-chv { transform: rotate(180deg); }
+.db-page.teacher-ui .db-chv { top: 8px; right: 14px; padding: 6px; }
+.db-page.teacher-ui .db-grp:has(.db-ni.on) > .db-chv, .db-page.teacher-ui .db-grp:has(.db-ni-btn.on) > .db-chv { color: #fff; }

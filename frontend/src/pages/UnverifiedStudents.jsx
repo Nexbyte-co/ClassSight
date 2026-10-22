@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import {
   ScanFace,
   Sun,
@@ -15,18 +15,29 @@ import {
   CheckCircle2,
 } from "lucide-react";
 import { useTheme } from "../context/ThemeContext";
-import { useAttendance } from "../context/AttendanceContext";
+import TeacherProfileMenu from "../components/TeacherProfileMenu";
+import { useDialogA11y } from "../hooks/useDialogA11y";
+import { useAttendanceSession } from "../context/AttendanceContext";
+import { useSessionRoute } from "../context/ScheduleContext";
+import { usePhotoRescan } from "../hooks/usePhotoRescan";
+import { getCompletionMessage } from "../context/attendanceSessions";
 import "./Attendance.css";
 
 function UnverifiedStudents() {
   const navigate = useNavigate();
   const { isDarkMode, toggleDarkMode } = useTheme();
+  const { sessionId, sessionClass: scheduledClass, redirectTo } = useSessionRoute("/unverified");
   const {
-    sessionData,
     unverifiedStudents,
+    verifiedStudents,
+    absentStudents,
     resolveStudent,
     totalStudentsCount,
-  } = useAttendance();
+    classSnapshot,
+  } = useAttendanceSession(sessionId, scheduledClass);
+
+  // Recorded sessions show the class details from when attendance was taken
+  const sessionClass = classSnapshot || scheduledClass;
 
   const [searchQuery, setSearchQuery] = useState("");
   const [resolvingStudent, setResolvingStudent] = useState(null);
@@ -43,10 +54,16 @@ function UnverifiedStudents() {
     });
   }, [unverifiedStudents, searchQuery]);
 
-  const handleExecuteResolve = (studentId, method) => {
+  // "Upload Another Photo": verify only after a photo is chosen and the simulated re-scan finishes
+  const { fileInputRef, rescanState, startRescan, cancelRescan, handleRescanFileChange } =
+    usePhotoRescan((studentId) => handleExecuteResolve(studentId, "photo"));
+
+  function handleExecuteResolve(studentId, method) {
     const student = unverifiedStudents.find((s) => s.id === studentId);
-    resolveStudent(studentId, method);
+    cancelRescan();
     setResolvingStudent(null);
+    if (!student) return;
+    resolveStudent(studentId, method);
 
     const actionText =
       method === "absent"
@@ -59,10 +76,29 @@ function UnverifiedStudents() {
     setTimeout(() => {
       setToastMessage(null);
     }, 3500);
+  }
+
+  const handleCloseResolve = () => {
+    cancelRescan();
+    setResolvingStudent(null);
   };
 
+  // Accessible modal behaviour (focus in, Tab trapped, Escape closes, focus returned)
+  const resolveDialogRef = useDialogA11y(Boolean(resolvingStudent), handleCloseResolve);
+
+  if (redirectTo) {
+    return <Navigate to={redirectTo} replace />;
+  }
+
+  const completionMessage = getCompletionMessage(verifiedStudents.length, absentStudents.length);
+
+  const isRescanning =
+    rescanState.status === "scanning" && rescanState.studentId === resolvingStudent?.id;
+  const isRescanInvalid =
+    rescanState.status === "invalid" && rescanState.studentId === resolvingStudent?.id;
+
   return (
-    <div className={`attendance-page-root ${isDarkMode ? "dark-mode" : ""}`}>
+    <div className={`attendance-page-root teacher-ui ${isDarkMode ? "dark-mode" : ""}`}>
       {/* ================= HEADER ================= */}
       <header className="attendance-top-header">
         <div className="header-left">
@@ -73,7 +109,7 @@ function UnverifiedStudents() {
             <span className="brand-name">ClassSight</span>
           </Link>
           <span className="header-crumb-sep">/</span>
-          <Link to="/attendance" className="header-crumb-current" style={{ textDecoration: "none" }}>
+          <Link to={`/attendance/${sessionId}`} className="header-crumb-current" style={{ textDecoration: "none" }}>
             Attendance
           </Link>
           <span className="header-crumb-sep">/</span>
@@ -88,10 +124,7 @@ function UnverifiedStudents() {
           >
             {isDarkMode ? <Sun size={19} strokeWidth={1.8} /> : <Moon size={19} strokeWidth={1.8} />}
           </button>
-          <div className="profile-pill">
-            <div className="profile-avatar">PJ</div>
-            <span className="profile-name">Prof. Jhonsy</span>
-          </div>
+          <TeacherProfileMenu />
         </div>
       </header>
 
@@ -102,21 +135,21 @@ function UnverifiedStudents() {
             <button
               type="button"
               className="btn-back-dashboard"
-              onClick={() => navigate("/attendance")}
+              onClick={() => navigate(`/attendance/${sessionId}`)}
             >
               <ArrowLeft size={16} strokeWidth={2.2} />
               <span>Back to Attendance Overview</span>
             </button>
             <div className="session-title-block">
               <div className="session-badge-row">
-                <span className="badge-section">{sessionData.section}</span>
-                <span className="badge-course-code">{sessionData.courseCode}</span>
+                <span className="badge-section">{sessionClass.section}</span>
+                <span className="badge-course-code">{sessionClass.code}</span>
                 <span className="count-pill amber">
                   {unverifiedStudents.length} of {totalStudentsCount} Unverified
                 </span>
               </div>
               <h1 className="session-main-title">
-                Complete Unverified Students List &bull; {sessionData.classTitle}
+                Complete Unverified Students List &bull; {sessionClass.title}
               </h1>
             </div>
           </div>
@@ -174,11 +207,11 @@ function UnverifiedStudents() {
           {filteredStudents.length === 0 ? (
             <div className="empty-table-state">
               <CheckCircle2 size={36} strokeWidth={2} color="#16a34a" />
-              <h4>{searchQuery ? "No matching unverified students" : "All Students Verified!"}</h4>
+              <h4>{searchQuery ? "No matching unverified students" : completionMessage.title}</h4>
               <p>
                 {searchQuery
                   ? "Try clearing your search query to see other records."
-                  : "All students in this batch have been verified present."}
+                  : completionMessage.body}
               </p>
             </div>
           ) : (
@@ -231,7 +264,7 @@ function UnverifiedStudents() {
 
           <div className="table-card-footer">
             <span>Showing {filteredStudents.length} of {unverifiedStudents.length} total unverified students</span>
-            <Link to="/attendance" className="footer-read-more-btn">
+            <Link to={`/attendance/${sessionId}`} className="footer-read-more-btn">
               <span>← Back to Attendance Overview</span>
             </Link>
           </div>
@@ -240,8 +273,8 @@ function UnverifiedStudents() {
 
       {/* Resolve Modal */}
       {resolvingStudent && (
-        <div className="cs-modal-backdrop" onClick={() => setResolvingStudent(null)}>
-          <div className="cs-modal-card resolve-modal-card" onClick={(e) => e.stopPropagation()}>
+        <div className="cs-modal-backdrop" onClick={handleCloseResolve}>
+          <div className="cs-modal-card resolve-modal-card" ref={resolveDialogRef} role="dialog" aria-modal="true" tabIndex={-1} aria-label={`Resolve verification for ${resolvingStudent.name}`} onClick={(e) => e.stopPropagation()}>
             <div className="cs-modal-header">
               <div className="resolve-student-profile">
                 <div className="resolve-avatar">{resolvingStudent.name.charAt(0)}</div>
@@ -256,7 +289,7 @@ function UnverifiedStudents() {
               <button
                 type="button"
                 className="cs-modal-close"
-                onClick={() => setResolvingStudent(null)}
+                onClick={handleCloseResolve}
               >
                 <X size={19} />
               </button>
@@ -279,6 +312,7 @@ function UnverifiedStudents() {
                   type="button"
                   className="resolve-option-btn option-nfc"
                   onClick={() => handleExecuteResolve(resolvingStudent.id, "nfc")}
+                  disabled={isRescanning}
                 >
                   <div className="option-icon-box">
                     <Radio size={20} strokeWidth={2} />
@@ -292,14 +326,21 @@ function UnverifiedStudents() {
                 <button
                   type="button"
                   className="resolve-option-btn option-photo"
-                  onClick={() => handleExecuteResolve(resolvingStudent.id, "photo")}
+                  onClick={() => startRescan(resolvingStudent.id)}
+                  disabled={isRescanning}
                 >
                   <div className="option-icon-box">
                     <Camera size={20} strokeWidth={2} />
                   </div>
                   <div className="option-text-box">
-                    <strong>Upload Another Photo</strong>
-                    <span>Re-scan with alternative angle or close-up</span>
+                    <strong>{isRescanning ? "Re-scanning photo…" : "Upload Another Photo"}</strong>
+                    <span>
+                      {isRescanning
+                        ? "Simulated re-scan in progress"
+                        : isRescanInvalid
+                        ? "Choose an image file (max 20 MB)"
+                        : "Re-scan with alternative angle or close-up"}
+                    </span>
                   </div>
                 </button>
 
@@ -307,6 +348,7 @@ function UnverifiedStudents() {
                   type="button"
                   className="resolve-option-btn option-manual"
                   onClick={() => handleExecuteResolve(resolvingStudent.id, "manual")}
+                  disabled={isRescanning}
                 >
                   <div className="option-icon-box">
                     <UserCheck size={20} strokeWidth={2} />
@@ -321,6 +363,7 @@ function UnverifiedStudents() {
                   type="button"
                   className="resolve-option-btn option-absent"
                   onClick={() => handleExecuteResolve(resolvingStudent.id, "absent")}
+                  disabled={isRescanning}
                 >
                   <div className="option-icon-box">
                     <UserX size={20} strokeWidth={2} />
@@ -337,7 +380,7 @@ function UnverifiedStudents() {
               <button
                 type="button"
                 className="btn-modal-cancel"
-                onClick={() => setResolvingStudent(null)}
+                onClick={handleCloseResolve}
               >
                 Cancel
               </button>
@@ -346,8 +389,16 @@ function UnverifiedStudents() {
         </div>
       )}
 
+      <input
+        type="file"
+        ref={fileInputRef}
+        onChange={handleRescanFileChange}
+        accept="image/*"
+        style={{ display: "none" }}
+      />
+
       {toastMessage && (
-        <div className="attendance-floating-toast">
+        <div className="attendance-floating-toast" role="status" aria-live="polite">
           <CheckCircle2 size={18} strokeWidth={2.2} color="#16a34a" />
           <span>{toastMessage}</span>
         </div>

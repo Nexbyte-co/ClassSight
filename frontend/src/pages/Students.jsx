@@ -1,15 +1,11 @@
 // src/pages/Students.jsx
 import { useState, useMemo } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import {
   GraduationCap,
-  Settings,
-  Bell,
   Sun,
   Moon,
-  LogOut,
   Search,
-  ChevronDown,
   ChevronRight,
   ChevronLeft,
   Calendar,
@@ -31,6 +27,11 @@ import "./Dashboard.css";
 import "./Students.css";
 import { useTheme } from "../context/ThemeContext";
 import AppNavigationDrawer from "../components/AppNavigationDrawer";
+import TeacherProfileMenu from "../components/TeacherProfileMenu";
+import TeacherNotificationsMenu from "../components/TeacherNotificationsMenu";
+import { useDialogA11y } from "../hooks/useDialogA11y";
+import { useSettings } from "../context/SettingsContext";
+import { getAtRiskFloor } from "../context/settingsStore";
 import {
   availableClasses,
   initialStudents,
@@ -38,8 +39,11 @@ import {
 } from "../data/mockStudents";
 
 function Students() {
-  const navigate = useNavigate();
   const { isDarkMode, toggleDarkMode } = useTheme();
+
+  // Attendance requirement from Settings (default 75%, at risk from 65%)
+  const { attendanceThreshold: threshold } = useSettings();
+  const atRiskFloor = getAtRiskFloor(threshold);
 
   // Navigation & Menu States
   const [isNavOpen, setIsNavOpen] = useState(false);
@@ -128,8 +132,8 @@ function Students() {
     let criticalCount = 0;
 
     filteredAndSortedStudents.forEach((student) => {
-      if (student.attendancePct >= 75) safeCount++;
-      else if (student.attendancePct >= 65) warningCount++;
+      if (student.attendancePct >= threshold) safeCount++;
+      else if (student.attendancePct >= atRiskFloor) warningCount++;
       else criticalCount++;
     });
 
@@ -150,21 +154,25 @@ function Students() {
       criticalCount,
       avgAttendance,
     };
-  }, [filteredAndSortedStudents]);
+  }, [filteredAndSortedStudents, threshold, atRiskFloor]);
+
+  // Accessible modal behaviour (focus in, Tab trapped, Escape closes, focus returned)
+  const studentDialogRef = useDialogA11y(Boolean(selectedStudent), () => setSelectedStudent(null));
 
   return (
-    <div className={`students-page-root ${isDarkMode ? "dark-mode" : ""}`}>
+    <div className={`students-page-root teacher-ui ${isDarkMode ? "dark-mode" : ""}`}>
       {/* ================= HEADER ================= */}
       <header className="dashboard-header">
         <div className="header-left">
           <button
             type="button"
             className="hamburger-nav-btn"
+            aria-expanded={isNavOpen}
             onClick={() => setIsNavOpen(!isNavOpen)}
             aria-label={isNavOpen ? "Close navigation menu" : "Open navigation menu"}
             title={isNavOpen ? "Close navigation" : "Open navigation"}
           >
-            {isNavOpen ? <X size={22} /> : <Menu size={22} />}
+            <Menu size={22} aria-hidden="true" />
           </button>
 
           <Link to="/dashboard" className="brand-link" title="ClassSight Dashboard">
@@ -193,81 +201,23 @@ function Students() {
             )}
           </button>
 
-          {/* Notifications */}
-          <div style={{ position: "relative" }}>
-            <button
-              className="header-icon-btn"
-              onClick={() => {
-                setIsNotificationsOpen(!isNotificationsOpen);
-                setIsProfileOpen(false);
-              }}
-              aria-label="Notifications"
-            >
-              <Bell size={19} strokeWidth={1.8} />
-              <span className="notification-badge" />
-            </button>
+          {/* Notifications (demo content) */}
+          <TeacherNotificationsMenu
+            items={[{ id: 1, text: "Section 3C2 morning attendance completed.", time: "10 mins ago" }]}
+            open={isNotificationsOpen}
+            onOpenChange={(open) => {
+              setIsNotificationsOpen(open);
+              if (open) setIsProfileOpen(false);
+            }}
+          />
 
-            {isNotificationsOpen && (
-              <div className="notifications-dropdown">
-                <div className="dropdown-header">
-                  <h4>Notifications</h4>
-                  <span className="badge-count">1 New</span>
-                </div>
-                <div className="notification-list">
-                  <div className="notification-item unread">
-                    <div className="notif-dot" />
-                    <div>
-                      <p className="notif-msg">
-                        Section 3C2 morning attendance completed.
-                      </p>
-                      <span className="notif-time">10 mins ago</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* User Profile */}
-          <div style={{ position: "relative" }}>
-            <div
-              className="profile-pill"
-              onClick={() => {
-                setIsProfileOpen(!isProfileOpen);
-                setIsNotificationsOpen(false);
-              }}
-            >
-              <div className="profile-avatar">PJ</div>
-              <span className="profile-name">Prof. Jhonsy</span>
-              <ChevronDown size={14} strokeWidth={2} />
-            </div>
-
-            {isProfileOpen && (
-              <div className="profile-dropdown">
-                <div className="dropdown-user-info">
-                  <strong>Prof. Jhonsy</strong>
-                  <span>Head of CSE Department</span>
-                </div>
-                <div className="dropdown-divider" />
-                <Link
-                  to="/settings"
-                  className="dropdown-item"
-                  onClick={() => setIsProfileOpen(false)}
-                >
-                  <Settings size={16} strokeWidth={1.8} />
-                  <span>Account Settings</span>
-                </Link>
-                <button
-                  type="button"
-                  className="dropdown-item text-danger"
-                  onClick={() => navigate("/")}
-                >
-                  <LogOut size={16} strokeWidth={1.8} />
-                  <span>Sign Out</span>
-                </button>
-              </div>
-            )}
-          </div>
+          <TeacherProfileMenu
+            open={isProfileOpen}
+            onOpenChange={(open) => {
+              setIsProfileOpen(open);
+              if (open) setIsNotificationsOpen(false);
+            }}
+          />
         </div>
       </header>
 
@@ -314,7 +264,7 @@ function Students() {
                 <CheckCircle2 size={22} strokeWidth={2} />
               </div>
               <div className="cohort-info">
-                <span className="cohort-label">Good / Safe (≥ 75%)</span>
+                <span className="cohort-label">Good / Safe (≥ {threshold}%)</span>
                 <strong className="cohort-value text-safe">
                   {cohortMetrics.safeCount}
                 </strong>
@@ -326,7 +276,7 @@ function Students() {
                 <AlertTriangle size={22} strokeWidth={2} />
               </div>
               <div className="cohort-info">
-                <span className="cohort-label">Warning (65% – 74%)</span>
+                <span className="cohort-label">Warning ({atRiskFloor}% – {threshold - 1}%)</span>
                 <strong className="cohort-value text-warning">
                   {cohortMetrics.warningCount}
                 </strong>
@@ -338,7 +288,7 @@ function Students() {
                 <AlertCircle size={22} strokeWidth={2} />
               </div>
               <div className="cohort-info">
-                <span className="cohort-label">Low / Critical (&lt; 65%)</span>
+                <span className="cohort-label">Low / Critical (&lt; {atRiskFloor}%)</span>
                 <strong className="cohort-value text-critical">
                   {cohortMetrics.criticalCount}
                 </strong>
@@ -472,7 +422,7 @@ function Students() {
                   </thead>
                   <tbody>
                     {paginatedStudents.map((student) => {
-                      const status = getAttendanceStatus(student.attendancePct);
+                      const status = getAttendanceStatus(student.attendancePct, threshold);
                       return (
                         <tr
                           key={student.id}
@@ -616,6 +566,8 @@ function Students() {
         >
           <div
             className="cs-modal-card student-details-modal"
+            ref={studentDialogRef}
+            tabIndex={-1}
             onClick={(e) => e.stopPropagation()}
             role="dialog"
             aria-modal="true"
@@ -655,7 +607,7 @@ function Students() {
 
             {/* Attendance Status Banner */}
             {(() => {
-              const status = getAttendanceStatus(selectedStudent.attendancePct);
+              const status = getAttendanceStatus(selectedStudent.attendancePct, threshold);
               return (
                 <div className={`student-status-strip ${status.level}`}>
                   <div className="status-strip-left">
@@ -664,11 +616,11 @@ function Students() {
                       <strong>{status.label}</strong>
                     </div>
                     <span className="status-threshold-hint">
-                      {selectedStudent.attendancePct >= 75
-                        ? "Meets college statutory attendance requirement (≥ 75%)"
-                        : selectedStudent.attendancePct >= 65
+                      {selectedStudent.attendancePct >= threshold
+                        ? `Meets college statutory attendance requirement (≥ ${threshold}%)`
+                        : selectedStudent.attendancePct >= atRiskFloor
                         ? "At risk of detention. Regular attendance recommended."
-                        : "Detention threshold breached (< 65%). Immediate remediation required."}
+                        : `Detention threshold breached (< ${atRiskFloor}%). Immediate remediation required.`}
                     </span>
                   </div>
 
@@ -784,6 +736,15 @@ function Students() {
 
             {/* Modal Footer */}
             <div className="student-modal-footer">
+              <Link
+                to={`/student/preview/${selectedStudent.id}`}
+                className="btn-view-details"
+                style={{ textDecoration: "none", marginRight: "auto" }}
+                title="Preview what this student sees (frontend demo)"
+              >
+                <Eye size={15} />
+                <span>Student View (Demo)</span>
+              </Link>
               <button
                 type="button"
                 className="btn-modal-cancel"

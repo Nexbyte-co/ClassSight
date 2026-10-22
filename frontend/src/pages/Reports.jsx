@@ -2,12 +2,8 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   BarChart3,
-  Settings,
-  Bell,
   Sun,
   Moon,
-  ChevronDown,
-  LogOut,
   Search,
   ChevronRight,
   ChevronLeft,
@@ -15,23 +11,75 @@ import {
   X,
   ScanFace,
   Menu,
-  User,
   AlertCircle,
   FileSpreadsheet,
+  ClipboardList,
+  SearchX,
+  SlidersHorizontal,
+  Layers,
+  TrendingUp,
+  CheckCircle2,
 } from "lucide-react";
 import "./Dashboard.css";
 import "./Reports.css";
 import { useTheme } from "../context/ThemeContext";
+import { useSettings } from "../context/SettingsContext";
 import AppNavigationDrawer from "../components/AppNavigationDrawer";
+import TeacherProfileMenu from "../components/TeacherProfileMenu";
+import TeacherNotificationsMenu from "../components/TeacherNotificationsMenu";
+import { useDialogA11y } from "../hooks/useDialogA11y";
+import { useAttendance } from "../context/AttendanceContext";
+import { useSchedule } from "../context/ScheduleContext";
+import {
+  SESSION_STATUS,
+  buildSessionHistory,
+  filterSessionHistory,
+  filterSessionHistoryByDate,
+  getPresetRange,
+  summarizeSessionHistory,
+} from "../context/attendanceSessions";
+import { formatShortSessionDate, getLocalDateKey } from "../context/scheduleStatus";
 
 function Reports() {
   const navigate = useNavigate();
 
   // Global dark mode from ThemeContext
   const { isDarkMode, toggleDarkMode } = useTheme();
+  // Attendance requirement from Settings (default 75%)
+  const { attendanceThreshold } = useSettings();
   const [isNavOpen, setIsNavOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
+
+  // Attendance Sessions: real records saved by the teacher (newest first)
+  const { sessions } = useAttendance();
+  const { scheduleList } = useSchedule();
+  const [sessionSearchQuery, setSessionSearchQuery] = useState("");
+  const [sessionPreset, setSessionPreset] = useState("all");
+  const [customFrom, setCustomFrom] = useState("");
+  const [customTo, setCustomTo] = useState("");
+  const [areSessionFiltersOpen, setAreSessionFiltersOpen] = useState(false);
+  const sessionHistory = buildSessionHistory(sessions, scheduleList);
+  const sessionRange = getPresetRange(sessionPreset, getLocalDateKey(), { from: customFrom, to: customTo });
+  const visibleSessionHistory = filterSessionHistoryByDate(
+    filterSessionHistory(sessionHistory, sessionSearchQuery),
+    sessionRange
+  );
+  const sessionSummary = summarizeSessionHistory(visibleSessionHistory);
+  const hasSessionFilters = sessionSearchQuery.trim() !== "" || sessionPreset !== "all";
+  const clearSessionFilters = () => {
+    setSessionSearchQuery("");
+    setSessionPreset("all");
+    setCustomFrom("");
+    setCustomTo("");
+  };
+  const SESSION_PRESETS = [
+    ["all", "All time"],
+    ["today", "Today"],
+    ["week", "This week"],
+    ["last7", "Last 7 days"],
+    ["custom", "Custom range"],
+  ];
 
   // Search & Filter state for Recorded Lectures
   const [searchQuery, setSearchQuery] = useState("");
@@ -221,19 +269,23 @@ function Reports() {
     calendarGridDays.push(d);
   }
 
+  // Accessible modal behaviour (focus in, Tab trapped, Escape closes, focus returned)
+  const studentDialogRef = useDialogA11y(Boolean(activeModalLecture), () => setActiveModalLecture(null));
+
   return (
-    <div className={`reports-root ${isDarkMode ? "dark-mode" : ""}`}>
+    <div className={`reports-root teacher-ui ${isDarkMode ? "dark-mode" : ""}`}>
       {/* ================= HEADER ================= */}
       <header className="dashboard-header">
         <div className="header-left">
           <button
             type="button"
             className="hamburger-nav-btn"
+            aria-expanded={isNavOpen}
             onClick={() => setIsNavOpen(!isNavOpen)}
             aria-label={isNavOpen ? "Close navigation menu" : "Open navigation menu"}
             title={isNavOpen ? "Close navigation" : "Open navigation"}
           >
-            {isNavOpen ? <X size={22} /> : <Menu size={22} />}
+            <Menu size={22} aria-hidden="true" />
           </button>
 
           <Link to="/dashboard" className="brand-link">
@@ -254,86 +306,23 @@ function Reports() {
             {isDarkMode ? <Sun size={19} strokeWidth={1.8} /> : <Moon size={19} strokeWidth={1.8} />}
           </button>
 
-          <div style={{ position: "relative" }}>
-            <button
-              className="header-icon-btn"
-              onClick={() => {
-                setIsNotificationsOpen(!isNotificationsOpen);
-                setIsProfileOpen(false);
-              }}
-              aria-label="Notifications"
-            >
-              <Bell size={19} strokeWidth={1.8} />
-              <span className="notification-badge" />
-            </button>
+          {/* Notifications (demo content) */}
+          <TeacherNotificationsMenu
+            items={[{ id: 1, title: "Monthly Report Ready", text: "August attendance consolidated for 3C2." }]}
+            open={isNotificationsOpen}
+            onOpenChange={(open) => {
+              setIsNotificationsOpen(open);
+              if (open) setIsProfileOpen(false);
+            }}
+          />
 
-            {isNotificationsOpen && (
-              <div className="dropdown-menu">
-                <div className="dropdown-user-header">
-                  <div className="dropdown-user-name">Notifications</div>
-                  <div className="dropdown-user-email">Classroom attendance alerts</div>
-                </div>
-                <div className="dropdown-item" style={{ flexDirection: "column", alignItems: "flex-start" }}>
-                  <div style={{ fontWeight: 600, color: "var(--cs-text-primary)", fontSize: 13 }}>
-                    Monthly Report Ready
-                  </div>
-                  <div style={{ fontSize: 12, color: "var(--cs-text-secondary)", marginTop: 2 }}>
-                    August attendance consolidated for 3C2.
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-
-          <div className="user-profile-wrapper">
-            <button
-              className="profile-trigger"
-              onClick={() => {
-                setIsProfileOpen(!isProfileOpen);
-                setIsNotificationsOpen(false);
-              }}
-              aria-label="User menu"
-            >
-              <div className="profile-avatar">PJ</div>
-              <span className="profile-name">Professor Jhonsy</span>
-              <ChevronDown
-                size={16}
-                strokeWidth={2}
-                className={`profile-chevron ${isProfileOpen ? "open" : ""}`}
-              />
-            </button>
-
-            {isProfileOpen && (
-              <div className="dropdown-menu">
-                <div className="dropdown-user-header">
-                  <div className="dropdown-user-name">Professor Jhonsy</div>
-                  <div className="dropdown-user-email">Jhonsy.Bansal@thapar.edu</div>
-                </div>
-
-                <Link to="/settings" className="dropdown-item" onClick={() => setIsProfileOpen(false)}>
-                  <User size={16} strokeWidth={1.8} />
-                  <span>Profile Overview</span>
-                </Link>
-
-                <Link to="/settings" className="dropdown-item" onClick={() => setIsProfileOpen(false)}>
-                  <Settings size={16} strokeWidth={1.8} />
-                  <span>Account Settings</span>
-                </Link>
-
-                <div className="dropdown-divider" />
-
-                <button
-                  type="button"
-                  className="dropdown-item"
-                  onClick={() => navigate("/")}
-                  style={{ color: "#dc2626" }}
-                >
-                  <LogOut size={16} strokeWidth={1.8} />
-                  <span>Sign Out</span>
-                </button>
-              </div>
-            )}
-          </div>
+          <TeacherProfileMenu
+            open={isProfileOpen}
+            onOpenChange={(open) => {
+              setIsProfileOpen(open);
+              if (open) setIsNotificationsOpen(false);
+            }}
+          />
         </div>
       </header>
 
@@ -356,6 +345,214 @@ function Reports() {
             </h1>
             <p className="reports-subtitle">Attendance records &amp; report generation</p>
           </div>
+
+          <div className="reports-divider" />
+
+          {/* ================= ATTENDANCE SESSIONS (saved attendance records) ================= */}
+          <section className="attendance-sessions-section">
+            <div className="section-title-tag">ATTENDANCE SESSIONS</div>
+            <div className="section-desc">Attendance you have recorded, newest first</div>
+
+            {sessionHistory.length > 0 && (
+              <>
+                {/* Summary of the sessions currently shown (recorded data only) */}
+                <div className="report-stats-grid session-summary-grid" aria-live="polite">
+                  {[
+                    [Layers, sessionSummary.sessions, sessionSummary.sessions === 1 ? "Session" : "Sessions"],
+                    [TrendingUp, sessionSummary.avgPct === null ? "—" : `${sessionSummary.avgPct}%`, "Average attendance"],
+                    [CheckCircle2, sessionSummary.saved, "Saved"],
+                    [AlertCircle, sessionSummary.unverified, "Students awaiting verification"],
+                  ].map(([Icon, value, label]) => (
+                    <div className="stat-card" key={label}>
+                      <div className="stat-icon">
+                        <Icon size={18} aria-hidden="true" />
+                      </div>
+                      <div className="stat-value">{value}</div>
+                      <div className="stat-label">{label}</div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Compact toolbar: search, date presets, clear */}
+                <div className="sessions-toolbar" role="search" aria-label="Filter attendance sessions">
+                  <div className="reports-search-bar sessions-search">
+                    <Search size={18} className="reports-search-icon" aria-hidden="true" />
+                    <input
+                      type="text"
+                      placeholder="Search sessions by course / code / section / room..."
+                      value={sessionSearchQuery}
+                      onChange={(e) => setSessionSearchQuery(e.target.value)}
+                      className="reports-search-input"
+                      aria-label="Search attendance sessions"
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    className="btn-view-session sessions-filter-toggle"
+                    aria-expanded={areSessionFiltersOpen}
+                    aria-controls="session-date-filters"
+                    onClick={() => setAreSessionFiltersOpen(!areSessionFiltersOpen)}
+                  >
+                    <SlidersHorizontal size={14} aria-hidden="true" />
+                    <span>Date filters{sessionPreset !== "all" ? " (1)" : ""}</span>
+                  </button>
+                  <div
+                    id="session-date-filters"
+                    className="sessions-presets"
+                    data-collapsed={!areSessionFiltersOpen}
+                    role="group"
+                    aria-label="Date range"
+                  >
+                    {SESSION_PRESETS.map(([value, label]) => (
+                      <button
+                        key={value}
+                        type="button"
+                        className="btn-view-session session-preset"
+                        aria-pressed={sessionPreset === value}
+                        onClick={() => setSessionPreset(value)}
+                      >
+                        {label}
+                      </button>
+                    ))}
+                    {sessionPreset === "custom" && (
+                      <span className="session-custom-range">
+                        <label>
+                          <span className="sr-only">From date</span>
+                          <input
+                            type="date"
+                            className="picker-date-input"
+                            value={customFrom}
+                            onChange={(e) => setCustomFrom(e.target.value)}
+                            aria-label="From date"
+                          />
+                        </label>
+                        <span aria-hidden="true">–</span>
+                        <label>
+                          <span className="sr-only">To date</span>
+                          <input
+                            type="date"
+                            className="picker-date-input"
+                            value={customTo}
+                            onChange={(e) => setCustomTo(e.target.value)}
+                            aria-label="To date"
+                          />
+                        </label>
+                      </span>
+                    )}
+                    {hasSessionFilters && (
+                      <button type="button" className="btn-reset-filters session-clear" onClick={clearSessionFilters}>
+                        Clear filters
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </>
+            )}
+
+            <div className="reports-table-card">
+              <div className="reports-table-header">
+                <div>DATE &amp; COURSE</div>
+                <div>TIME / ROOM</div>
+                <div>ATTENDANCE</div>
+              </div>
+
+              {sessionHistory.length === 0 ? (
+                <div className="sessions-empty-state teacher-empty-state">
+                  <ClipboardList size={28} aria-hidden="true" />
+                  <strong>No attendance recorded yet</strong>
+                  <div style={{ marginBottom: 8 }}>
+                    Sessions appear here once you start taking attendance for a class.
+                  </div>
+                  <Link to="/dashboard" className="btn-view-session" style={{ textDecoration: "none" }}>
+                    <span>Go to Dashboard</span>
+                    <ChevronRight size={14} />
+                  </Link>
+                </div>
+              ) : visibleSessionHistory.length === 0 ? (
+                <div className="sessions-no-results teacher-empty-state">
+                  <SearchX size={28} aria-hidden="true" />
+                  <strong>No sessions match your filters</strong>
+                  <div style={{ marginBottom: 8 }}>
+                    {sessionSearchQuery.trim()
+                      ? `No attendance sessions match “${sessionSearchQuery.trim()}”${sessionPreset !== "all" ? " in this date range" : ""}.`
+                      : "No attendance sessions were recorded in this date range."}
+                  </div>
+                  <button type="button" className="btn-reset-filters" onClick={clearSessionFilters}>
+                    Clear filters
+                  </button>
+                </div>
+              ) : (
+                visibleSessionHistory.map((row) => (
+                  <div key={row.sessionId} className="reports-table-row session-history-row">
+                    {/* Date & Course */}
+                    <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 4 }}>
+                      <span style={{ fontSize: 12, fontWeight: 600, color: "var(--cs-text-secondary)" }}>
+                        {formatShortSessionDate(row.dateKey)}
+                      </span>
+                      <span className="course-title-text">
+                        {row.classInfo?.title || "Removed lecture"}
+                        {row.classInfo?.section && (
+                          <span className="section-chip">{row.classInfo.section}</span>
+                        )}
+                      </span>
+                      {row.classInfo?.code && (
+                        <span style={{ fontSize: 12, color: "var(--cs-text-muted)" }}>{row.classInfo.code}</span>
+                      )}
+                      {row.isRemoved && (
+                        <span style={{ fontSize: 12, fontWeight: 600, color: "var(--cs-text-muted)" }}>
+                          Lecture removed from schedule
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Time / Room & counts */}
+                    <div className="time-room-info">
+                      <span className="time-text">{row.classInfo?.timeRange || "—"}</span>
+                      <span className="room-text">{row.classInfo?.room || "—"}</span>
+                      <span className="room-text">
+                        {row.present} present · {row.absent} absent · {row.unverified} unverified
+                      </span>
+                    </div>
+
+                    {/* Attendance %, status & open */}
+                    <div className="attendance-action-cell">
+                      <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 6 }}>
+                        <span className="attendance-pct-badge">{row.pct}%</span>
+                        {row.status === SESSION_STATUS.saved ? (
+                          <span className="badge-eligible">Saved {row.savedAt}</span>
+                        ) : row.status === SESSION_STATUS.unsaved ? (
+                          <span
+                            className="badge-eligible"
+                            style={{ background: "var(--cs-warning-bg)", color: "var(--cs-warning)" }}
+                          >
+                            Unsaved changes
+                          </span>
+                        ) : (
+                          <span
+                            className="badge-eligible"
+                            style={{ background: "var(--cs-card-hover)", color: "var(--cs-text-secondary)" }}
+                          >
+                            In progress
+                          </span>
+                        )}
+                      </div>
+                      {!row.isRemoved && (
+                        <button
+                          type="button"
+                          className="btn-view-session"
+                          onClick={() => navigate(`/attendance/${row.sessionId}`)}
+                          title="Open this attendance session"
+                        >
+                          <span>Open</span>
+                          <ChevronRight size={14} />
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </section>
 
           <div className="reports-divider" />
 
@@ -661,7 +858,7 @@ function Reports() {
       {/* ================= STUDENT LIST BREAKDOWN MODAL ================= */}
       {activeModalLecture && (
         <div className="cs-modal-backdrop" onClick={() => setActiveModalLecture(null)}>
-          <div className="student-modal-card" onClick={(e) => e.stopPropagation()}>
+          <div className="student-modal-card" ref={studentDialogRef} role="dialog" aria-modal="true" tabIndex={-1} aria-label={`${activeModalLecture.course} student attendance`} onClick={(e) => e.stopPropagation()}>
             <div className="cs-modal-header">
               <div>
                 <h3>
@@ -670,7 +867,7 @@ function Reports() {
                 <p>Enrolled Student Attendance Breakdown</p>
                 <div className="criteria-pill">
                   <AlertCircle size={14} />
-                  <span>Criteria: Students below 75% attendance are Detained</span>
+                  <span>Criteria: Students below {attendanceThreshold}% attendance are Detained</span>
                 </div>
               </div>
               <button
@@ -716,7 +913,7 @@ function Reports() {
                     )
                     .map((student) => {
                       const pct = Math.round((student.attended / student.total) * 100);
-                      const isDetained = pct < 75;
+                      const isDetained = pct < attendanceThreshold;
                       return (
                         <tr key={student.roll}>
                           <td style={{ fontWeight: 600 }}>{student.roll}</td>

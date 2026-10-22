@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import {
   ScanFace,
   Sun,
@@ -24,33 +24,46 @@ import {
   Menu,
 } from "lucide-react";
 import { useTheme } from "../context/ThemeContext";
-import { useAttendance } from "../context/AttendanceContext";
+import { useAttendanceSession } from "../context/AttendanceContext";
+import { useSessionRoute } from "../context/ScheduleContext";
+import { formatSessionDate } from "../context/scheduleStatus";
+import { getCompletionMessage } from "../context/attendanceSessions";
+import { usePhotoRescan } from "../hooks/usePhotoRescan";
 import AppNavigationDrawer from "../components/AppNavigationDrawer";
+import TeacherProfileMenu from "../components/TeacherProfileMenu";
+import { useDialogA11y } from "../hooks/useDialogA11y";
 import "./Attendance.css";
 
 function Attendance() {
   const navigate = useNavigate();
-  const location = useLocation();
   const { isDarkMode, toggleDarkMode } = useTheme();
+
+  // Session comes from the URL (/attendance/:sessionId)
+  const { sessionId, sessionClass: scheduledClass, sessionDateKey, redirectTo } = useSessionRoute();
   const {
     sessionData,
     verifiedStudents,
     unverifiedStudents,
+    absentStudents,
     resolveStudent,
+    returnAbsentStudent,
     saveAttendanceRecord,
     isSaved,
     lastSavedTimestamp,
     totalStudentsCount,
     resetAttendanceData,
-  } = useAttendance();
+    classSnapshot,
+  } = useAttendanceSession(sessionId, scheduledClass);
 
-  // If navigated from Dashboard with specific class data, overlay that info
-  const incomingClass = location.state?.classData;
-  const currentClassTitle = incomingClass?.title || sessionData.classTitle;
-  const currentCourseCode = incomingClass?.code || sessionData.courseCode;
-  const currentSection = incomingClass?.section || sessionData.section;
-  const currentRoom = incomingClass?.room || sessionData.room;
-  const currentTimeRange = incomingClass?.timeRange || sessionData.timeRange;
+  // Recorded sessions show the class details from when attendance was taken
+  const sessionClass = classSnapshot || scheduledClass;
+
+  const currentClassTitle = sessionClass.title;
+  const currentCourseCode = sessionClass.code;
+  const currentSection = sessionClass.section;
+  const currentRoom = sessionClass.room;
+  const currentTimeRange = sessionClass.timeRange;
+  const sessionDateString = formatSessionDate(sessionDateKey);
 
   // Navigation drawer state
   const [isNavOpen, setIsNavOpen] = useState(false);
@@ -72,23 +85,32 @@ function Attendance() {
 
   const presentCount = verifiedStudents.length;
   const unverifiedCount = unverifiedStudents.length;
+  const absentCount = absentStudents.length;
   const presentPct = totalStudentsCount > 0 ? Math.round((presentCount / totalStudentsCount) * 100) : 0;
   const unverifiedPct = totalStudentsCount > 0 ? Math.round((unverifiedCount / totalStudentsCount) * 100) : 0;
+  const absentPct = totalStudentsCount > 0 ? Math.round((absentCount / totalStudentsCount) * 100) : 0;
 
   // Donut chart SVG geometry
   const radius = 64;
   const circumference = 2 * Math.PI * radius;
   const presentStroke = (presentCount / totalStudentsCount) * circumference;
   const unverifiedStroke = (unverifiedCount / totalStudentsCount) * circumference;
+  const absentStroke = (absentCount / totalStudentsCount) * circumference;
 
   const handleOpenResolve = (student) => {
     setResolvingStudent(student);
   };
 
-  const handleExecuteResolve = (studentId, method) => {
+  // "Upload Another Photo": verify only after a photo is chosen and the simulated re-scan finishes
+  const { fileInputRef, rescanState, startRescan, cancelRescan, handleRescanFileChange } =
+    usePhotoRescan((studentId) => handleExecuteResolve(studentId, "photo"));
+
+  function handleExecuteResolve(studentId, method) {
     const student = unverifiedStudents.find((s) => s.id === studentId);
-    resolveStudent(studentId, method);
+    cancelRescan();
     setResolvingStudent(null);
+    if (!student) return;
+    resolveStudent(studentId, method);
 
     const actionMessage =
       method === "absent"
@@ -101,6 +123,20 @@ function Attendance() {
     setTimeout(() => {
       setResolveSuccessToast(null);
     }, 3500);
+  }
+
+  // Undo a confirmed absence: the student returns to the unverified queue
+  const handleUndoAbsent = (student) => {
+    returnAbsentStudent(student.id);
+    setResolveSuccessToast(`Moved ${student.name} back to Unverified`);
+    setTimeout(() => {
+      setResolveSuccessToast(null);
+    }, 3500);
+  };
+
+  const handleCloseResolve = () => {
+    cancelRescan();
+    setResolvingStudent(null);
   };
 
   const handleConfirmSave = () => {
@@ -112,19 +148,35 @@ function Attendance() {
     }, 4000);
   };
 
+  // Accessible modal behaviour (focus in, Tab trapped, Escape closes, focus returned)
+  const resolveDialogRef = useDialogA11y(Boolean(resolvingStudent), handleCloseResolve);
+  const saveDialogRef = useDialogA11y(isSaveModalOpen, () => setIsSaveModalOpen(false));
+
+  if (redirectTo) {
+    return <Navigate to={redirectTo} replace />;
+  }
+
+  const completionMessage = getCompletionMessage(presentCount, absentCount);
+
+  const isRescanning =
+    rescanState.status === "scanning" && rescanState.studentId === resolvingStudent?.id;
+  const isRescanInvalid =
+    rescanState.status === "invalid" && rescanState.studentId === resolvingStudent?.id;
+
   return (
-    <div className={`attendance-page-root ${isDarkMode ? "dark-mode" : ""}`}>
+    <div className={`attendance-page-root teacher-ui ${isDarkMode ? "dark-mode" : ""}`}>
       {/* ================= GLOBAL TOP HEADER ================= */}
       <header className="attendance-top-header">
         <div className="header-left">
           <button
             type="button"
             className="hamburger-nav-btn"
+            aria-expanded={isNavOpen}
             onClick={() => setIsNavOpen(!isNavOpen)}
             aria-label={isNavOpen ? "Close navigation menu" : "Open navigation menu"}
             title={isNavOpen ? "Close navigation" : "Open navigation"}
           >
-            {isNavOpen ? <X size={22} /> : <Menu size={22} />}
+            <Menu size={22} aria-hidden="true" />
           </button>
 
           {/* Instruction 1: Clickable ClassSight Logo */}
@@ -151,10 +203,7 @@ function Attendance() {
           </button>
 
           {/* Teacher Profile */}
-          <div className="profile-pill">
-            <div className="profile-avatar">PJ</div>
-            <span className="profile-name">Prof. Jhonsy</span>
-          </div>
+          <TeacherProfileMenu />
         </div>
       </header>
 
@@ -202,7 +251,7 @@ function Attendance() {
           <div className="session-context-meta">
             <div className="meta-pill">
               <Calendar size={15} strokeWidth={2} />
-              <span>{sessionData.dateString}</span>
+              <span>{sessionDateString}</span>
             </div>
             <div className="meta-pill">
               <Clock size={15} strokeWidth={2} />
@@ -245,7 +294,7 @@ function Attendance() {
 
                 {unverifiedStudents.length > 8 && (
                   <Link
-                    to="/attendance/unverified"
+                    to={`/attendance/${sessionId}/unverified`}
                     className="link-read-more"
                     title="View all unverified students"
                   >
@@ -258,8 +307,8 @@ function Attendance() {
               {unverifiedStudents.length === 0 ? (
                 <div className="empty-table-state">
                   <CheckCircle2 size={36} strokeWidth={2} color="#16a34a" />
-                  <h4>All Students Verified!</h4>
-                  <p>There are no remaining unverified students for this lecture session.</p>
+                  <h4>{completionMessage.title}</h4>
+                  <p>{completionMessage.body}</p>
                 </div>
               ) : (
                 <div className="table-responsive-wrapper">
@@ -316,13 +365,95 @@ function Attendance() {
               {unverifiedStudents.length > 8 && (
                 <div className="table-card-footer">
                   <span>Showing first 8 of {unverifiedStudents.length} unverified students</span>
-                  <Link to="/attendance/unverified" className="footer-read-more-btn">
+                  <Link to={`/attendance/${sessionId}/unverified`} className="footer-read-more-btn">
                     <span>Read More</span>
                     <ChevronRight size={14} />
                   </Link>
                 </div>
               )}
             </section>
+
+            {/* CONFIRMED ABSENT TABLE (shown only when at least one student is confirmed absent) */}
+            {absentCount > 0 && (
+              <section className="attendance-card-section">
+                <div className="table-card-header">
+                  <div className="table-card-title-group">
+                    <div
+                      className="icon-badge"
+                      style={{ background: "var(--cs-absent-bg, var(--att-hover-row))", color: "var(--cs-absent, var(--cs-text-secondary))" }}
+                    >
+                      <UserX size={18} strokeWidth={2.2} />
+                    </div>
+                    <div>
+                      <div className="title-with-pill">
+                        <h3>Confirmed Absent</h3>
+                        <span
+                          className="count-pill"
+                          style={{ background: "var(--cs-absent-bg, var(--att-hover-row))", color: "var(--cs-absent, var(--cs-text-secondary))" }}
+                        >
+                          {absentCount} Absent
+                        </span>
+                      </div>
+                      <p className="table-card-subtitle">
+                        Students confirmed not in the classroom. Use Undo to return a student to the unverified queue.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="table-responsive-wrapper">
+                  <table className="cs-table attendance-table">
+                    <thead>
+                      <tr>
+                        <th style={{ width: "30%" }}>Student Name</th>
+                        <th style={{ width: "20%" }}>Roll No.</th>
+                        <th style={{ width: "30%" }}>Status</th>
+                        <th style={{ width: "20%", textAlign: "right" }}>Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {absentStudents.map((student) => (
+                        <tr key={student.id}>
+                          <td>
+                            <div className="student-name-cell">
+                              <span
+                                className="student-avatar-letter"
+                                style={{ background: "var(--cs-absent-bg, var(--att-hover-row))", color: "var(--cs-absent, var(--cs-text-secondary))" }}
+                              >
+                                {student.name.charAt(0)}
+                              </span>
+                              <span className="name-bold">{student.name}</span>
+                            </div>
+                          </td>
+                          <td>
+                            <span className="roll-badge">{student.roll}</span>
+                          </td>
+                          <td>
+                            <span
+                              className="status-badge-unverified"
+                              style={{ background: "var(--cs-absent-bg, var(--att-hover-row))", color: "var(--cs-absent, var(--cs-text-secondary))" }}
+                            >
+                              <UserX size={13} strokeWidth={2.2} />
+                              <span>{student.status}</span>
+                            </span>
+                          </td>
+                          <td style={{ textAlign: "right" }}>
+                            <button
+                              type="button"
+                              className="btn-resolve-action"
+                              onClick={() => handleUndoAbsent(student)}
+                              title={`Return ${student.name} to the unverified queue`}
+                            >
+                              Undo
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </section>
+            )}
 
             {/* 2. VERIFIED STUDENTS TABLE (Instruction 9) */}
             <section className="attendance-card-section verified-section">
@@ -344,7 +475,7 @@ function Attendance() {
 
                 {verifiedStudents.length > 8 && (
                   <Link
-                    to="/attendance/verified"
+                    to={`/attendance/${sessionId}/verified`}
                     className="link-read-more"
                     title="View full verified roster"
                   >
@@ -415,7 +546,7 @@ function Attendance() {
               {verifiedStudents.length > 8 && (
                 <div className="table-card-footer">
                   <span>Showing first 8 of {verifiedStudents.length} verified students</span>
-                  <Link to="/attendance/verified" className="footer-read-more-btn">
+                  <Link to={`/attendance/${sessionId}/verified`} className="footer-read-more-btn">
                     <span>Read More</span>
                     <ChevronRight size={14} />
                   </Link>
@@ -489,6 +620,27 @@ function Attendance() {
                     }
                   />
 
+                  {/* Confirmed Absent Segment (neutral grey: --cs-absent-mark) */}
+                  <circle
+                    cx="80"
+                    cy="80"
+                    r={radius}
+                    className={`donut-segment segment-absent ${
+                      hoveredSlice === "absent" ? "slice-hovered" : ""
+                    }`}
+                    style={{ stroke: "var(--cs-absent-mark, var(--cs-text-muted))" }}
+                    strokeWidth="18"
+                    fill="none"
+                    strokeDasharray={`${absentStroke} ${circumference}`}
+                    strokeDashoffset={-(presentStroke + unverifiedStroke)}
+                    transform="rotate(-90 80 80)"
+                    onMouseEnter={() => setHoveredSlice("absent")}
+                    onMouseLeave={() => setHoveredSlice(null)}
+                    onClick={() =>
+                      setHoveredSlice(hoveredSlice === "absent" ? null : "absent")
+                    }
+                  />
+
                   {/* Center Content */}
                   <g className="donut-center-group">
                     <text x="80" y="74" textAnchor="middle" className="donut-center-num">
@@ -496,6 +648,8 @@ function Attendance() {
                         ? `${presentPct}%`
                         : hoveredSlice === "unverified"
                         ? `${unverifiedPct}%`
+                        : hoveredSlice === "absent"
+                        ? `${absentPct}%`
                         : `${presentPct}%`}
                     </text>
                     <text x="80" y="93" textAnchor="middle" className="donut-center-label">
@@ -503,6 +657,8 @@ function Attendance() {
                         ? "Present"
                         : hoveredSlice === "unverified"
                         ? "Unverified"
+                        : hoveredSlice === "absent"
+                        ? "Absent"
                         : "Turnout"}
                     </text>
                   </g>
@@ -515,6 +671,11 @@ function Attendance() {
                       <div>
                         <strong>{presentCount} Students</strong>
                         <span>({presentPct}% verified present)</span>
+                      </div>
+                    ) : hoveredSlice === "absent" ? (
+                      <div>
+                        <strong>{absentCount} Students</strong>
+                        <span>({absentPct}% confirmed absent)</span>
                       </div>
                     ) : (
                       <div>
@@ -561,6 +722,27 @@ function Attendance() {
                   <div className="legend-stat">
                     <strong>{unverifiedCount}</strong>
                     <span className="legend-pct">({unverifiedPct}%)</span>
+                  </div>
+                </div>
+
+                <div
+                  className={`legend-row ${hoveredSlice === "absent" ? "active-legend" : ""}`}
+                  onMouseEnter={() => setHoveredSlice("absent")}
+                  onMouseLeave={() => setHoveredSlice(null)}
+                  onClick={() =>
+                    setHoveredSlice(hoveredSlice === "absent" ? null : "absent")
+                  }
+                >
+                  <div className="legend-label-group">
+                    <span
+                      className="legend-dot"
+                      style={{ background: "var(--cs-absent-mark, var(--cs-text-muted))" }}
+                    />
+                    <span className="legend-name">Confirmed Absent</span>
+                  </div>
+                  <div className="legend-stat">
+                    <strong>{absentCount}</strong>
+                    <span className="legend-pct">({absentPct}%)</span>
                   </div>
                 </div>
               </div>
@@ -616,10 +798,37 @@ function Attendance() {
         {/* ================= BOTTOM ACTION BAR: SAVE RECORD (Instruction 13) ================= */}
         <div className="attendance-bottom-save-strip">
           <div className="save-strip-info">
-            <h4>Ready to finalise this lecture attendance?</h4>
+            {/* State comes from the real session data: unverified count + saved/unsaved */}
+            <h4 className="save-strip-heading">
+              {unverifiedCount > 0
+                ? "Review in progress"
+                : isSaved
+                ? "Attendance complete and saved"
+                : "Review complete — ready to save"}
+            </h4>
+            <div className="save-strip-progress" style={{ display: "flex", alignItems: "center", gap: 10, margin: "6px 0 8px" }}>
+              <div
+                className="teacher-progress"
+                role="progressbar"
+                aria-label="Students reviewed"
+                aria-valuemin={0}
+                aria-valuemax={totalStudentsCount}
+                aria-valuenow={presentCount + absentCount}
+                style={{ flex: "0 1 240px" }}
+              >
+                <span
+                  style={{
+                    width: `${totalStudentsCount > 0 ? Math.round(((presentCount + absentCount) / totalStudentsCount) * 100) : 0}%`,
+                  }}
+                />
+              </div>
+              <span style={{ fontSize: 13, fontWeight: 600 }}>
+                {presentCount + absentCount} of {totalStudentsCount} reviewed
+              </span>
+            </div>
             <p>
               Current session: <strong>{presentCount} Present</strong> &bull;{" "}
-              <strong>{unverifiedCount} Unverified / Absent</strong> out of{" "}
+              <strong>{unverifiedCount + absentCount} Unverified / Absent</strong> out of{" "}
               <strong>{totalStudentsCount} students</strong>.
             </p>
           </div>
@@ -637,8 +846,8 @@ function Attendance() {
 
       {/* ================= MODAL: RESOLVE UNVERIFIED STUDENT (Instructions 10 & 11) ================= */}
       {resolvingStudent && (
-        <div className="cs-modal-backdrop" onClick={() => setResolvingStudent(null)}>
-          <div className="cs-modal-card resolve-modal-card" onClick={(e) => e.stopPropagation()}>
+        <div className="cs-modal-backdrop" onClick={handleCloseResolve}>
+          <div className="cs-modal-card resolve-modal-card" ref={resolveDialogRef} role="dialog" aria-modal="true" tabIndex={-1} aria-label={`Resolve verification for ${resolvingStudent.name}`} onClick={(e) => e.stopPropagation()}>
             <div className="cs-modal-header">
               <div className="resolve-student-profile">
                 <div className="resolve-avatar">
@@ -656,7 +865,7 @@ function Attendance() {
               <button
                 type="button"
                 className="cs-modal-close"
-                onClick={() => setResolvingStudent(null)}
+                onClick={handleCloseResolve}
                 aria-label="Close modal"
               >
                 <X size={19} />
@@ -681,6 +890,7 @@ function Attendance() {
                   type="button"
                   className="resolve-option-btn option-nfc"
                   onClick={() => handleExecuteResolve(resolvingStudent.id, "nfc")}
+                  disabled={isRescanning}
                 >
                   <div className="option-icon-box">
                     <Radio size={20} strokeWidth={2} />
@@ -695,14 +905,21 @@ function Attendance() {
                 <button
                   type="button"
                   className="resolve-option-btn option-photo"
-                  onClick={() => handleExecuteResolve(resolvingStudent.id, "photo")}
+                  onClick={() => startRescan(resolvingStudent.id)}
+                  disabled={isRescanning}
                 >
                   <div className="option-icon-box">
                     <Camera size={20} strokeWidth={2} />
                   </div>
                   <div className="option-text-box">
-                    <strong>Upload Another Photo</strong>
-                    <span>Re-scan with alternative angle or close-up</span>
+                    <strong>{isRescanning ? "Re-scanning photo…" : "Upload Another Photo"}</strong>
+                    <span>
+                      {isRescanning
+                        ? "Simulated re-scan in progress"
+                        : isRescanInvalid
+                        ? "Choose an image file (max 20 MB)"
+                        : "Re-scan with alternative angle or close-up"}
+                    </span>
                   </div>
                 </button>
 
@@ -711,6 +928,7 @@ function Attendance() {
                   type="button"
                   className="resolve-option-btn option-manual"
                   onClick={() => handleExecuteResolve(resolvingStudent.id, "manual")}
+                  disabled={isRescanning}
                 >
                   <div className="option-icon-box">
                     <UserCheck size={20} strokeWidth={2} />
@@ -726,6 +944,7 @@ function Attendance() {
                   type="button"
                   className="resolve-option-btn option-absent"
                   onClick={() => handleExecuteResolve(resolvingStudent.id, "absent")}
+                  disabled={isRescanning}
                 >
                   <div className="option-icon-box">
                     <UserX size={20} strokeWidth={2} />
@@ -742,7 +961,7 @@ function Attendance() {
               <button
                 type="button"
                 className="btn-modal-cancel"
-                onClick={() => setResolvingStudent(null)}
+                onClick={handleCloseResolve}
               >
                 Cancel
               </button>
@@ -754,7 +973,7 @@ function Attendance() {
       {/* ================= MODAL: SAVE RECORD CONFIRMATION (Instruction 13) ================= */}
       {isSaveModalOpen && (
         <div className="cs-modal-backdrop" onClick={() => setIsSaveModalOpen(false)}>
-          <div className="cs-modal-card cs-modal-save-confirm" onClick={(e) => e.stopPropagation()}>
+          <div className="cs-modal-card cs-modal-save-confirm" ref={saveDialogRef} role="dialog" aria-modal="true" tabIndex={-1} aria-label="Save attendance record" onClick={(e) => e.stopPropagation()}>
             <div className="cs-modal-header">
               <div className="confirm-icon-success">
                 <ShieldCheck size={24} strokeWidth={2.2} />
@@ -777,19 +996,21 @@ function Attendance() {
               <div className="summary-stat-row">
                 <span>Date &amp; Time:</span>
                 <strong>
-                  {sessionData.dateString} ({currentTimeRange})
+                  {sessionDateString} ({currentTimeRange})
                 </strong>
               </div>
               <div className="summary-divider" />
               <div className="summary-pills-row">
                 <span className="summary-chip green">{presentCount} Present</span>
-                <span className="summary-chip amber">{unverifiedCount} Unverified / Absent</span>
+                <span className="summary-chip amber">{unverifiedCount + absentCount} Unverified / Absent</span>
                 <span className="summary-chip gray">{totalStudentsCount} Total</span>
               </div>
             </div>
 
             <p className="save-confirm-note">
-              Saving will preserve this snapshot for college compliance and analytics reports.
+              {unverifiedCount > 0
+                ? `${unverifiedCount} student${unverifiedCount === 1 ? " is" : "s are"} still unverified and will be saved as unverified. You can resolve them later and save again.`
+                : "Saving will preserve this snapshot for college compliance and analytics reports."}
             </p>
 
             <div className="cs-modal-actions">
@@ -813,16 +1034,24 @@ function Attendance() {
         </div>
       )}
 
+      <input
+        type="file"
+        ref={fileInputRef}
+        onChange={handleRescanFileChange}
+        accept="image/*"
+        style={{ display: "none" }}
+      />
+
       {/* Floating Success Toasts */}
       {resolveSuccessToast && (
-        <div className="attendance-floating-toast">
+        <div className="attendance-floating-toast" role="status" aria-live="polite">
           <CheckCircle2 size={18} strokeWidth={2.2} color="#16a34a" />
           <span>{resolveSuccessToast}</span>
         </div>
       )}
 
       {saveSuccessToast && (
-        <div className="attendance-floating-toast toast-success-save">
+        <div className="attendance-floating-toast toast-success-save" role="status" aria-live="polite">
           <ShieldCheck size={20} strokeWidth={2.2} />
           <div>
             <h5>Attendance Record Saved Successfully!</h5>

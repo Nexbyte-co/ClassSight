@@ -1,4 +1,5 @@
 // src/data/mockStudents.js
+import { DEFAULT_ATTENDANCE_THRESHOLD, getAtRiskFloor } from "../context/settingsStore";
 
 export const availableClasses = [
   { id: "all", name: "All Classes" },
@@ -498,15 +499,16 @@ export const initialStudents = [
   },
 ];
 
-export function getAttendanceStatus(pct) {
-  if (pct >= 75) {
+// Status bands follow the configured attendance threshold (default 75%, at risk from 65%)
+export function getAttendanceStatus(pct, threshold = DEFAULT_ATTENDANCE_THRESHOLD) {
+  if (pct >= threshold) {
     return {
       label: "Good / Safe",
       level: "safe",
       badgeClass: "badge-status-safe",
     };
   }
-  if (pct >= 65) {
+  if (pct >= getAtRiskFloor(threshold)) {
     return {
       label: "Warning",
       level: "warning",

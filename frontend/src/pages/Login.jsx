@@ -1,21 +1,33 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { Eye, EyeOff, LockKeyhole, Mail, Moon, Sun } from "lucide-react";
+import { Mail, Moon, Sun } from "lucide-react";
 import { useTheme } from "../context/ThemeContext";
+import { useDemoSession } from "../context/DemoSessionContext";
+import { DEMO_ACCOUNTS, UNKNOWN_ACCOUNT_ERROR } from "../context/demoSession";
 import "./Login.css";
 
+// Demo sign-in: routes the two approved demo accounts to their experience.
+// There is no password and no server check — this is not real authentication.
 function Login() {
   const navigate = useNavigate();
   const { isDarkMode, toggleDarkMode } = useTheme();
+  const { session, signIn } = useDemoSession();
 
-  const [showPassword, setShowPassword] = useState(false);
-  const [rememberMe, setRememberMe] = useState(false);
+  const [email, setEmail] = useState("");
+  const [error, setError] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
-    // Temporary navigation until backend authentication is connected
-    navigate("/dashboard");
+    if (!email.trim()) {
+      setError("Enter your college email address.");
+      return;
+    }
+    const account = signIn(email);
+    if (!account) {
+      setError(UNKNOWN_ACCOUNT_ERROR);
+      return;
+    }
+    navigate(account.home);
   };
 
   return (
@@ -36,7 +48,7 @@ function Login() {
       <div className="login-card">
 
         <div className="login-header">
-          <Link to="/dashboard" className="login-brand">
+          <Link to="/" className="login-brand">
             ClassSight
           </Link>
 
@@ -47,72 +59,41 @@ function Login() {
           </p>
         </div>
 
-        <form className="login-form" onSubmit={handleSubmit}>
+        <form className="login-form" onSubmit={handleSubmit} noValidate>
 
           <div className="form-group">
-            <label htmlFor="email">College ID / Email</label>
+            <label htmlFor="email">College Email</label>
 
-            <div className="input-wrapper">
+            <div
+              className="input-wrapper"
+              style={error ? { borderColor: "#dc2626" } : undefined}
+            >
               <Mail size={19} strokeWidth={1.8} />
 
               <input
                 id="email"
                 type="text"
-                placeholder="Enter your college ID or email"
-                required
+                inputMode="email"
+                autoComplete="email"
+                placeholder="Enter your college email"
+                value={email}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  setError("");
+                }}
+                aria-invalid={Boolean(error)}
+                aria-describedby="login-error login-demo-note"
               />
             </div>
-          </div>
 
-          <div className="form-group">
-            <label htmlFor="password">Password</label>
-
-            <div className="input-wrapper">
-              <LockKeyhole size={19} strokeWidth={1.8} />
-
-              <input
-                id="password"
-                type={showPassword ? "text" : "password"}
-                placeholder="Enter your password"
-                required
-              />
-
-              <button
-                type="button"
-                className="password-toggle"
-                onClick={() => setShowPassword(!showPassword)}
-                aria-label={
-                  showPassword ? "Hide password" : "Show password"
-                }
-              >
-                {showPassword ? (
-                  <EyeOff size={19} />
-                ) : (
-                  <Eye size={19} />
-                )}
-              </button>
-            </div>
-          </div>
-
-          <div className="login-options">
-
-            <label className="remember-me">
-              <input
-                type="checkbox"
-                checked={rememberMe}
-                onChange={(e) => setRememberMe(e.target.checked)}
-              />
-
-              <span>Remember me</span>
-            </label>
-
-            <button
-              type="button"
-              className="forgot-password"
+            <div
+              id="login-error"
+              className="login-error"
+              role="alert"
+              style={{ minHeight: 18, marginTop: 6, fontSize: 13, fontWeight: 600, color: "#dc2626" }}
             >
-              Forgot password?
-            </button>
-
+              {error}
+            </div>
           </div>
 
           <button type="submit" className="login-submit">
@@ -120,6 +101,37 @@ function Login() {
           </button>
 
         </form>
+
+        <div
+          id="login-demo-note"
+          className="login-demo-note"
+          style={{ marginTop: 18, fontSize: 13, lineHeight: 1.5, color: isDarkMode ? "#bdbdbd" : "#555555" }}
+        >
+          <strong>Demo sign-in.</strong> No password is needed and nothing is checked by a server —
+          this only switches between the two demo experiences.
+          <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 10 }}>
+            {DEMO_ACCOUNTS.map((account) => (
+              <button
+                key={account.email}
+                type="button"
+                className="forgot-password login-demo-fill"
+                onClick={() => {
+                  setEmail(account.email);
+                  setError("");
+                }}
+                title={account.email}
+              >
+                Use {account.role} demo
+              </button>
+            ))}
+          </div>
+          {session && (
+            <p className="login-current-session" style={{ marginTop: 10 }}>
+              Currently signed in as <strong>{session.email}</strong> ({session.role}). Signing in
+              again switches the demo account.
+            </p>
+          )}
+        </div>
 
         <div className="login-footer">
           <span>ClassSight</span>

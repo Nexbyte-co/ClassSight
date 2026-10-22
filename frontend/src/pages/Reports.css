@@ -775,6 +775,135 @@
   color: var(--cs-text-secondary);
 }
 
+/* ==========================================================================
+   Report Details - Metrics Grid & Lecture Breakdown
+   ========================================================================== */
+.report-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.stat-card {
+  background: var(--cs-card-bg);
+  border: 1px solid var(--cs-border);
+  border-radius: 14px;
+  padding: 22px 20px;
+  box-shadow: var(--cs-shadow-sm);
+}
+
+.stat-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: var(--cs-crimson-light);
+  color: var(--cs-crimson);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 14px;
+}
+
+.stat-value {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--cs-text-primary);
+  letter-spacing: -0.5px;
+}
+
+.stat-label {
+  font-size: 13px;
+  color: var(--cs-text-secondary);
+  margin-top: 4px;
+}
+
+.lecture-breakdown-card {
+  background: var(--cs-card-bg);
+  border: 1px solid var(--cs-border);
+  border-radius: 14px;
+  padding: 24px;
+  box-shadow: var(--cs-shadow-sm);
+}
+
+.lecture-breakdown-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.lecture-breakdown-header h3 {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--cs-text-primary);
+  margin: 0;
+}
+
+.lecture-breakdown-table {
+  border: 1px solid var(--cs-border);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.lecture-row {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr 1.4fr 0.8fr;
+  align-items: center;
+  padding: 12px 18px;
+  font-size: 13px;
+  color: var(--cs-text-primary);
+  border-bottom: 1px solid var(--cs-border-subtle);
+}
+
+.lecture-row:last-child {
+  border-bottom: none;
+}
+
+.lecture-row-head {
+  background: var(--cs-card-hover);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--cs-text-muted);
+}
+
+.lecture-row:not(.lecture-row-head):hover {
+  background: var(--cs-card-hover);
+}
+
+.lecture-pct-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+}
+
+.lecture-pct-bar-track {
+  width: 70px;
+  height: 6px;
+  border-radius: 4px;
+  background: var(--cs-border-subtle);
+  overflow: hidden;
+}
+
+.lecture-pct-bar-fill {
+  display: block;
+  height: 100%;
+  background: var(--cs-crimson);
+  border-radius: 4px;
+}
+
+.lecture-row-empty {
+  padding: 24px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--cs-text-muted);
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .reports-main {
@@ -794,6 +923,19 @@
   .reports-controls-bar {
     flex-direction: column;
     align-items: stretch;
+  }
+
+  .report-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .lecture-row {
+    grid-template-columns: 1fr 1fr;
+    row-gap: 6px;
+  }
+
+  .lecture-row-head {
+    display: none;
   }
 }
 
