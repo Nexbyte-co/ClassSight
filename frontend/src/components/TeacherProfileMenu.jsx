@@ -5,6 +5,7 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ChevronDown, User, Settings, LogOut } from "lucide-react";
+import { logout } from "../api/auth";
 import { useDemoSession } from "../context/DemoSessionContext";
 
 const TEACHER = {
@@ -72,6 +73,7 @@ function TeacherProfileMenu({ open: controlledOpen, onOpenChange, variant }) {
 
   const handleSignOut = () => {
     setOpen(false);
+    logout(); // also clear any API token from the backend login
     signOut();
     navigate("/", { replace: true });
   };

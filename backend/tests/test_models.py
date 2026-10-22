@@ -9,6 +9,7 @@ def test_model_registry_contains_all_readme_entities() -> None:
         "users",
         "classrooms",
         "students",
+        "student_photos",
         "attendance_sessions",
         "attendance_records",
     }

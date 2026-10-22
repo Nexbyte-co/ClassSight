@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import "../pages/Dashboard.css";
 import { useTheme } from "../context/ThemeContext";
+import { logout } from "../api/auth";
 import { useDemoSession } from "../context/DemoSessionContext";
 import AppNavigationDrawer from "./AppNavigationDrawer";
 import ReportsIcon from "./ReportsIcon";
@@ -77,6 +78,7 @@ function TeacherShell({
 
   // Ends the mock demo sign-in and returns to the public landing page
   const handleSignOut = () => {
+    logout(); // also clear any API token from the backend login
     signOut();
     navigate("/", { replace: true });
   };

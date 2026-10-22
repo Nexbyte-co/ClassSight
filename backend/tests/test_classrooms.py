@@ -77,3 +77,26 @@ def test_teacher_can_add_and_list_students(client, teacher_user, classroom):
     assert listing.status_code == 200
     assert len(listing.json()) == 1
     assert listing.json()[0]["roll_number"] == "R010"
+    assert listing.json()[0]["face_enrolled"] is False
+
+
+def test_roll_number_is_unique_across_classrooms(client, teacher_user, classroom, db_session):
+    from app.models import Classroom
+
+    other_room = Classroom(course="CS102", section="B", teacher_id=teacher_user.id)
+    db_session.add(other_room)
+    db_session.commit()
+
+    headers = auth_headers(client, "teacher1@classsight.example", "teacherpass123")
+    first = client.post(
+        f"/classrooms/{classroom.id}/students",
+        json={"roll_number": "102203001", "name": "Bob"},
+        headers=headers,
+    )
+    assert first.status_code == 201, first.text
+    duplicate = client.post(
+        f"/classrooms/{other_room.id}/students",
+        json={"roll_number": "102203001", "name": "Someone Else"},
+        headers=headers,
+    )
+    assert duplicate.status_code == 409

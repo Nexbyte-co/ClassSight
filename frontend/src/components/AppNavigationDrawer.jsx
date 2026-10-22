@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import "./AppNavigationDrawer.css";
 import ReportsIcon from "./ReportsIcon";
+import { logout } from "../api/auth";
 import { useDemoSession } from "../context/DemoSessionContext";
 
 // Delay before the drawer closes after a mouse pointer leaves it (avoids flicker).
@@ -100,6 +101,7 @@ function AppNavigationDrawer({ isOpen, onClose, activePage }) {
   const { signOut } = useDemoSession();
   const handleSignOut = () => {
     onClose();
+    logout(); // also clear any API token from the backend login
     signOut();
     navigate("/", { replace: true });
   };
