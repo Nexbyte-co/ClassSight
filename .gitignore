@@ -26,3 +26,6 @@ venv/
 # Secrets
 *.pem
 *.key
+
+# Phase C results hold real roll numbers
+e2e-results/
