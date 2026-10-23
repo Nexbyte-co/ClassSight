@@ -1,8 +1,9 @@
-# MVP session: 2026-10-18
+# MVP session: 2026-10-18 (updated 2026-10-23)
 
 Picks up from `claude/face-recognition-session.md` (2026-10-11). This file is the
 handoff for the next session: what was decided, what is done and verified, and
-what remains. Read this first.
+what remains. Read this first. **Sections marked 2026-10-23 are the latest;
+Phases A, B and C are done, Phase D (AWS) is next.**
 
 ## The MVP being built (requirements from the user)
 1. Containerize the whole app and run it on AWS EC2.
@@ -17,8 +18,9 @@ what remains. Read this first.
 - **Enrollment photos ARE stored** in a private S3 bucket (`students/{roll}/`); they're deletable via `DELETE …/face`. (This reverses the 2026-10-11 "never store" decision.)
 - **Verification:** "identify within a class": one photo → which enrolled student, or not recognised.
 - **No frontend code changes** until the backend flow is verified end to end. Frontend work = Phase E (document only).
-- **Augmentation:** `ENROLL_AUGMENT` (mirror + ±40 brightness), off by default. Keep it only if Phase C shows it helps. Real varied photos matter more.
-- **A wrong match is worse than a miss.** Thresholds `MATCH_THRESHOLD` 0.5 / `AMBIGUITY_MARGIN` 0.05 are untuned until Phase C.
+- **Augmentation:** `ENROLL_AUGMENT` (mirror + ±40 brightness) **stays off**: Phase C showed no useful gain (scores moved 0.01–0.02, no result changed) and it costs ~4x detection work.
+- **A wrong match is worse than a miss.** `MATCH_THRESHOLD` 0.5 / `AMBIGUITY_MARGIN` 0.05 **stay unchanged**: the 5-student data sits far from them (same person ≥ 0.70, strangers ≤ 0.29) but can't discriminate between 0.30 and 0.65, so there is no evidence to move them and not enough to tune. Re-tune with 15–20 students photographed on a different day.
+- **Only 5 students' photos exist and no more can be added** (privacy). The demo is on those 5. There are no photos of unknown people; strangers are simulated by leaving one student out of the class.
 - **Local S3 is SeaweedFS**, not MinIO: MinIO's free images are no longer published on any registry.
 - **No fake data:** the seed script creates the first admin only.
 - **AWS:** the user has **no AWS account yet**; they'll create a new one (credit-based Free plan, see Phase D).
@@ -27,6 +29,8 @@ what remains. Read this first.
 - **Phase by phase:** finish one phase, verify it, report, and **wait for approval before committing or starting the next phase**.
 - **No Claude attribution** in commits/PRs. Set in `~/.claude/settings.json` (`attribution` all empty). Old commit `3bbacc3` (already pushed) still has a Sonnet co-author line; rewriting it needs a force-push, which has **not** been approved.
 - Explain changes file by file, with the reason for each.
+- **Independent review:** before reporting a phase, run a separate **read-only** reviewer agent (no edits, no commits/pushes, no dev-DB or Docker changes) that checks the code and whether we're off plan. It reports; the main agent fixes. It found real bugs in Phase C (exit code, cleanup, error parsing).
+- Commit and push only when the user says so. They have approved commits for Phase C (done).
 - Ask before AWS actions (they cost money and are visible outside the machine).
 
 ## Branches and commits
@@ -36,7 +40,15 @@ what remains. Read this first.
 | | `ff9ff27` | One matching path (`identify_face` removed) |
 | `feature/containerization-ec2` (pushed, from the branch above) | `c87eb11` | Phase B containers |
 
-**Update 2026-10-23:** PR #8 merged these into `develop`, and the old feature branches were deleted (local and GitHub). Phase C continues on `feature/e2e-verification`, branched from `develop`. `develop` also now holds a teammate's frontend rewrite (see "Frontend changed" below).
+**Update 2026-10-23:** PR #8 merged these into `develop`. The old branches `feature/containerization-ec2` and `feature/face-recognition-model` were deleted locally and on GitHub (recreate with `git branch <name> c87eb11` / `ff9ff27` if ever needed). Local `develop` was fast-forwarded to `origin/develop` (`825b774`). Work continues on **`feature/e2e-verification`** (from `develop`, pushed):
+
+| Commit | What |
+|---|---|
+| `3ade9a3` | Phase C scripts (`backend/scripts/e2e_common.py`, `e2e_verify.py`, `e2e_scores.py`) + `.gitignore` entry `e2e-results/` |
+| `425741a` | `docs/e2e-verification.md` + this handoff note |
+| `1b2eb1e` | Journal entry `Journals/1024030331_Journal/Manit Sharma 2026-10-23.md` |
+
+The journal entry is committed. The `Journals/` folder (with the readme and the 2026-10-11 entry) exists on `main` but not on `develop`, so on this branch the folder holds only the new entry; it merges cleanly because the file name is new. This note was updated again after the journal commit (see `git log`). No PR is open for this branch yet. Commits carry no Claude attribution.
 
 ## Done this session
 
@@ -97,45 +109,39 @@ what remains. Read this first.
 - **EC2 must expose port 8000 as well as 80.** The browser calls the API directly. Proxying `/api` via nginx would collide with the frontend's `/attendance` route and needs a frontend change.
 - **No NFC in the backend:** no `nfc_uid` and no endpoint. The frontend NFC flow is a `setTimeout` simulation. The fallback works **per student** (roster minus matched → unverified list), not per face.
 - **`attendance_records` doesn't store the verification method** (ai/nfc/manual). It's a small schema change, not yet planned.
-- **Frontend data screens are still mock.** Real attendance history is only visible through `/docs` until Phase E.
+- **The frontend does not call the API at all** (see "Frontend changed"). Real attendance history is only visible through `/docs` until Phase E.
 - **Browser camera capture needs HTTPS** on EC2 (a domain + TLS). Not needed for backend testing.
 - `HTTP_422_UNPROCESSABLE_ENTITY` deprecation warnings appear across the codebase; pre-existing and harmless.
 
-## Phase C status (2026-10-23): harness built and run, report awaiting review
-- `backend/scripts/e2e_verify.py` (HTTP), `e2e_scores.py` (offline sweep), `e2e_common.py`; report in `docs/e2e-verification.md`. Not committed yet.
-- Result: 41/41 checks, 0 wrong matches, 0 false accepts on 5 students; thresholds stay at 0.5 / 0.05 (data too thin to tune); augmentation stays off.
-- **Open decision:** photos with a small background face are refused (4 of 24). Option: accept the dominant face when it is much larger (e.g. 5x area).
-- Data: `~/classsight-data` (5 students, no unknown-person photos; strangers simulated by leaving one student out). Results in git-ignored `e2e-results/`.
-- Dev DB and bucket were emptied after the runs.
+## Done 2026-10-23 (Phase C: local end-to-end with real photos)
+Steps, in order:
+1. Pulled `develop`; found a teammate's frontend rewrite (below). Made `feature/e2e-verification`; cleaned up old branches.
+2. Created `~/classsight-data/` (outside the repo): `students.csv` (header only, so placeholder names are used), `enroll/<roll>/` (5 students, 3–5 photos each = 20), `verify/known/` (4 photos, `<roll>_test.jpeg`), `verify/unknown/` (empty). Started Docker; 61/61 tests still pass.
+3. Wrote `backend/scripts/`:
+   - `e2e_verify.py`: HTTP harness over the running stack. Probes: **held-out** (enroll without photo P, verify P), **known** (separate test photo), **stranger** (remove the student's face data, verify their photos). Also: second teacher gets 403, empty class → `no_enrolled_students`, profile + photo link opens, delete removes photos (link 404). Exit code 1 on any failed check, wrong match, false accept, request error, or nothing scored. Removes stored face data even after a crash. Needs `requests` (not in requirements.txt).
+   - `e2e_scores.py`: offline replay on the host (model weights in `~/.insightface`) through the app's own `match_embeddings`, with a threshold × margin sweep. Its scores match the API run to 3 decimals.
+   - `e2e_common.py`: dataset loader.
+4. Ran both passes (augmentation off, then on; confirmed via the "augmented copies used" log lines). Saved to git-ignored `e2e-results/` with backend logs.
+5. Independent reviewer agent checked the code; fixed its findings.
+6. Wrote `docs/e2e-verification.md` (students shown as S1–S5, no roll numbers), committed and pushed.
+7. Cleaned up: dev DB (0 users/classrooms/students/photos) and the S3 bucket (0 objects). Test rows are tagged `E2E…` / `e2e-*@example.com`. No embeddings or images are in `e2e-results/`. Physical wipe of Postgres/SeaweedFS storage was **not** verified (`docker compose down -v` would do it; the user declined).
+
+**Results (5 students):** 41/41 checks in both passes; 20/20 same-person probes identified; 0 wrong matches; 0/20 strangers accepted. Same-person scores 0.70–0.89, best stranger score ≤ 0.29.
+
+**Findings:**
+- **One-face rule (OPEN DECISION):** 4 of 24 photos (1 enrollment, 3 of 4 verify photos) were refused with 422 because a small background face was also detected (main face 8–48x larger). In a scratch check, using the dominant face matched all three verify photos correctly (0.69–0.76 vs ≤ 0.16 next best). Options: keep strict (teacher retakes) or accept the dominant face when it is ≥ ~5x the next one's area; that changes a safety rule and needs re-testing. **For the demo, keep one person in frame.**
+- Tight crops still fail detection (not re-tested; all photos were full-frame).
+- Only 1 verify photo was usable, so the "different photo" evidence is mostly held-out photos from one session.
 
 ## Frontend changed (teammate commit 1940ccf, now in `develop`)
 Login no longer calls the API (it uses hardcoded demo accounts in `DemoSessionContext`), and no page fetches from the backend. The "only login hits the API" statements above and in CLAUDE.md are out of date. Phase E must re-wire login as well as the data screens; tell the teammate before touching those files.
 
 ## Remaining
 
-### Phase C: local end-to-end with real photos (next)
-**Needs from the user:** a data folder **outside the repo**, plus confirmation that the students consented:
-```
-classsight-data/
-├── students.csv            # roll_number,name
-├── enroll/<roll_no>/       # 3–5 photos each, ONE face, head+shoulders, varied light/angle
-└── verify/
-    ├── <roll_no>_a.jpg     # DIFFERENT photos of enrolled students (expected answer in the name)
-    └── unknown_1.jpg       # people NOT enrolled (must be rejected)
-```
-Build `backend/scripts/e2e_verify.py`, a harness over HTTP against the running containers:
-1. health → seed admin → create teacher → classroom → students
-2. enroll (check S3 objects exist) → list + profiles
-3. verify every test photo
-4. a second teacher gets 403
-5. delete one enrollment and confirm it's gone
+### Phase C: done (see "Done 2026-10-23")
+Open items only: the one-face-rule decision, and optionally a PR from `feature/e2e-verification` into `develop`.
 
-Also:
-- **Save** every request/response and the backend logs to `e2e-results/<timestamp>/`. Add it to `.gitignore`, since it holds real names.
-- **Run two passes:** `ENROLL_AUGMENT` off and on. Report accuracy, false accepts, misses and score distributions, then **tune the thresholds**.
-- **Report:** `docs/e2e-verification.md` with no photos and roll numbers hidden.
-
-### Phase D: AWS EC2 (after C)
+### Phase D: AWS EC2 (NEXT; the user has no AWS account yet)
 **Account:** new account, so the Free plan applies: $100 + up to $100 credits, 6 months or until the credits run out. When it ends the account is **suspended, with data kept 90 days**. Upgrade to Paid before then to keep data.
 
 Each step is approved by the user first:
@@ -152,7 +158,7 @@ Each step is approved by the user first:
    - Daily EBS snapshots via Data Lifecycle Manager, keeping 7.
    - A restore drill.
 5. **Deploy:** clone the repo, create `deployment/.env` (`COMPOSE_PROFILES=app`, strong `JWT_SECRET_KEY`/`POSTGRES_PASSWORD`, `VITE_API_BASE_URL=http://<ip>:8000`, `CORS_ALLOWED_ORIGINS=["http://<ip>"]`), then run `docker compose -f docker-compose.yml -f docker-compose.ec2.yml up -d --build`.
-6. Run `e2e_verify.py` against EC2 and add the EC2 results to the report.
+6. Run `e2e_verify.py` against EC2 (`--base-url http://<ip>:8000`; the photos stay on the laptop) and add the EC2 results to `docs/e2e-verification.md`. Remember ENROLL_AUGMENT stays off, and the demo is on the 5 students.
 
 ### Phase E: frontend plan (document only)
 `docs/frontend-plan.md`, written from the verified API:
@@ -175,6 +181,14 @@ cd deployment && docker compose up -d           # whole stack (COMPOSE_PROFILES=
 docker compose ps                               # backend should be (healthy)
 cd ../backend && .venv/bin/python -m pytest -q  # expect 61 passed
 ```
-- Frontend: http://localhost · API docs: http://localhost:8000/docs · local S3: http://localhost:8333
+- Frontend: http://localhost · API docs: http://localhost:8000/docs · local S3: http://localhost:8333. (The frontend container is the 2026-10-18 build, from before the teammate's change; `docker compose up -d --build frontend` refreshes it.)
+- **Re-running the harness:** the dev DB has no users. Seed a throwaway admin, then run (use `example.com` addresses; the email validator rejects `.test`):
+  ```bash
+  cd deployment && docker compose exec -T -e SEED_ADMIN_EMAIL=e2e-admin@example.com -e SEED_ADMIN_PASSWORD=<pw> backend python -m app.db.seed
+  cd ../backend && pip install requests
+  E2E_ADMIN_EMAIL=e2e-admin@example.com E2E_ADMIN_PASSWORD=<pw> python scripts/e2e_verify.py --data-dir ~/classsight-data --label augment-off
+  python scripts/e2e_scores.py --data-dir ~/classsight-data
+  ```
+  Augmentation-on pass: `ENROLL_AUGMENT=true docker compose up -d --force-recreate backend`, then back to default the same way. Clear the tagged rows afterwards (no delete endpoints): `delete from student_photos where student_id in (select id from students where roll_number like 'E2E%'); delete from students where roll_number like 'E2E%'; delete from classrooms where course like 'E2E %'; delete from users where email like 'e2e-%@example.com';`
 - The full plan is also at `~/.claude/plans/abundant-orbiting-octopus.md` (outside the repo); this file holds everything needed.
-- First question for the user: "Is `classsight-data/` ready, and where is it?"
+- **First questions for the user:** (1) one-face rule: keep strict or accept the dominant face? (2) Ready to create the AWS account (Phase D)? (3) Open a PR from `feature/e2e-verification` into `develop`? (4) Has the teammate been told login now uses demo accounts, before Phase E?
