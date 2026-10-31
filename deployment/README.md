@@ -34,22 +34,28 @@ At startup the container also applies database migrations.
 
 ## Run on EC2
 
+Full step-by-step guide (AWS account, S3, IAM role, instance, DNS, backups, checks):
+[`docs/aws-deployment.md`](../docs/aws-deployment.md).
+
 ```bash
 # deployment/.env on the instance: COMPOSE_PROFILES=app, strong JWT_SECRET_KEY and
-# POSTGRES_PASSWORD, VITE_API_BASE_URL=http://<public-ip>:8000,
-# CORS_ALLOWED_ORIGINS=["http://<public-ip>"], S3_BUCKET_NAME, AWS_REGION.
-docker compose -f docker-compose.yml -f docker-compose.ec2.yml up -d --build
+# POSTGRES_PASSWORD, APP_HOST=app.<domain>, API_HOST=api.<domain>,
+# VITE_API_BASE_URL=https://api.<domain>, CORS_ALLOWED_ORIGINS=["https://app.<domain>"],
+# S3_BUCKET_NAME, AWS_REGION.
+./deploy.sh        # git pull + docker compose -f docker-compose.yml -f docker-compose.ec2.yml up -d --build
 ```
 
 `docker-compose.ec2.yml` switches to real S3 through the instance's IAM role (no
-keys), binds Postgres to the instance only, and restarts services automatically.
-The security group must allow 80 and 8000 (the browser calls the API directly), and
-22 from your IP only.
+keys), binds Postgres to the instance only, restarts services automatically, and adds
+**Caddy** as the only public entry point (automatic Let's Encrypt HTTPS for
+`APP_HOST` and `API_HOST`). The security group must allow 80 and 443, and 22 from your
+IP only; 8000 is not published. `backup.sh` dumps Postgres to `s3://<bucket>/backups/`
+(run it nightly from cron).
 
 ## Notes
 
 - The frontend reads `VITE_API_BASE_URL` at **build** time; rebuild it after changing it.
-- Browsers allow camera capture only over HTTPS (or localhost); camera use on EC2 will
-  need a domain and TLS.
+- Browsers allow camera capture only over HTTPS (or localhost); on EC2 this is why the
+  setup uses a domain with Caddy.
 - MinIO was the original plan for local S3, but its free images are no longer published
   on Docker Hub, so SeaweedFS is used instead.

@@ -1,0 +1,11 @@
+# Used by the caddy service in docker-compose.ec2.yml. Caddy obtains and renews
+# Let's Encrypt certificates for both hosts on its own (DNS must already point
+# at this server, and ports 80 and 443 must be open).
+
+{$APP_HOST} {
+	reverse_proxy frontend:80
+}
+
+{$API_HOST} {
+	reverse_proxy backend:8000
+}

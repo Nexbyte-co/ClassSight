@@ -10,6 +10,7 @@ from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
+from app.core.login_limiter import login_limiter
 from app.core.security import hash_password
 from app.db.base import Base
 from app.db.session import get_db
@@ -26,6 +27,13 @@ def _reset_database():
     Base.metadata.create_all(bind=engine)
     yield
     Base.metadata.drop_all(bind=engine)
+
+
+@pytest.fixture(autouse=True)
+def _reset_login_limiter():
+    login_limiter.reset()
+    yield
+    login_limiter.reset()
 
 
 @pytest.fixture

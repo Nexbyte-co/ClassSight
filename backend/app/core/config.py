@@ -14,6 +14,14 @@ class Settings(BaseSettings):
     jwt_algorithm: str = "HS256"
     access_token_expire_minutes: int = 60 * 8
 
+    # Failed-login throttle (see app/core/login_limiter.py).
+    login_max_failures_per_email: int = 5
+    login_max_failures_per_ip: int = 20
+    login_window_seconds: int = 15 * 60
+
+    # Interactive API docs (/docs, /redoc, /openapi.json); turned off on EC2.
+    enable_docs: bool = True
+
     s3_bucket_name: str = "classsight-attendance-photos"
     aws_region: str = "us-east-1"
     # Set only for an S3-compatible store such as the local SeaweedFS; unset means real AWS S3.

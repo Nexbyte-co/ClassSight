@@ -13,4 +13,6 @@ if [ "${PRELOAD_MODEL:-true}" = "true" ]; then
 fi
 
 echo "entrypoint: starting API"
-exec uvicorn app.main:app --host 0.0.0.0 --port 8000 --proxy-headers
+# Port 8000 is only reachable through the reverse proxy (Caddy on EC2), so trust its
+# X-Forwarded-* headers; otherwise redirects would be built as http:// URLs.
+exec uvicorn app.main:app --host 0.0.0.0 --port 8000 --proxy-headers --forwarded-allow-ips='*'
