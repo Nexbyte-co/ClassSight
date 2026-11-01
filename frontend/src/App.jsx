@@ -13,6 +13,7 @@ import AllReports from "./pages/AllReports";
 import ReportDetails from "./pages/ReportDetails";
 import Settings from "./pages/Settings";
 import Admin from "./pages/Admin";
+import Verify from "./pages/Verify";
 
 import { ThemeProvider } from "./context/ThemeContext";
 import { AttendanceProvider } from "./context/AttendanceContext";
@@ -64,6 +65,7 @@ function App() {
               <Route path="/attendance/:sessionId/unverified" element={<UnverifiedStudents />} />
               <Route path="/attendance/:sessionId/verified" element={<VerifiedStudents />} />
               <Route path="/students" element={<Students />} />
+              <Route path="/verify" element={<Verify />} />
               <Route path="/reports" element={<Reports />} />
               <Route path="/Reports" element={<Reports />} />
               <Route path="/reports/all" element={<AllReports />} />

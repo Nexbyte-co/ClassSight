@@ -33,6 +33,7 @@ const SIDEBAR_LINKS = [
   { to: "/dashboard", key: "dashboard", label: "Dashboard", Icon: LayoutDashboard },
   { to: "/classes", key: "classes", label: "Classes", Icon: BookOpen },
   { to: "/attendance", key: "attendance", label: "Attendance", Icon: CircleCheck },
+  { to: "/verify", key: "verify", label: "Verify", Icon: ScanFace },
   { to: "/students", key: "students", label: "Students", Icon: UserRound },
   { to: "/reports", key: "reports", label: "Reports", Icon: ReportsIcon },
   { to: "/settings", key: "settings", label: "Settings", Icon: Settings },

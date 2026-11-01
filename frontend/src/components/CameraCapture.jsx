@@ -2,7 +2,7 @@
 // camera is missing or blocked it says so, and the page's file picker still works.
 import { useEffect, useRef, useState } from "react";
 
-function CameraCapture({ onCapture, onCancel, label = "Take photo" }) {
+function CameraCapture({ onCapture, onCancel, label = "Take photo", facingMode = "user" }) {
   const videoRef = useRef(null);
   const streamRef = useRef(null);
   const [error, setError] = useState("");
@@ -15,7 +15,7 @@ function CameraCapture({ onCapture, onCancel, label = "Take photo" }) {
       return undefined;
     }
     navigator.mediaDevices
-      .getUserMedia({ video: { facingMode: "user", width: { ideal: 1280 } }, audio: false })
+      .getUserMedia({ video: { facingMode, width: { ideal: 1280 } }, audio: false })
       .then((stream) => {
         if (cancelled) {
           stream.getTracks().forEach((t) => t.stop());
@@ -51,7 +51,7 @@ function CameraCapture({ onCapture, onCancel, label = "Take photo" }) {
   return (
     <div className="mg-camera">
       {error ? (
-        <div className="mg-alert warn">{error}</div>
+        <div className="mg-alert warn" role="alert">{error}</div>
       ) : (
         <video ref={videoRef} autoPlay playsInline muted />
       )}

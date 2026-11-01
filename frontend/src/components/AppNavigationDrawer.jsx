@@ -186,6 +186,15 @@ function AppNavigationDrawer({ isOpen, onClose, activePage }) {
           </Link>
 
           <Link
+            to="/verify"
+            className={`app-nav-link ${activePage === "verify" ? "active" : ""}`}
+            onClick={onClose}
+          >
+            <ScanFace size={19} strokeWidth={1.8} />
+            <span>Verify</span>
+          </Link>
+
+          <Link
             to="/students"
             className={`app-nav-link ${activePage === "students" ? "active" : ""}`}
             onClick={onClose}
