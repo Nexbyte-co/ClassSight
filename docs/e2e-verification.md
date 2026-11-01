@@ -49,6 +49,8 @@ The same harness ran against the deployed stack (`https://api.<dashed-ip>.sslip.
 - 4 photos were refused for showing more than one face (1 enrollment, 3 verification), the same photos as in the local run (finding 1).
 - Access control (teacher B gets 403) and the empty-class case behave as locally.
 
+**Rerun with the dominant-face rule deployed (run `ec2-dominant`, same resized copies):** 41/41 checks; no photo refused (the 4 refused before are accepted); 24/24 same-person probes identified (4 known-photo 0.69 to 0.78, 20 held-out 0.69 to 0.89); 0 wrong matches; 0/24 strangers accepted, best stranger score 0.29. The four rescued photos score 0.69 to 0.78, lower than the other photos but well above the 0.5 threshold and the best stranger. Still only 5 students, one session, resized photos.
+
 Reproduce with `--base-url https://api.<dashed-ip>.sslip.io` and a seeded EC2 admin.
 
 ## Thresholds
