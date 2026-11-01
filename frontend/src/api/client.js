@@ -2,6 +2,9 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000
 
 const TOKEN_STORAGE_KEY = "classsight_access_token";
 
+// Fired when the API rejects our token (expired or revoked) so the app can sign out.
+export const UNAUTHORIZED_EVENT = "classsight:unauthorized";
+
 export function getToken() {
   return localStorage.getItem(TOKEN_STORAGE_KEY);
 }
@@ -21,6 +24,16 @@ export class ApiError extends Error {
     this.status = status;
     this.details = details;
   }
+}
+
+// FastAPI sends detail as a string, or as a list of {msg} for validation errors.
+function errorMessage(data, response) {
+  const detail = data && typeof data === "object" ? data.detail : null;
+  if (typeof detail === "string" && detail) return detail;
+  if (Array.isArray(detail) && detail.length) {
+    return detail.map((item) => item.msg).filter(Boolean).join("; ");
+  }
+  return response.statusText || "Request failed";
 }
 
 async function request(path, { method = "GET", body, params, isFormData = false } = {}) {
@@ -49,7 +62,12 @@ async function request(path, { method = "GET", body, params, isFormData = false 
     }
   }
 
-  const response = await fetch(url, { method, headers, body: requestBody });
+  let response;
+  try {
+    response = await fetch(url, { method, headers, body: requestBody });
+  } catch {
+    throw new ApiError("Cannot reach the server. Check your connection and try again.", 0);
+  }
 
   if (response.status === 204) {
     return null;
@@ -59,9 +77,11 @@ async function request(path, { method = "GET", body, params, isFormData = false 
   const data = contentType.includes("application/json") ? await response.json() : await response.text();
 
   if (!response.ok) {
-    const message =
-      (data && typeof data === "object" && data.detail) || response.statusText || "Request failed";
-    throw new ApiError(message, response.status, data);
+    if (response.status === 401 && token) {
+      clearToken();
+      window.dispatchEvent(new Event(UNAUTHORIZED_EVENT));
+    }
+    throw new ApiError(errorMessage(data, response), response.status, data);
   }
 
   return data;
@@ -70,4 +90,5 @@ async function request(path, { method = "GET", body, params, isFormData = false 
 export const api = {
   get: (path, params) => request(path, { method: "GET", params }),
   post: (path, body, options) => request(path, { method: "POST", body, ...options }),
+  delete: (path) => request(path, { method: "DELETE" }),
 };

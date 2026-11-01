@@ -12,17 +12,20 @@ import Reports from "./pages/Reports";
 import AllReports from "./pages/AllReports";
 import ReportDetails from "./pages/ReportDetails";
 import Settings from "./pages/Settings";
+import Admin from "./pages/Admin";
 
 import { ThemeProvider } from "./context/ThemeContext";
 import { AttendanceProvider } from "./context/AttendanceContext";
 import { ScheduleProvider } from "./context/ScheduleContext";
+import { ClassroomProvider } from "./context/ClassroomContext";
 import { SettingsProvider } from "./context/SettingsContext";
 import {
-  DemoSessionProvider,
+  AdminArea,
+  AuthProvider,
   LegacyStudentRedirect,
   StudentArea,
   TeacherArea,
-} from "./context/DemoSessionContext";
+} from "./context/AuthContext";
 import {
   StudentPortalLayout,
   StudentTimetable,
@@ -42,12 +45,13 @@ function App() {
       <SettingsProvider>
       <AttendanceProvider>
         <ScheduleProvider>
-        <DemoSessionProvider>
+        <AuthProvider>
+        <ClassroomProvider>
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
-            {/* Teacher area (mock role check: signed-out -> "/", demo student -> /student) */}
+            {/* Teacher area: needs a valid API login, otherwise -> /login */}
             <Route element={<TeacherArea />}>
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/classrooms" element={<Classrooms />} />
@@ -69,7 +73,10 @@ function App() {
               <Route path="/student/preview" element={<StudentOverview />} />
               <Route path="/student/preview/:studentId" element={<StudentOverview />} />
             </Route>
-            {/* Student portal (mock role check: signed-out -> "/", teacher -> /dashboard) */}
+            <Route element={<AdminArea />}>
+              <Route path="/admin" element={<Admin />} />
+            </Route>
+            {/* Student portal: no student accounts in the backend yet, so this redirects */}
             <Route element={<StudentArea />}>
               <Route path="/student" element={<StudentPortalLayout />}>
                 <Route index element={<StudentDashboard />} />
@@ -81,7 +88,8 @@ function App() {
             <Route path="/student/:studentId" element={<LegacyStudentRedirect />} />
           </Routes>
         </BrowserRouter>
-        </DemoSessionProvider>
+        </ClassroomProvider>
+        </AuthProvider>
         </ScheduleProvider>
       </AttendanceProvider>
       </SettingsProvider>

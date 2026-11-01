@@ -8,7 +8,7 @@ import "./Reports.css";
 import "../components/AppNavigationDrawer.css";
 import "./StudentPortal.css";
 import { useTheme } from "../context/ThemeContext";
-import { useDemoSession } from "../context/DemoSessionContext";
+import { useAuth } from "../context/AuthContext";
 
 const STUDENT_NAV = [
   { to: "/student/timetable", label: "Timetable", Icon: CalendarDays },
@@ -19,7 +19,7 @@ const STUDENT_NAV = [
 export function StudentPortalLayout() {
   const navigate = useNavigate();
   const { isDarkMode, toggleDarkMode } = useTheme();
-  const { session, signOut } = useDemoSession();
+  const { session, signOut } = useAuth();
 
   const handleSignOut = () => {
     signOut();

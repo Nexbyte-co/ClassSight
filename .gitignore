@@ -29,3 +29,6 @@ venv/
 
 # Phase C results hold real roll numbers
 e2e-results/
+
+# Browser-test screenshots and logs
+.playwright-mcp/
