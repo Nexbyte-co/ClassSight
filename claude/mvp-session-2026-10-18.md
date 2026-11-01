@@ -1,9 +1,9 @@
-# MVP session: 2026-10-18 (updated 2026-10-23)
+# MVP session: 2026-10-18 (updated 2026-11-01)
 
 Picks up from `claude/face-recognition-session.md` (2026-10-11). This file is the
 handoff for the next session: what was decided, what is done and verified, and
 what remains. Read this first. **Sections marked 2026-10-23 are the latest;
-Phases A, B and C are done, Phase D (AWS) is next.**
+Phases A, B and C are done; Phase D (AWS EC2) is deployed and partly verified (see "Phase D status 2026-11-01"); Phase E is next after it.**
 
 ## The MVP being built (requirements from the user)
 1. Containerize the whole app and run it on AWS EC2.
@@ -23,7 +23,7 @@ Phases A, B and C are done, Phase D (AWS) is next.**
 - **Only 5 students' photos exist and no more can be added** (privacy). The demo is on those 5. There are no photos of unknown people; strangers are simulated by leaving one student out of the class.
 - **Local S3 is SeaweedFS**, not MinIO: MinIO's free images are no longer published on any registry.
 - **No fake data:** the seed script creates the first admin only.
-- **AWS:** the user has **no AWS account yet**; they'll create a new one (credit-based Free plan, see Phase D).
+- **AWS:** the user now has an account on the credit-based Free plan ($120 credits, 180 days); see "Phase D status 2026-11-01".
 
 ## Working agreements (user preferences)
 - **Phase by phase:** finish one phase, verify it, report, and **wait for approval before committing or starting the next phase**.
@@ -50,6 +50,13 @@ Phases A, B and C are done, Phase D (AWS) is next.**
 
 The journal entry is committed. The `Journals/` folder (with the readme and the 2026-10-11 entry) exists on `main` but not on `develop`, so on this branch the folder holds only the new entry; it merges cleanly because the file name is new. This note was updated again after the journal commit (see `git log`). No PR is open for this branch yet. Commits carry no Claude attribution.
 
+**Update 2026-11-01:** PR #9 merged `feature/e2e-verification` into `develop` (`0ab884a`). Phase D work is on **`feature/aws-ec2-deploy`** (from `develop` at `0ab884a`, pushed, **no PR yet**; open it after the EC2 checks pass):
+
+| Commit | What |
+|---|---|
+| `56ef803` | Caddy HTTPS in `docker-compose.ec2.yml`, `deploy.sh`, `backup.sh`, `docs/aws-deployment.md`, login throttle, `ENABLE_DOCS`, proxy headers; 65 tests pass |
+| uncommitted | `docs/aws-deployment.md`: seed command uses `docker exec` (Session Manager hang note) |
+
 ## Done this session
 
 ### DB/dev setup fixes (in `cf0d02e`)
@@ -65,7 +72,7 @@ The journal entry is committed. The `Journals/` folder (with the readme and the 
   - S3 failure → 503 and nothing saved.
 - **Profile:** `GET /classrooms/{id}/students/{sid}` returns photo links that expire in 5 minutes.
 - **Delete:** `DELETE …/face` removes from S3 first (so it's retryable), then the DB rows and embedding.
-- **Verify:** `POST /classrooms/{id}/verify` takes one photo with exactly one face (else 422).
+- **Verify:** `POST /classrooms/{id}/verify` takes one photo with exactly one face, or one dominant face (area ≥ 5x the next largest; else 422).
   - Returns `verified`, `student`, `confidence`, and `reason` ∈ `matched | below_threshold | ambiguous | no_enrolled_students`.
   - Captured photos are not stored.
 - **`face_enrolled`** added to `StudentOut`.
@@ -129,7 +136,7 @@ Steps, in order:
 **Results (5 students):** 41/41 checks in both passes; 20/20 same-person probes identified; 0 wrong matches; 0/20 strangers accepted. Same-person scores 0.70–0.89, best stranger score ≤ 0.29.
 
 **Findings:**
-- **One-face rule (OPEN DECISION):** 4 of 24 photos (1 enrollment, 3 of 4 verify photos) were refused with 422 because a small background face was also detected (main face 8–48x larger). In a scratch check, using the dominant face matched all three verify photos correctly (0.69–0.76 vs ≤ 0.16 next best). Options: keep strict (teacher retakes) or accept the dominant face when it is ≥ ~5x the next one's area; that changes a safety rule and needs re-testing. **For the demo, keep one person in frame.**
+- **One-face rule (DECIDED 2026-11-01: accept the dominant face, see "Dominant face" below):** 4 of 24 photos (1 enrollment, 3 of 4 verify photos) were refused with 422 because a small background face was also detected (main face 8–48x larger). In a scratch check, using the dominant face matched all three verify photos correctly (0.69–0.76 vs ≤ 0.16 next best). Options: keep strict (teacher retakes) or accept the dominant face when it is ≥ ~5x the next one's area; that changes a safety rule and needs re-testing. **For the demo, keep one person in frame.**
 - Tight crops still fail detection (not re-tested; all photos were full-frame).
 - Only 1 verify photo was usable, so the "different photo" evidence is mostly held-out photos from one session.
 
@@ -139,26 +146,33 @@ Login no longer calls the API (it uses hardcoded demo accounts in `DemoSessionCo
 ## Remaining
 
 ### Phase C: done (see "Done 2026-10-23")
-Open items only: the one-face-rule decision, and optionally a PR from `feature/e2e-verification` into `develop`.
+Done. The one-face-rule decision was made on 2026-11-01 (PR #9 merged this branch into `develop`).
 
-### Phase D: AWS EC2 (NEXT; the user has no AWS account yet)
-**Account:** new account, so the Free plan applies: $100 + up to $100 credits, 6 months or until the credits run out. When it ends the account is **suspended, with data kept 90 days**. Upgrade to Paid before then to keep data.
+### Phase D status 2026-11-01 (EC2 deployed; checks partly done)
+Full guide: `docs/aws-deployment.md` (steps, troubleshooting, hardening). Resource ids (instance, Elastic IP, bucket) are in the user's private memory and the AWS console, not here (public repo).
 
-Each step is approved by the user first:
-0. **Account safety:** MFA on root, a separate IAM admin user, an AWS Budget alert (e.g. $10).
-1. **S3 bucket:** private, Block Public Access, default encryption. A lifecycle rule expires `attendance/` after 60 days; keep `students/` and `backups/`.
-2. **IAM role / instance profile:** Get/Put/DeleteObject on that bucket only.
-3. **EC2:**
-   - **c7i-flex.large** (4 GB, free-plan eligible; t3.small 2 GB is too tight), Ubuntu 24.04, Docker, 30 GB gp3.
-   - Security group: SSH from the user's IP only, plus 80 and 8000.
-   - **Termination protection on**, and the root disk set to not be deleted on termination. **Stop keeps the data; terminate deletes it.**
-   - An Elastic IP is optional: the IP changes on stop/start, and the frontend has the API URL baked in at build time.
-4. **Backups (option A, chosen by the user):**
-   - A nightly `pg_dump` → `s3://<bucket>/backups/`, keeping 14.
-   - Daily EBS snapshots via Data Lifecycle Manager, keeping 7.
-   - A restore drill.
-5. **Deploy:** clone the repo, create `deployment/.env` (`COMPOSE_PROFILES=app`, strong `JWT_SECRET_KEY`/`POSTGRES_PASSWORD`, `VITE_API_BASE_URL=http://<ip>:8000`, `CORS_ALLOWED_ORIGINS=["http://<ip>"]`), then run `docker compose -f docker-compose.yml -f docker-compose.ec2.yml up -d --build`.
-6. Run `e2e_verify.py` against EC2 (`--base-url http://<ip>:8000`; the photos stay on the laptop) and add the EC2 results to `docs/e2e-verification.md`. Remember ENROLL_AUGMENT stays off, and the demo is on the 5 students.
+**Decisions (do not re-ask):** one EC2 instance (Docker Compose) + S3 + Caddy for HTTPS. Considered and dropped: Render, HF Spaces (Docker Spaces need a paid plan), Vercel for the backend (size limits), Cloud Run, ECS/RDS (costs more than one EC2 and takes more setup), Cloudflare Tunnel. **sslip.io hostnames** (`<dashed-ip>.sslip.io` and `api.<dashed-ip>.sslip.io`) are used until the user buys a domain.
+
+**Done**
+- Account: Free plan, **$120 credits for 180 days** (about $20 a month; a 24/7 c7i-flex.large is about $60+ a month, so **stop the instance when idle**). Root MFA, IAM admin user, budgets set. Region **ap-south-1 (Mumbai)**.
+- S3 bucket (private; lifecycle: `attendance/` 60 days, `backups/` 14 days, `students/` kept). IAM role `classsight-ec2-role` (inline S3 policy + `AmazonSSMManagedInstanceCore`).
+- EC2 c7i-flex.large, Ubuntu 24.04, 30 GB gp3 (not deleted on termination), termination protection, **IMDSv2 required with hop limit 2** (checked from a container: 200), Elastic IP. Security group: 80 and 443 open, **port 22 removed 2026-11-01; access is Session Manager only**. Server prepped (Docker, 2 GB swap, log rotation).
+- Deployed with `./deploy.sh`: four containers up (backend healthy), valid Let's Encrypt certificate, `/health` and the frontend answer over HTTPS. Admin seeded. Scanners hit the site within minutes (all 404), as expected.
+- Gotchas found: `docker compose exec` hangs with no output in Session Manager (use `docker exec` or `-T`); the first Session Manager shell is `ssm-user` (run `sudo -iu ubuntu`); `awscli` is not an apt package on Ubuntu 24.04 (snap, so cron needs `/snap/bin` on PATH).
+- Harness vs EC2, first attempt (run `20261101-022823-ec2`) was **partial** (superseded by the full run below): setup, access control and the first enrollment (4 of 4 photos, status 200) passed; the second enrollment hit a socket write timeout. Cause: test photos average 3.1 MB (74 MB total) and the user's upload speed is about 200 KB/s (`REQUEST_TIMEOUT` is 300 s); the server was idle with no memory pressure. `e2e_scores.py` runs locally and is not EC2 evidence. The harness's cleanup removed the face data (S3 objects); the E2E teacher/classroom/student rows from that run are still in the EC2 database.
+
+**Done 2026-11-01 (after the harness run):** leftover E2E rows cleared (the harness leaves its tagged rows again each run, so clear them after every run); `backup.sh` run by hand and uploaded to `backups/`; restore drill passed (dump restored into a scratch database with the same row counts, then dropped); nightly cron entry added (02:00 server time; skipped on nights the instance is stopped); EBS snapshot policy via Data Lifecycle Manager (tag `backup=daily` on the volume, daily 03:00 UTC, keep 3); instance rebooted once and came back by itself (health 200, valid certificate; containers, swap and cron confirmed by the user); port 22 removed from `classsight-sg`, Session Manager still works. Not yet confirmed: the first snapshot and the first cron backup (check `~/backup.log` and the Snapshots list after the next 02:00/03:00 with the instance running).
+
+**Remaining**
+1. Automation (agreed to do next): `scripts/ec2.sh start|stop|status` using a restricted IAM user, and a nightly auto-stop (EventBridge Scheduler) so credits are not drained.
+2. Optional: buy a domain; then set `APP_HOST`, `API_HOST`, `VITE_API_BASE_URL` and `CORS_ALLOWED_ORIGINS` in `.env` and run `deploy.sh`.
+3. Commit the doc changes, open the PR `feature/aws-ec2-deploy` into `develop` (after the checks pass, per the user), update CLAUDE.md if anything changes.
+
+**Dominant face (2026-11-01, uncommitted):** `extract_main_face` in `face_recognition.py` is used by enroll and `/verify`; it keeps one face when its box area is >= `DOMINANT_FACE_AREA_RATIO` (5, untuned) times the next largest, otherwise returns all faces and the caller rejects (422, "found N"). `/process` still uses all faces. Tests: 75 pass (new ones in `tests/test_dominant_face.py` and `test_enrollment.py`). Augmented copies are kept only if they show one dominant face that matches the original photo (>= MATCH_THRESHOLD), so a bystander cannot enter the template; zero-area boxes are never "dominant". Real-model check on the original photos: the refused enrollment photo (area ratio 23.8) and all 3 refused verify photos are accepted, and all 4 verify photos match the right student (0.68-0.76, runner-up <= 0.16). Not covered: a bystander closer to the camera than the subject would be taken as the subject (teacher must keep one person in frame); the 5x ratio has no data between 1x and 8x; the EC2 server still runs the old code until `deploy.sh`.
+
+**EC2 harness 2026-11-01 (run `20261101-170022-ec2-small`, resized copies):** 41/41 checks, 20/20 identified, 0 wrong, 0/20 strangers accepted; recorded in `docs/e2e-verification.md`. The harness rerun and the E2E row cleanup are done.
+
+**Phase E notes from this work:** the frontend should downscale in the browser before upload (canvas `toBlob` JPEG ~0.8): about 1280 px long side for single-student verify (~150-300 KB), about 2000 px for group photos (~400-800 KB); consider a server-side upload size cap. Rerun the harness at the exact size the app sends. the frontend should downscale photos before upload (3 MB photos over a slow link time out); the deployed UI still shows mock data and demo logins, so the camera/verify flow can only be shown after Phase E.
 
 ### Phase E: frontend plan (document only)
 `docs/frontend-plan.md`, written from the verified API:
@@ -174,12 +188,15 @@ Each step is approved by the user first:
 - Possibly move to RDS later (only `DATABASE_URL` changes).
 
 ## Resume checklist (next session)
+**EC2 (Phase D):** the instance was **stopped on 2026-11-01** to save credits (confirm in the console). To resume: EC2 → Instances → Start; wait for 2/2 checks; the containers restart themselves (about 2 minutes); `curl https://api.<dashed-ip>.sslip.io/health` should return healthy. The Elastic IP and hostnames do not change. Then do the "Remaining" list above, starting with clearing the E2E rows. In a Session Manager shell: `sudo -iu ubuntu`, `cd ~/ClassSight/deployment`, `export COMPOSE_FILE=docker-compose.yml:docker-compose.ec2.yml`.
+
+**Local stack (everything below):** the local containers were also stopped.
 ```bash
-cd ~/ClassSight && git switch feature/e2e-verification && git pull
+cd ~/ClassSight && git switch feature/aws-ec2-deploy && git pull
 open -a Docker                                  # Docker Desktop must be running
 cd deployment && docker compose up -d           # whole stack (COMPOSE_PROFILES=app,local in .env)
 docker compose ps                               # backend should be (healthy)
-cd ../backend && .venv/bin/python -m pytest -q  # expect 61 passed
+cd ../backend && .venv/bin/python -m pytest -q  # expect 75 passed
 ```
 - Frontend: http://localhost · API docs: http://localhost:8000/docs · local S3: http://localhost:8333. (The frontend container is the 2026-10-18 build, from before the teammate's change; `docker compose up -d --build frontend` refreshes it.)
 - **Re-running the harness:** the dev DB has no users. Seed a throwaway admin, then run (use `example.com` addresses; the email validator rejects `.test`):
@@ -191,4 +208,4 @@ cd ../backend && .venv/bin/python -m pytest -q  # expect 61 passed
   ```
   Augmentation-on pass: `ENROLL_AUGMENT=true docker compose up -d --force-recreate backend`, then back to default the same way. Clear the tagged rows afterwards (no delete endpoints): `delete from student_photos where student_id in (select id from students where roll_number like 'E2E%'); delete from students where roll_number like 'E2E%'; delete from classrooms where course like 'E2E %'; delete from users where email like 'e2e-%@example.com';`
 - The full plan is also at `~/.claude/plans/abundant-orbiting-octopus.md` (outside the repo); this file holds everything needed.
-- **First questions for the user:** (1) one-face rule: keep strict or accept the dominant face? (2) Ready to create the AWS account (Phase D)? (3) Open a PR from `feature/e2e-verification` into `develop`? (4) Has the teammate been told login now uses demo accounts, before Phase E?
+- **First questions for the user:** (1) one-face rule: DECIDED, accept the dominant face (done, uncommitted). (2) Has the teammate been told login now uses demo accounts, before Phase E? (3) Rerun the EC2 harness with the original photos or resized copies? (4) Build `scripts/ec2.sh` and the nightly auto-stop now?

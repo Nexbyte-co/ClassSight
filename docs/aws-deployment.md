@@ -76,7 +76,7 @@ Launch with:
   aws ec2 modify-instance-metadata-options --instance-id <instance-id> \
     --http-tokens required --http-put-response-hop-limit 2
   ```
-- Security group, inbound: **22 from My IP only**, **80** and **443** from anywhere.
+- Security group, inbound: **22 from My IP only** (for first setup; remove it once Session Manager works, see Hardening), **80** and **443** from anywhere.
   Nothing for 8000 or 5432.
 
 Then allocate an **Elastic IP** and associate it with the instance. The domain needs a
@@ -86,7 +86,7 @@ an unattached Elastic IP is charged.
 Prepare the server:
 
 ```bash
-ssh -i key.pem ubuntu@<eip>
+ssh -i key.pem ubuntu@<eip>      # first setup only; then close port 22 and use Session Manager (see Hardening)
 sudo apt-get update && sudo apt-get install -y git unattended-upgrades
 sudo snap install aws-cli --classic          # installs to /snap/bin, see the cron note in step 7
 curl -fsSL https://get.docker.com | sudo sh
@@ -145,9 +145,13 @@ Then:
 ```bash
 ./deploy.sh
 docker compose -f docker-compose.yml -f docker-compose.ec2.yml ps    # backend (healthy)
-docker compose -f docker-compose.yml -f docker-compose.ec2.yml exec \
-  -e SEED_ADMIN_EMAIL=you@school.edu backend python -m app.db.seed
+docker exec -e SEED_ADMIN_EMAIL=you@school.edu -e SEED_ADMIN_PASSWORD='<strong password>' \
+  classsight-backend python -m app.db.seed
 ```
+
+Use `docker exec` (not `docker compose exec`) for the seed when connected through Session
+Manager: Compose opens an interactive terminal that hangs there with no output. Session
+Manager starts as `ssm-user`; run `sudo -iu ubuntu` first.
 
 The first start downloads the face model (about 280 MB) into a volume, which can take up
 to 5 minutes; later starts take seconds. `POSTGRES_PASSWORD` only applies when the
@@ -165,7 +169,7 @@ Postgres volume is first created.
 - **EBS snapshots:** EC2 → Lifecycle Manager → a daily policy for the instance's volume,
   keeping 3 (snapshots cost credits).
 - **Restore drill (do it once):** download a dump, create a scratch database in the
-  Postgres container, restore with
+  Postgres container (`docker exec classsight-postgres psql -U classsight -d classsight -c "create database scratch"`), restore with
   `gunzip -c file.sql.gz | docker compose ... exec -T postgres psql -U classsight scratch`,
   compare row counts, then drop the scratch database.
 
@@ -189,8 +193,9 @@ Postgres volume is first created.
 
 ## 9. Updating and rolling back
 
-- **Update:** `git push` from your laptop, then
-  `ssh ubuntu@app.<domain> ~/ClassSight/deployment/deploy.sh`.
+- **Update:** `git push` from your laptop, then in a Session Manager shell
+  (`sudo -iu ubuntu`) run `~/ClassSight/deployment/deploy.sh`. (While port 22 is still open you
+  can use `ssh ubuntu@app.<domain> ~/ClassSight/deployment/deploy.sh` instead.)
 - **Changed domain or API address:** edit `.env`, then run `deploy.sh` (it rebuilds the
   frontend, which has the API URL baked in).
 - **Roll back:** `git checkout <previous-commit>`, then `docker compose -f docker-compose.yml
@@ -274,5 +279,5 @@ the bucket.
 - The frontend still uses hardcoded demo accounts and mock data (commit 1940ccf), so the
   full camera and attendance flow is only demoable after Phase E. Tell the teammate
   before Phase E touches those files.
-- The one-face rule (keep strict, or accept the dominant face) is undecided.
+- The one-face rule accepts a clearly dominant face (area ≥ 5x the next); the ratio is untuned.
 - The demo uses 5 students with `ENROLL_AUGMENT=false`.

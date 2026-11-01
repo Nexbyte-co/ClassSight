@@ -48,8 +48,8 @@ Full step-by-step guide (AWS account, S3, IAM role, instance, DNS, backups, chec
 `docker-compose.ec2.yml` switches to real S3 through the instance's IAM role (no
 keys), binds Postgres to the instance only, restarts services automatically, and adds
 **Caddy** as the only public entry point (automatic Let's Encrypt HTTPS for
-`APP_HOST` and `API_HOST`). The security group must allow 80 and 443, and 22 from your
-IP only; 8000 is not published. `backup.sh` dumps Postgres to `s3://<bucket>/backups/`
+`APP_HOST` and `API_HOST`). The security group must allow 80 and 443, and, for first setup, 22 from your
+IP only (remove it once Session Manager works); 8000 is not published. `backup.sh` dumps Postgres to `s3://<bucket>/backups/`
 (run it nightly from cron).
 
 ## Notes

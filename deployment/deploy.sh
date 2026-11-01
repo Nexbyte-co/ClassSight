@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Update the running EC2 deployment to the latest code on the current branch.
-#   ssh ubuntu@<host> ~/ClassSight/deployment/deploy.sh
+#   ~/ClassSight/deployment/deploy.sh   (in a Session Manager shell: sudo -iu ubuntu; or via ssh while port 22 is open)
 # Compose rebuilds only the services whose inputs changed. The frontend bakes in
 # VITE_API_BASE_URL at build time, so edit .env first if the API address changed.
 set -euo pipefail
