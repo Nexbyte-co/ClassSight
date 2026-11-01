@@ -11,7 +11,7 @@ import { ENROLL_MAX_SIDE, resizeImage } from "../lib/resizeImage";
 const NO_MATCH_TEXT = {
   below_threshold: "Not recognised: this face does not match any enrolled student closely enough.",
   ambiguous: "Not sure: this face is close to more than one student. Retake the photo with better light, facing the camera.",
-  no_enrolled_students: "Nobody in this class has an enrolled face yet. Enroll students on the Students page first.",
+  no_enrolled_students: "Nobody in this class has an enrolled face yet. Ask an admin to enroll the students.",
 };
 
 function Verify() {

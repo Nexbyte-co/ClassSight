@@ -2,7 +2,7 @@
 // Real attendance for today's class: upload a class photo, review who was recognised,
 // resolve the rest by hand or one-person photo, and save to the server.
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { Camera, CheckCircle2, HelpCircle, Radio, Save, UserX } from "lucide-react";
 import PageShell from "../components/PageShell";
 import Modal from "../components/Modal";
@@ -16,6 +16,7 @@ import {
   processSession,
   uploadSessionPhoto,
 } from "../api/attendance";
+import { parseSessionId, isValidDateKey } from "../context/scheduleStatus";
 import { ENROLL_MAX_SIDE, GROUP_MAX_SIDE, resizeImage } from "../lib/resizeImage";
 
 // Local calendar date as YYYY-MM-DD (what the API stores as the session date)
@@ -57,7 +58,7 @@ function RescanModal({ classroomId, student, onClose, onMatched }) {
     <Modal title={`Verify ${student.name} by photo`} onClose={busy ? () => {} : onClose}>
       <p className="mg-hint">Take or choose a photo of this student only. They are marked present only if the face matches.</p>
       {!student.face_enrolled && (
-        <div className="mg-alert warn">This student has no enrolled face yet, so a photo cannot verify them. Mark them manually.</div>
+        <div className="mg-alert warn">This student has no enrolled face yet. Ask an admin to enroll them, or mark them manually.</div>
       )}
       <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginTop: 10 }}>
         <button type="button" className="mg-btn" disabled={busy || !student.face_enrolled} onClick={() => setCameraOn((on) => !on)}>
@@ -96,10 +97,23 @@ function RescanModal({ classroomId, student, onClose, onMatched }) {
 }
 
 function TakeAttendance() {
-  const { classroom } = useClassroom();
+  // /attendance/class-<classroom id>_<YYYY-MM-DD> (from the dashboard) names the class and day;
+  // plain /attendance uses the selected class and today.
+  const { sessionId: routeSessionId } = useParams();
+  const { classrooms, classroom: selectedClassroom, selectClassroom, loading: classesLoading } = useClassroom();
+  const route = parseSessionId(routeSessionId);
+  const routeClassroomId = /^class-(\d+)$/.test(route.classId || "") ? Number(route.classId.slice(6)) : null;
+  const routeClassroom = routeClassroomId ? classrooms.find((c) => c.id === routeClassroomId) || null : null;
+  const classNotFound = Boolean(routeSessionId) && !routeClassroom && !classesLoading && classrooms.length > 0;
+  const classroom = routeSessionId ? routeClassroom : selectedClassroom;
   const classroomId = classroom?.id;
+  // Keep the other pages (Students, Verify) on the class that was opened from the dashboard
+  useEffect(() => {
+    if (routeClassroom) selectClassroom(routeClassroom.id);
+  }, [routeClassroom, selectClassroom]);
+  const routeDate = isValidDateKey(route.dateKey) && route.dateKey <= todayKey() ? route.dateKey : null;
   // Fixed while this class is open: a re-render after midnight must not reload and wipe unsaved marks.
-  const date = useMemo(() => todayKey(), [classroomId]); // eslint-disable-line react-hooks/exhaustive-deps
+  const date = useMemo(() => routeDate || todayKey(), [classroomId, routeDate]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const [students, setStudents] = useState([]);
   // studentId -> { status: "present" | "absent", method: "ai" | "manual", confidence?: number }
@@ -340,7 +354,16 @@ function TakeAttendance() {
       )}
       {saveError && <div className="mg-alert error" role="alert">{saveError}</div>}
 
-      {!classroom && (
+      {classNotFound && (
+        <div className="mg-card mg-empty">
+          <h2>Class not found</h2>
+          <p>
+            This class is not one of yours. Go back to the <Link to="/dashboard">dashboard</Link>.
+          </p>
+        </div>
+      )}
+
+      {!classroom && !classNotFound && (
         <div className="mg-card mg-empty">
           <h2>No class yet</h2>
           <p>An admin creates a class and assigns it to a teacher under Admin.</p>
@@ -351,7 +374,7 @@ function TakeAttendance() {
         <div className="mg-card mg-empty">
           <h2>No students in this class</h2>
           <p>
-            Add and enroll students on the <Link to="/students">Students</Link> page first.
+            The roster is managed by an administrator. Ask an admin to add the students to this class&apos;s section.
           </p>
         </div>
       )}

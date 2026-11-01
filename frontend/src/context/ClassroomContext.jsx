@@ -49,14 +49,14 @@ export function ClassroomProvider({ children }) {
     reload();
   }, [userId, reload]);
 
-  const selectClassroom = (id) => {
+  const selectClassroom = useCallback((id) => {
     setSelectedId(id);
     try {
       localStorage.setItem(SELECTED_KEY, String(id));
     } catch {
       /* ignore */
     }
-  };
+  }, []);
 
   const classroom = classrooms.find((c) => c.id === selectedId) || classrooms[0] || null;
 

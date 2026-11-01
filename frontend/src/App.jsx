@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 import Home from "./pages/Home";
 import Login from "./pages/Login";
@@ -6,7 +6,6 @@ import Dashboard from "./pages/Dashboard";
 import Classrooms from "./pages/Classrooms";
 import Classes from "./pages/Classes";
 import ClassSchedule from "./pages/ClassSchedule";
-import Attendance from "./pages/Attendance";
 import Students from "./pages/Students";
 import Reports from "./pages/Reports";
 import AllReports from "./pages/AllReports";
@@ -38,16 +37,14 @@ import StudentDashboard from "./pages/StudentDashboard";
 // Teacher interface design system (scoped to .teacher-ui; imported last so it layers over page styles)
 import "./styles/teacher.css";
 import StudentOverview from "./pages/StudentOverview";
-import UnverifiedStudents from "./pages/UnverifiedStudents";
-import VerifiedStudents from "./pages/VerifiedStudents";
 
 function App() {
   return (
     <ThemeProvider>
       <SettingsProvider>
       <AttendanceProvider>
-        <ScheduleProvider>
         <AuthProvider>
+        <ScheduleProvider>
         <ClassroomProvider>
         <BrowserRouter>
           <Routes>
@@ -60,11 +57,13 @@ function App() {
               <Route path="/classes" element={<Classes />} />
               <Route path="/classes/schedule" element={<ClassSchedule />} />
               <Route path="/attendance" element={<TakeAttendance />} />
-              <Route path="/attendance/unverified" element={<UnverifiedStudents />} />
-              <Route path="/attendance/verified" element={<VerifiedStudents />} />
-              <Route path="/attendance/:sessionId" element={<Attendance />} />
-              <Route path="/attendance/:sessionId/unverified" element={<UnverifiedStudents />} />
-              <Route path="/attendance/:sessionId/verified" element={<VerifiedStudents />} />
+              {/* /attendance/<class-N_YYYY-MM-DD> opens the real attendance page for that class */}
+              <Route path="/attendance/:sessionId" element={<TakeAttendance />} />
+              {/* The old demo review pages are retired: send those URLs to the real page */}
+              <Route path="/attendance/unverified" element={<Navigate to="/attendance" replace />} />
+              <Route path="/attendance/verified" element={<Navigate to="/attendance" replace />} />
+              <Route path="/attendance/:sessionId/unverified" element={<Navigate to="/attendance" replace />} />
+              <Route path="/attendance/:sessionId/verified" element={<Navigate to="/attendance" replace />} />
               <Route path="/students" element={<Students />} />
               <Route path="/verify" element={<Verify />} />
               <Route path="/reports" element={<Reports />} />
@@ -92,8 +91,8 @@ function App() {
           </Routes>
         </BrowserRouter>
         </ClassroomProvider>
-        </AuthProvider>
         </ScheduleProvider>
+        </AuthProvider>
       </AttendanceProvider>
       </SettingsProvider>
     </ThemeProvider>

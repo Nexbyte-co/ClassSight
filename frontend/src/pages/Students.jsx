@@ -1,5 +1,5 @@
 // src/pages/Students.jsx
-// Real roster for the selected class: add students, enroll their faces, view profiles.
+// Roster. Admin: pick a section, add students, enroll faces, view profiles. Teacher: read-only roster of the class.
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { CheckCircle2, AlertCircle, GraduationCap, Search, ChevronLeft, ChevronRight, Eye, X } from "lucide-react";
@@ -7,19 +7,32 @@ import PageShell from "../components/PageShell";
 import Modal from "../components/Modal";
 import CameraCapture from "../components/CameraCapture";
 import { useClassroom } from "../context/ClassroomContext";
+import { useAuth } from "../context/AuthContext";
+import { listStudents } from "../api/classrooms";
 import {
-  createStudent,
-  deleteFace,
-  enrollFace,
-  getStudent,
-  listStudents,
-} from "../api/classrooms";
+  createSection,
+  createSectionStudent,
+  deleteSectionFace,
+  enrollSectionFace,
+  getSectionStudent,
+  listSectionStudents,
+  listSections,
+} from "../api/sections";
 import { ENROLL_MAX_SIDE, resizeImage } from "../lib/resizeImage";
 
 const PAGE_SIZE = 8;
 const MAX_PHOTOS = 5;
+const SECTION_KEY = "classsight_section_id";
 
-function EnrollModal({ classroomId, student, onClose, onDone }) {
+function readStoredSection() {
+  try {
+    return Number(localStorage.getItem(SECTION_KEY)) || null;
+  } catch {
+    return null;
+  }
+}
+
+function EnrollModal({ sectionId, student, onClose, onDone }) {
   const [photos, setPhotos] = useState([]); // File objects
   const [cameraOn, setCameraOn] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -38,7 +51,7 @@ function EnrollModal({ classroomId, student, onClose, onDone }) {
     setError("");
     try {
       const resized = await Promise.all(photos.map((file) => resizeImage(file, ENROLL_MAX_SIDE)));
-      await enrollFace(classroomId, student.id, resized);
+      await enrollSectionFace(sectionId, student.id, resized);
       onDone(`${student.name}: face enrolled with ${resized.length} photo${resized.length > 1 ? "s" : ""}.`);
     } catch (err) {
       setError(err.message || "Enrollment failed.");
@@ -113,26 +126,26 @@ function EnrollModal({ classroomId, student, onClose, onDone }) {
   );
 }
 
-function ProfileModal({ classroomId, studentId, onClose, onEnroll, onDeleted }) {
+function ProfileModal({ sectionId, studentId, onClose, onEnroll, onDeleted }) {
   const [profile, setProfile] = useState(null);
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
-    getStudent(classroomId, studentId)
+    getSectionStudent(sectionId, studentId)
       .then((data) => !cancelled && setProfile(data))
       .catch((err) => !cancelled && setError(err.message || "Could not load the profile."));
     return () => {
       cancelled = true;
     };
-  }, [classroomId, studentId]);
+  }, [sectionId, studentId]);
 
   const removeFace = async () => {
     if (!window.confirm(`Delete ${profile.name}'s face data and photos? This cannot be undone.`)) return;
     setBusy(true);
     try {
-      await deleteFace(classroomId, studentId);
+      await deleteSectionFace(sectionId, studentId);
       onDeleted(`${profile.name}: face data deleted.`);
     } catch (err) {
       setError(err.message || "Could not delete the face data.");
@@ -184,8 +197,71 @@ function ProfileModal({ classroomId, studentId, onClose, onEnroll, onDeleted }) 
 }
 
 function Students() {
+  const { session } = useAuth();
+  const isAdmin = session?.apiRole === "admin";
   const { classroom, loading: classLoading, error: classError } = useClassroom();
+
+  // Admin: sections. Everyone else: the selected class (read-only).
+  const [sections, setSections] = useState([]);
+  const [sectionsLoading, setSectionsLoading] = useState(false);
+  const [sectionsError, setSectionsError] = useState("");
+  const [selectedSectionId, setSelectedSectionId] = useState(readStoredSection);
+  const [newSectionName, setNewSectionName] = useState("");
+  const [creatingSection, setCreatingSection] = useState(false);
+  const [sectionError, setSectionError] = useState("");
+  const sectionReq = useRef(0);
+
+  const loadSections = useCallback(async () => {
+    const id = ++sectionReq.current;
+    setSectionsLoading(true);
+    setSectionsError("");
+    try {
+      const list = await listSections();
+      if (id === sectionReq.current) setSections(list);
+    } catch (err) {
+      if (id === sectionReq.current) setSectionsError(err.message || "Could not load sections.");
+    } finally {
+      if (id === sectionReq.current) setSectionsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (isAdmin) loadSections();
+  }, [isAdmin, loadSections]);
+
+  const section = isAdmin ? sections.find((x) => x.id === selectedSectionId) || sections[0] || null : null;
+  const sectionId = section?.id;
   const classroomId = classroom?.id;
+  const scopeId = isAdmin ? sectionId : classroomId;
+  const hasScope = isAdmin ? !!section : !!classroom;
+
+  const chooseSection = (id) => {
+    setSelectedSectionId(id);
+    setSearch("");
+    setPage(1);
+    setNotice("");
+    try {
+      localStorage.setItem(SECTION_KEY, String(id));
+    } catch {
+      /* ignore */
+    }
+  };
+
+  const addSection = async (e) => {
+    e.preventDefault();
+    setCreatingSection(true);
+    setSectionError("");
+    try {
+      const created = await createSection(newSectionName.trim());
+      setNewSectionName("");
+      await loadSections();
+      chooseSection(created.id);
+    } catch (err) {
+      setSectionError(err.status === 409 ? "A section with that name already exists." : err.message);
+    } finally {
+      setCreatingSection(false);
+    }
+  };
 
   const [students, setStudents] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -209,26 +285,26 @@ function Students() {
 
   const reload = useCallback(async () => {
     const id = ++requestId.current; // ignore answers that arrive after a newer request
-    if (!classroomId) {
+    if (!scopeId) {
       setStudents([]);
       return;
     }
     setLoading(true);
     setError("");
     try {
-      const list = await listStudents(classroomId);
+      const list = await (isAdmin ? listSectionStudents(scopeId) : listStudents(scopeId));
       if (id === requestId.current) setStudents(list);
     } catch (err) {
       if (id === requestId.current) setError(err.message || "Could not load students.");
     } finally {
       if (id === requestId.current) setLoading(false);
     }
-  }, [classroomId]);
+  }, [scopeId, isAdmin]);
 
   // Switching class: drop the old roster right away instead of showing it until the load ends.
   useEffect(() => {
     setStudents([]);
-  }, [classroomId]);
+  }, [scopeId]);
 
   useEffect(() => {
     reload();
@@ -259,7 +335,7 @@ function Students() {
     setAdding(true);
     setAddError("");
     try {
-      const created = await createStudent(classroomId, { rollNumber: newRoll.trim(), name: newName.trim() });
+      const created = await createSectionStudent(sectionId, { rollNumber: newRoll.trim(), name: newName.trim() });
       setNewRoll("");
       setNewName("");
       setShowAdd(false);
@@ -278,29 +354,82 @@ function Students() {
     setProfileId(null);
     setNotice(message);
     await reload();
+    loadSections(); // refresh the per-section student counts
   };
 
   return (
-    <PageShell crumb="Students" activePage="students">
+    <PageShell crumb="Students" activePage="students" showClassPicker={!isAdmin}>
       <div className="students-page-header">
         <div>
           <h1 className="students-page-title">Students</h1>
           <p className="students-page-subtitle">
-            {classroom
-              ? `${classroom.course} - Section ${classroom.section}. Add students, then enroll their faces so attendance and verification can recognise them.`
-              : "No class is available yet."}
+            {isAdmin
+              ? section
+                ? `Section ${section.name}. Students added here belong to every class of this section. Enroll their faces so attendance and verification can recognise them.`
+                : "Create a section, then add and enroll its students."
+              : classroom
+                ? `${classroom.course} - Section ${classroom.section}. Who is enrolled in this class.`
+                : "No class is available yet."}
           </p>
         </div>
-        {classroom && (
+        {isAdmin && section && (
           <button type="button" className="mg-btn" onClick={() => setShowAdd((open) => !open)}>
             {showAdd ? "Cancel" : "Add student"}
           </button>
         )}
       </div>
 
-      {classError && <div className="mg-alert error">{classError}</div>}
+      {isAdmin && (
+        <div className="mg-card">
+          <h2>Section</h2>
+          {sectionsError && (
+            <div className="mg-alert error" role="alert">
+              {sectionsError}{" "}
+              <button type="button" className="mg-btn secondary small" onClick={loadSections}>
+                Retry
+              </button>
+            </div>
+          )}
+          {sectionsLoading && sections.length === 0 && <p className="mg-hint">Loading sections...</p>}
+          {sections.length > 0 && (
+            <label className="mg-field">
+              Selected section
+              <select value={section?.id ?? ""} onChange={(e) => chooseSection(Number(e.target.value))}>
+                {sections.map((x) => (
+                  <option key={x.id} value={x.id}>
+                    {x.name} ({x.student_count} student{x.student_count === 1 ? "" : "s"})
+                  </option>
+                ))}
+              </select>
+            </label>
+          )}
+          {!sectionsLoading && !sectionsError && sections.length === 0 && (
+            <p className="mg-hint">No sections yet. Create the first one below.</p>
+          )}
+          <form onSubmit={addSection} style={{ marginTop: 12 }}>
+            <div className="mg-grid">
+              <label className="mg-field">
+                New section
+                <input
+                  value={newSectionName}
+                  onChange={(e) => setNewSectionName(e.target.value)}
+                  placeholder="e.g. 3C2"
+                  required
+                  maxLength={40}
+                />
+              </label>
+              <button type="submit" className="mg-btn" disabled={creatingSection}>
+                {creatingSection ? "Creating..." : "Create section"}
+              </button>
+            </div>
+            {sectionError && <div className="mg-alert error" role="alert">{sectionError}</div>}
+          </form>
+        </div>
+      )}
 
-      {!classroom && !classLoading && !classError && (
+      {!isAdmin && classError && <div className="mg-alert error">{classError}</div>}
+
+      {!isAdmin && !classroom && !classLoading && !classError && (
         <div className="mg-card mg-empty">
           <GraduationCap size={36} />
           <h2>No class yet</h2>
@@ -308,15 +437,20 @@ function Students() {
         </div>
       )}
 
-      {classroom && (
+      {hasScope && (
         <>
+          {!isAdmin && (
+            <div className="mg-alert warn">
+              The roster is managed by an administrator. Ask an admin to add or enroll students.
+            </div>
+          )}
           {notice && (
             <div className="mg-alert ok" role="status">
               {notice}
             </div>
           )}
 
-          {showAdd && (
+          {isAdmin && showAdd && (
             <form className="mg-card" onSubmit={addStudent}>
               <h2>Add a student</h2>
               <p className="mg-hint">The roll number must be unique across the whole college.</p>
@@ -408,7 +542,9 @@ function Students() {
                 <h3>{students.length === 0 ? "No students yet" : "No match"}</h3>
                 <p>
                   {students.length === 0
-                    ? "Use Add student to build the roster."
+                    ? isAdmin
+                      ? "Use Add student to build the roster."
+                      : "No students in this class yet."
                     : `No student matches "${search}".`}
                 </p>
               </div>
@@ -420,7 +556,7 @@ function Students() {
                       <th>Student</th>
                       <th>Roll number</th>
                       <th>Face</th>
-                      <th style={{ textAlign: "right" }}>Actions</th>
+                      {isAdmin && <th style={{ textAlign: "right" }}>Actions</th>}
                     </tr>
                   </thead>
                   <tbody>
@@ -435,6 +571,7 @@ function Students() {
                             {student.face_enrolled ? "Enrolled" : "Not enrolled"}
                           </span>
                         </td>
+                        {isAdmin && (
                         <td>
                           <div className="mg-actions">
                             <button
@@ -453,6 +590,7 @@ function Students() {
                             </button>
                           </div>
                         </td>
+                        )}
                       </tr>
                     ))}
                   </tbody>
@@ -494,18 +632,18 @@ function Students() {
         </>
       )}
 
-      {profileId && !enrollTarget && (
+      {isAdmin && profileId && !enrollTarget && (
         <ProfileModal
-          classroomId={classroomId}
+          sectionId={sectionId}
           studentId={profileId}
           onClose={() => setProfileId(null)}
           onEnroll={(profile) => setEnrollTarget(profile)}
           onDeleted={finish}
         />
       )}
-      {enrollTarget && (
+      {isAdmin && enrollTarget && (
         <EnrollModal
-          classroomId={classroomId}
+          sectionId={sectionId}
           student={enrollTarget}
           onClose={() => setEnrollTarget(null)}
           onDone={finish}
