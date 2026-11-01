@@ -8,6 +8,8 @@ def test_model_registry_contains_all_readme_entities() -> None:
     assert set(Base.metadata.tables) == {
         "users",
         "classrooms",
+        "lectures",
+        "sections",
         "students",
         "student_photos",
         "attendance_sessions",

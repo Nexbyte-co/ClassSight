@@ -7,9 +7,10 @@ import numpy as np
 from app.core.config import get_settings
 from app.models import StudentPhoto
 from app.services import face_recognition
-from tests.conftest import auth_headers
+from tests.conftest import auth_headers, make_classroom
 
 TEACHER = ("teacher1@classsight.example", "teacherpass123")
+ADMIN = ("admin@classsight.example", "adminpass123")
 
 
 def _photos(count=1):
@@ -21,7 +22,7 @@ def _one_face(_image_bytes):
 
 
 def _url(classroom, student):
-    return f"/classrooms/{classroom.id}/students/{student.id}/face"
+    return f"/sections/{student.section_id}/students/{student.id}/face"
 
 
 def _enroll(client, headers, classroom, student, count=1):
@@ -30,9 +31,9 @@ def _enroll(client, headers, classroom, student, count=1):
 
 
 def test_enroll_stores_normalised_embedding_and_photos(
-    client, teacher_user, classroom, student, db_session, fake_s3
+    client, admin_user, classroom, student, db_session, fake_s3
 ):
-    headers = auth_headers(client, *TEACHER)
+    headers = auth_headers(client, *ADMIN)
     response = _enroll(client, headers, classroom, student, count=2)
 
     assert response.status_code == 200, response.text
@@ -47,14 +48,14 @@ def test_enroll_stores_normalised_embedding_and_photos(
     assert all(key.startswith(f"students/{student.roll_number}/") for key in keys)
     assert set(fake_s3.objects) == set(keys)
 
-    listing = client.get(f"/classrooms/{classroom.id}/students", headers=headers)
+    listing = client.get(f"/sections/{student.section_id}/students", headers=headers)
     assert listing.json()[0]["face_enrolled"] is True
 
 
 def test_photo_with_no_or_multiple_faces_is_rejected_and_nothing_stored(
-    client, teacher_user, classroom, student, db_session, fake_s3
+    client, admin_user, classroom, student, db_session, fake_s3
 ):
-    headers = auth_headers(client, *TEACHER)
+    headers = auth_headers(client, *ADMIN)
     for face_count in (0, 2):
         faces = np.ones((face_count, face_recognition.EMBEDDING_DIM), dtype=np.float32)
         with patch.object(face_recognition, "extract_main_face", lambda _b, f=faces: f):
@@ -66,8 +67,8 @@ def test_photo_with_no_or_multiple_faces_is_rejected_and_nothing_stored(
     assert db_session.query(StudentPhoto).count() == 0
 
 
-def test_photo_count_and_type_validated(client, teacher_user, classroom, student):
-    headers = auth_headers(client, *TEACHER)
+def test_photo_count_and_type_validated(client, admin_user, classroom, student):
+    headers = auth_headers(client, *ADMIN)
     too_many = client.post(_url(classroom, student), files=_photos(6), headers=headers)
     assert too_many.status_code == 422
 
@@ -79,24 +80,24 @@ def test_photo_count_and_type_validated(client, teacher_user, classroom, student
     assert wrong_type.status_code == 422
 
 
-def test_other_teacher_cannot_enroll(client, classroom, student, other_teacher_user):
-    headers = auth_headers(client, "teacher2@classsight.example", "teacherpass123")
+def test_teacher_cannot_enroll_even_in_own_class(client, teacher_user, classroom, student):
+    headers = auth_headers(client, *TEACHER)
     response = client.post(_url(classroom, student), files=_photos(), headers=headers)
     assert response.status_code == 403
 
 
-def test_unknown_student_returns_404(client, teacher_user, classroom, student):
-    headers = auth_headers(client, *TEACHER)
+def test_unknown_student_returns_404(client, admin_user, classroom, student):
+    headers = auth_headers(client, *ADMIN)
     response = client.post(
-        f"/classrooms/{classroom.id}/students/999999/face", files=_photos(), headers=headers
+        f"/sections/{classroom.section_id}/students/999999/face", files=_photos(), headers=headers
     )
     assert response.status_code == 404
 
 
 def test_re_enrollment_replaces_old_photos(
-    client, teacher_user, classroom, student, db_session, fake_s3
+    client, admin_user, classroom, student, db_session, fake_s3
 ):
-    headers = auth_headers(client, *TEACHER)
+    headers = auth_headers(client, *ADMIN)
     _enroll(client, headers, classroom, student, count=2)
     first_keys = set(fake_s3.objects)
 
@@ -110,10 +111,10 @@ def test_re_enrollment_replaces_old_photos(
 
 
 def test_storage_failure_returns_503_and_saves_nothing(
-    client, teacher_user, classroom, student, db_session, fake_s3
+    client, admin_user, classroom, student, db_session, fake_s3
 ):
     fake_s3.fail = True
-    headers = auth_headers(client, *TEACHER)
+    headers = auth_headers(client, *ADMIN)
     response = _enroll(client, headers, classroom, student)
 
     assert response.status_code == 503
@@ -123,12 +124,12 @@ def test_storage_failure_returns_503_and_saves_nothing(
 
 
 def test_profile_lists_presigned_photo_urls(
-    client, teacher_user, classroom, student, fake_s3
+    client, admin_user, classroom, student, fake_s3
 ):
-    headers = auth_headers(client, *TEACHER)
+    headers = auth_headers(client, *ADMIN)
     _enroll(client, headers, classroom, student, count=2)
 
-    profile = client.get(f"/classrooms/{classroom.id}/students/{student.id}", headers=headers)
+    profile = client.get(f"/sections/{student.section_id}/students/{student.id}", headers=headers)
     assert profile.status_code == 200, profile.text
     body = profile.json()
     assert body["roll_number"] == student.roll_number
@@ -137,16 +138,29 @@ def test_profile_lists_presigned_photo_urls(
     assert all(photo["url"].startswith("https://fake-s3/students/") for photo in body["photos"])
 
 
-def test_other_teacher_cannot_view_profile(client, classroom, student, other_teacher_user):
-    headers = auth_headers(client, "teacher2@classsight.example", "teacherpass123")
-    response = client.get(f"/classrooms/{classroom.id}/students/{student.id}", headers=headers)
-    assert response.status_code == 403
+def test_teacher_cannot_view_profile_or_delete_face(client, teacher_user, classroom, student):
+    headers = auth_headers(client, *TEACHER)
+    url = f"/sections/{student.section_id}/students/{student.id}"
+    assert client.get(url, headers=headers).status_code == 403
+    assert client.delete(url + "/face", headers=headers).status_code == 403
+
+
+def test_student_cannot_be_reached_through_another_section(
+    client, admin_user, db_session, teacher_user, classroom, student
+):
+    other = make_classroom(db_session, "CS101", "B", teacher_user.id)
+    headers = auth_headers(client, *ADMIN)
+    url = f"/sections/{other.section_id}/students/{student.id}"
+    assert client.get(url, headers=headers).status_code == 404
+    assert client.delete(url + "/face", headers=headers).status_code == 404
+    response = client.post(url + "/face", files=_photos(), headers=headers)
+    assert response.status_code == 404
 
 
 def test_delete_face_removes_photos_and_embedding(
-    client, teacher_user, classroom, student, db_session, fake_s3
+    client, admin_user, classroom, student, db_session, fake_s3
 ):
-    headers = auth_headers(client, *TEACHER)
+    headers = auth_headers(client, *ADMIN)
     _enroll(client, headers, classroom, student, count=2)
 
     response = client.delete(_url(classroom, student), headers=headers)
@@ -159,9 +173,9 @@ def test_delete_face_removes_photos_and_embedding(
 
 
 def test_delete_face_storage_failure_changes_nothing(
-    client, teacher_user, classroom, student, db_session, fake_s3
+    client, admin_user, classroom, student, db_session, fake_s3
 ):
-    headers = auth_headers(client, *TEACHER)
+    headers = auth_headers(client, *ADMIN)
     _enroll(client, headers, classroom, student, count=1)
     fake_s3.fail = True
 
@@ -227,10 +241,10 @@ def test_augmentation_ignores_a_bystander_seen_after_the_subject_is_lost():
 
 
 def test_enroll_endpoint_uses_augment_setting(
-    client, teacher_user, classroom, student, fake_s3, monkeypatch
+    client, admin_user, classroom, student, fake_s3, monkeypatch
 ):
     monkeypatch.setattr(get_settings(), "enroll_augment", True)
-    headers = auth_headers(client, *TEACHER)
+    headers = auth_headers(client, *ADMIN)
     with patch.object(
         face_recognition, "build_enrollment_embedding", return_value=b"\0" * 2048
     ) as build:

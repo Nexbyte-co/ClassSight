@@ -15,11 +15,12 @@ import {
   ChevronDown,
   Layers,
   CalendarDays,
+  ShieldCheck,
 } from "lucide-react";
 import "../pages/Dashboard.css";
 import { useTheme } from "../context/ThemeContext";
 import { logout } from "../api/auth";
-import { useDemoSession } from "../context/DemoSessionContext";
+import { useAuth } from "../context/AuthContext";
 import AppNavigationDrawer from "./AppNavigationDrawer";
 import ReportsIcon from "./ReportsIcon";
 import TeacherProfileMenu from "./TeacherProfileMenu";
@@ -32,10 +33,13 @@ const SIDEBAR_LINKS = [
   { to: "/dashboard", key: "dashboard", label: "Dashboard", Icon: LayoutDashboard },
   { to: "/classes", key: "classes", label: "Classes", Icon: BookOpen },
   { to: "/attendance", key: "attendance", label: "Attendance", Icon: CircleCheck },
+  { to: "/verify", key: "verify", label: "Verify", Icon: ScanFace },
   { to: "/students", key: "students", label: "Students", Icon: UserRound },
   { to: "/reports", key: "reports", label: "Reports", Icon: ReportsIcon },
   { to: "/settings", key: "settings", label: "Settings", Icon: Settings },
 ];
+
+const ADMIN_LINK = { to: "/admin", key: "admin", label: "Admin setup", Icon: ShieldCheck };
 
 const DEFAULT_DATE = new Date().toLocaleDateString("en-US", {
   weekday: "short",
@@ -62,7 +66,8 @@ function TeacherShell({
 }) {
   const navigate = useNavigate();
   const { isDarkMode, toggleDarkMode } = useTheme();
-  const { signOut } = useDemoSession();
+  const { session, signOut } = useAuth();
+  const sidebarLinks = session?.apiRole === "admin" ? [ADMIN_LINK, ...SIDEBAR_LINKS] : SIDEBAR_LINKS;
 
   const [isNavOpen, setIsNavOpen] = useState(false);
   const [isSideCollapsed, setIsSideCollapsed] = useState(false);
@@ -152,7 +157,7 @@ function TeacherShell({
 
         <aside className={`db-side ${isSideCollapsed ? "c" : ""}`} aria-label="Main navigation">
           <nav className="db-nav">
-            {SIDEBAR_LINKS.map(({ to, key, label, Icon }) => {
+            {sidebarLinks.map(({ to, key, label, Icon }) => {
               const isOn = key === "classes" ? onClassesPage : key === active;
               const link = (
                 <Link

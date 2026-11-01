@@ -65,7 +65,7 @@ export function parseSessionId(sessionId) {
 // Demo clock: schedule statuses are computed as if it were always this time of day
 // (matches the dashboard design: two lectures done, 09:40 active, 10:30 next, the rest scheduled).
 // Set to null to follow the real clock.
-export const DEMO_SCHEDULE_TIME = { hours: 10, minutes: 15 };
+export const DEMO_SCHEDULE_TIME = null;
 
 // Today's date with the demo time of day applied (or the real time when the demo clock is off)
 export function getScheduleNow(date = new Date()) {

@@ -10,7 +10,7 @@ from app.db.base import Base
 
 if TYPE_CHECKING:
     from app.models.attendance import AttendanceRecord
-    from app.models.classroom import Classroom
+    from app.models.section import Section
 
 
 class Student(Base):
@@ -21,10 +21,10 @@ class Student(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     roll_number: Mapped[str] = mapped_column(String(40), nullable=False)
     name: Mapped[str] = mapped_column(String(120), nullable=False)
-    classroom_id: Mapped[int] = mapped_column(ForeignKey("classrooms.id"), nullable=False)
+    section_id: Mapped[int] = mapped_column(ForeignKey("sections.id"), nullable=False, index=True)
     face_embedding: Mapped[bytes | None] = mapped_column(LargeBinary, nullable=True)
 
-    classroom: Mapped[Classroom] = relationship(back_populates="students")
+    section: Mapped[Section] = relationship(back_populates="students")
     attendance_records: Mapped[list[AttendanceRecord]] = relationship(
         back_populates="student", cascade="all, delete-orphan"
     )

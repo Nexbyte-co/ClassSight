@@ -3,7 +3,7 @@ import logging
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api import attendance, auth, classrooms, users
+from app.api import attendance, auth, classrooms, lectures, sections, users
 from app.core.config import get_settings
 
 settings = get_settings()
@@ -31,6 +31,8 @@ app.include_router(auth.router)
 app.include_router(users.router)
 app.include_router(classrooms.router)
 app.include_router(attendance.router)
+app.include_router(lectures.router)
+app.include_router(sections.router)
 
 
 @app.get("/")

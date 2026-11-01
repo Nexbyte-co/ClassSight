@@ -53,8 +53,8 @@ CORS_ALLOWED_ORIGINS=["http://localhost:5173"]
 ### Backend Architecture
 
 - `app/main.py` — registers all routers
-- `app/api/` — route handlers: auth, users, classrooms, attendance
-- `app/models/` — SQLAlchemy ORM, typed `Mapped`/`mapped_column` style
+- `app/api/` — route handlers: auth, users, classrooms, attendance, sections (`sections.py`: ADMIN-only `/sections` list/create + per-section student add, profile, face enroll/delete; shared logic in `app/services/enrollment.py`), lectures (`lectures.py`: weekly timetable slots per class + role-aware `GET /lectures?weekday=N` schedule)
+- `app/models/` — SQLAlchemy ORM, typed `Mapped`/`mapped_column` style; `Lecture` = weekly slot (weekday 0=Mon, start/end time, room; one per class per weekday); `Classroom` also has `course_code`, `department`
 - `app/schemas/` — Pydantic request/response shapes
 - `app/services/s3_service.py` — private S3: session photos, student enrollment photos (`students/{roll}/`), presigned URLs. `S3_ENDPOINT_URL` / `S3_PUBLIC_ENDPOINT_URL` for local S3 (SeaweedFS)
 - `app/services/face_recognition.py` — InsightFace `buffalo_l` (detect → embed → cosine match). `_decide` is the single accept/reject rule (`MATCH_THRESHOLD` 0.5, `AMBIGUITY_MARGIN` 0.05, untuned). A wrong match is worse than a miss. Model loads lazily (~280 MB download on first use); tests fake it
@@ -66,11 +66,13 @@ CORS_ALLOWED_ORIGINS=["http://localhost:5173"]
 
 **Attendance flow:** create session → upload photo → process (group photo, face recognition) → confirm records.
 
-**Students:** `roll_number` = college roll no., unique college-wide. Enroll: `POST /classrooms/{id}/students/{sid}/face` (1–5 one-person photos → averaged embedding in Postgres + photos in S3; re-enroll replaces). Profile: `GET …/students/{sid}`. Delete face data: `DELETE …/face`. Verify one captured photo: `POST /classrooms/{id}/verify` → `verified`, `student`, `confidence`, `reason`.
+**Sections:** `Section` has a unique name (case-insensitive). A class = a course taught to a section by a teacher; `POST /classrooms` takes the section *name* and reuses or creates the section. Admins may attach a class to any existing section; a teacher may only start a new section or add a class to one they already teach (otherwise `403`), because a section's students are shared by all its classes. Students belong to the **section**, so every class of a section shares the same students (any teacher of any class in that section sees them, and the face match works in all of them). Attendance sessions stay per class per day. **The roster is admin-managed**: only admins add students and enroll/delete faces, via `/sections` (below); teachers only list their class's students, verify faces and take attendance.
+
+**Students (admin-managed):** `roll_number` = college roll no., unique college-wide. ADMIN only (teacher → `403`): `GET/POST /sections`, `GET/POST /sections/{id}/students`, `GET /sections/{id}/students/{sid}` (profile, presigned photos), `POST …/{sid}/face` (1–5 one-person photos → averaged embedding in Postgres + photos in S3; re-enroll replaces), `DELETE …/{sid}/face`. A student outside that section → `404`. The old classroom-scoped add/profile/enroll/delete endpoints are removed. Teachers/admins: `GET /classrooms/{id}/students` (list), `POST /classrooms/{id}/verify` → `verified`, `student`, `confidence`, `reason`.
 
 **One-face rule:** enroll and `/verify` use `extract_main_face`: exactly one face, or one whose box area is ≥ `DOMINANT_FACE_AREA_RATIO` (5, untuned) × the next largest; otherwise 422. `/process` (group photos) still uses every face.
 
-**Tests:** model and S3 are faked (`fake_s3` fixture in `conftest.py`); no AWS or model download needed. 75 tests; Postgres must be running.
+**Tests:** model and S3 are faked (`fake_s3` fixture in `conftest.py`); no AWS or model download needed. 107 tests; Postgres must be running.
 
 ## Frontend
 

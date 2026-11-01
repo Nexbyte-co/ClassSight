@@ -1,4 +1,4 @@
-from tests.conftest import auth_headers
+from tests.conftest import auth_headers, make_classroom
 
 
 def test_teacher_can_create_own_classroom(client, teacher_user):
@@ -64,15 +64,16 @@ def test_duplicate_course_section_is_rejected(client, teacher_user, classroom):
     assert response.status_code == 409
 
 
-def test_teacher_can_add_and_list_students(client, teacher_user, classroom):
-    headers = auth_headers(client, "teacher1@classsight.example", "teacherpass123")
+def test_teacher_lists_students_added_by_admin(client, admin_user, teacher_user, classroom):
+    admin = auth_headers(client, "admin@classsight.example", "adminpass123")
     create = client.post(
-        f"/classrooms/{classroom.id}/students",
+        f"/sections/{classroom.section_id}/students",
         json={"roll_number": "R010", "name": "Bob"},
-        headers=headers,
+        headers=admin,
     )
     assert create.status_code == 201, create.text
 
+    headers = auth_headers(client, "teacher1@classsight.example", "teacherpass123")
     listing = client.get(f"/classrooms/{classroom.id}/students", headers=headers)
     assert listing.status_code == 200
     assert len(listing.json()) == 1
@@ -80,23 +81,10 @@ def test_teacher_can_add_and_list_students(client, teacher_user, classroom):
     assert listing.json()[0]["face_enrolled"] is False
 
 
-def test_roll_number_is_unique_across_classrooms(client, teacher_user, classroom, db_session):
-    from app.models import Classroom
-
-    other_room = Classroom(course="CS102", section="B", teacher_id=teacher_user.id)
-    db_session.add(other_room)
-    db_session.commit()
-
+def test_classroom_scoped_student_writes_are_gone(client, teacher_user, classroom, student):
     headers = auth_headers(client, "teacher1@classsight.example", "teacherpass123")
-    first = client.post(
-        f"/classrooms/{classroom.id}/students",
-        json={"roll_number": "102203001", "name": "Bob"},
-        headers=headers,
-    )
-    assert first.status_code == 201, first.text
-    duplicate = client.post(
-        f"/classrooms/{other_room.id}/students",
-        json={"roll_number": "102203001", "name": "Someone Else"},
-        headers=headers,
-    )
-    assert duplicate.status_code == 409
+    base = f"/classrooms/{classroom.id}/students"
+    assert client.post(base, json={"roll_number": "X", "name": "X"}, headers=headers).status_code == 405
+    assert client.get(f"{base}/{student.id}", headers=headers).status_code == 404
+    assert client.post(f"{base}/{student.id}/face", headers=headers).status_code == 404
+    assert client.delete(f"{base}/{student.id}/face", headers=headers).status_code == 404

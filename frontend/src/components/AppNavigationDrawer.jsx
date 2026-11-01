@@ -10,11 +10,12 @@ import {
   ScanFace,
   Layers,
   CalendarDays,
+  ShieldCheck,
 } from "lucide-react";
 import "./AppNavigationDrawer.css";
 import ReportsIcon from "./ReportsIcon";
 import { logout } from "../api/auth";
-import { useDemoSession } from "../context/DemoSessionContext";
+import { useAuth } from "../context/AuthContext";
 
 // Delay before the drawer closes after a mouse pointer leaves it (avoids flicker).
 // Only mouse pointers trigger it; touch and pen keep the click-only behaviour.
@@ -97,8 +98,8 @@ function AppNavigationDrawer({ isOpen, onClose, activePage }) {
     };
   }, [isOpen]);
 
-  // Ends the mock demo sign-in and returns to the public landing page
-  const { signOut } = useDemoSession();
+  // Signs out (clears the API token) and returns to the public landing page
+  const { session, signOut } = useAuth();
   const handleSignOut = () => {
     onClose();
     logout(); // also clear any API token from the backend login
@@ -129,6 +130,16 @@ function AppNavigationDrawer({ isOpen, onClose, activePage }) {
 
         {/* Main Navigation Links */}
         <nav className="app-nav-links">
+          {session?.apiRole === "admin" && (
+            <Link
+              to="/admin"
+              className={`app-nav-link ${activePage === "admin" ? "active" : ""}`}
+              onClick={onClose}
+            >
+              <ShieldCheck size={19} strokeWidth={2} />
+              <span>Admin setup</span>
+            </Link>
+          )}
           <Link
             to="/dashboard"
             className={`app-nav-link ${activePage === "dashboard" ? "active" : ""}`}
@@ -172,6 +183,15 @@ function AppNavigationDrawer({ isOpen, onClose, activePage }) {
           >
             <Camera size={19} strokeWidth={1.8} />
             <span>Attendance</span>
+          </Link>
+
+          <Link
+            to="/verify"
+            className={`app-nav-link ${activePage === "verify" ? "active" : ""}`}
+            onClick={onClose}
+          >
+            <ScanFace size={19} strokeWidth={1.8} />
+            <span>Verify</span>
           </Link>
 
           <Link

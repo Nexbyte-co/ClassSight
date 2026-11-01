@@ -6,20 +6,27 @@ import { useEffect, useId, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ChevronDown, User, Settings, LogOut } from "lucide-react";
 import { logout } from "../api/auth";
-import { useDemoSession } from "../context/DemoSessionContext";
+import { useAuth } from "../context/AuthContext";
 
-const TEACHER = {
-  initials: "PJ",
-  name: "Professor Jhonsy",
-  shortName: "Prof. Jhonsy",
-  department: "Dept. of CS & Eng",
-  email: "Jhonsy.Bansal@thapar.edu",
-};
+// Identity of the signed-in user (from /auth/me) in the shape the markup below uses.
+function toProfile(session) {
+  const name = session?.name || "Teacher";
+  const initials =
+    name.split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0].toUpperCase()).join("") || "T";
+  return {
+    initials,
+    name,
+    shortName: name.split(/\s+/)[0],
+    department: session?.apiRole === "admin" ? "Administrator" : "Teacher",
+    email: session?.email || "",
+  };
+}
 
 // variant "stacked" shows the short name over the department (Dashboard header)
 function TeacherProfileMenu({ open: controlledOpen, onOpenChange, variant }) {
   const navigate = useNavigate();
-  const { signOut } = useDemoSession();
+  const { session, signOut } = useAuth();
+  const TEACHER = toProfile(session);
   const [internalOpen, setInternalOpen] = useState(false);
   const isControlled = controlledOpen !== undefined;
   const open = isControlled ? controlledOpen : internalOpen;

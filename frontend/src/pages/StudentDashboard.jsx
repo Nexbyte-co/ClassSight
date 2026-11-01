@@ -8,7 +8,7 @@ import { useTheme } from "../context/ThemeContext";
 import { useAttendance } from "../context/AttendanceContext";
 import { useSchedule } from "../context/ScheduleContext";
 import { useSettings } from "../context/SettingsContext";
-import { useDemoSession } from "../context/DemoSessionContext";
+import { useAuth } from "../context/AuthContext";
 import { findDemoAccount } from "../context/demoSession";
 import { formatShortSessionDate } from "../context/scheduleStatus";
 import {
@@ -406,7 +406,7 @@ function RecentAttendance({ entries, colorFor }) {
 
 // ---------------------------------------------------------------------------
 function StudentDashboard() {
-  const { session } = useDemoSession();
+  const { session } = useAuth();
   const { isDarkMode } = useTheme();
   const { sessions } = useAttendance();
   const { scheduleList } = useSchedule();

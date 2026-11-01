@@ -15,7 +15,7 @@ from app.core.security import hash_password
 from app.db.base import Base
 from app.db.session import get_db
 from app.main import app
-from app.models import Classroom, Student, User, UserRole
+from app.models import Classroom, Section, Student, User, UserRole
 
 engine = create_engine(os.environ["DATABASE_URL"])
 TestingSessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False)
@@ -101,9 +101,14 @@ def other_teacher_user(db_session):
     return user
 
 
-@pytest.fixture
-def classroom(db_session, teacher_user):
-    room = Classroom(course="CS101", section="A", teacher_id=teacher_user.id)
+def make_classroom(db_session, course: str, section: str, teacher_id: int, **fields) -> Classroom:
+    """A class for `section` (the section is created if it does not exist yet)."""
+    group = db_session.query(Section).filter(Section.name == section).first()
+    if group is None:
+        group = Section(name=section)
+        db_session.add(group)
+        db_session.flush()
+    room = Classroom(course=course, section_id=group.id, teacher_id=teacher_id, **fields)
     db_session.add(room)
     db_session.commit()
     db_session.refresh(room)
@@ -111,8 +116,13 @@ def classroom(db_session, teacher_user):
 
 
 @pytest.fixture
+def classroom(db_session, teacher_user):
+    return make_classroom(db_session, "CS101", "A", teacher_user.id)
+
+
+@pytest.fixture
 def student(db_session, classroom):
-    s = Student(roll_number="R001", name="Alice", classroom_id=classroom.id)
+    s = Student(roll_number="R001", name="Alice", section_id=classroom.section_id)
     db_session.add(s)
     db_session.commit()
     db_session.refresh(s)
