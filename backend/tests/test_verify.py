@@ -33,7 +33,7 @@ def enrolled(db_session, classroom, student):
 
 def _verify(client, classroom, faces, headers=None):
     headers = headers or auth_headers(client, *TEACHER)
-    with patch.object(face_recognition, "extract_face_embeddings", return_value=faces):
+    with patch.object(face_recognition, "extract_main_face", return_value=faces):
         return client.post(
             f"/classrooms/{classroom.id}/verify",
             files={"file": ("capture.jpg", io.BytesIO(b"img"), "image/jpeg")},
@@ -79,7 +79,7 @@ def test_photo_must_contain_exactly_one_face(
 
 
 def test_no_enrolled_students_skips_model(client, teacher_user, classroom, student):
-    with patch.object(face_recognition, "extract_face_embeddings") as extract:
+    with patch.object(face_recognition, "extract_main_face") as extract:
         response = client.post(
             f"/classrooms/{classroom.id}/verify",
             files={"file": ("capture.jpg", io.BytesIO(b"img"), "image/jpeg")},

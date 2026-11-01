@@ -3,8 +3,10 @@
 # with COMPOSE_PROFILES=app in deployment/.env (local S3 is not started).
 #
 # Photos go to real S3 using the instance's IAM role, so no AWS keys are set.
-# Browsers call the API directly (VITE_API_BASE_URL), so the security group
-# must allow 80 (frontend) and 8000 (API), plus 22 from your IP only.
+# Caddy is the only public entry point: it terminates HTTPS (automatic Let's
+# Encrypt certificates) for APP_HOST (frontend) and API_HOST (API), so the
+# security group needs 80 and 443, plus 22 from your IP only. Browsers still
+# call the API directly at VITE_API_BASE_URL, which is https://<API_HOST>.
 # Postgres is bound to the instance itself and never exposed.
 
 services:
@@ -16,11 +18,42 @@ services:
 
   backend:
     restart: unless-stopped
+    # Reachable only through Caddy.
+    ports: !override []
     environment:
       S3_ENDPOINT_URL: ""
       S3_PUBLIC_ENDPOINT_URL: ""
       AWS_ACCESS_KEY_ID: ""
       AWS_SECRET_ACCESS_KEY: ""
+      # Hardening for a public deployment: no interactive API docs, shorter sessions.
+      ENABLE_DOCS: ${ENABLE_DOCS:-false}
+      ACCESS_TOKEN_EXPIRE_MINUTES: ${ACCESS_TOKEN_EXPIRE_MINUTES:-120}
 
   frontend:
     restart: unless-stopped
+    # Reachable only through Caddy.
+    ports: !override []
+
+  caddy:
+    profiles: ["app"]
+    image: caddy:2
+    container_name: classsight-caddy
+    restart: unless-stopped
+    depends_on:
+      - frontend
+      - backend
+    environment:
+      APP_HOST: ${APP_HOST:?set APP_HOST in deployment/.env}
+      API_HOST: ${API_HOST:?set API_HOST in deployment/.env}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      # Keep certificates across restarts so Let's Encrypt is not asked again.
+      - caddy_data:/data
+      - caddy_config:/config
+
+volumes:
+  caddy_data:
+  caddy_config:

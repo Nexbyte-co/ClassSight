@@ -46,7 +46,7 @@ def embed_photos(ds: Dataset, augment: bool):
     for path in every:
         data = path.read_bytes()
         try:
-            faces = fr.extract_face_embeddings(data)
+            faces = fr.extract_main_face(data)
         except fr.InvalidImageError:
             problems.append(f"{path.parent.name}/{path.name}: could not decode image")
             continue

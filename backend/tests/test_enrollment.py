@@ -25,7 +25,7 @@ def _url(classroom, student):
 
 
 def _enroll(client, headers, classroom, student, count=1):
-    with patch.object(face_recognition, "extract_face_embeddings", _one_face):
+    with patch.object(face_recognition, "extract_main_face", _one_face):
         return client.post(_url(classroom, student), files=_photos(count), headers=headers)
 
 
@@ -57,7 +57,7 @@ def test_photo_with_no_or_multiple_faces_is_rejected_and_nothing_stored(
     headers = auth_headers(client, *TEACHER)
     for face_count in (0, 2):
         faces = np.ones((face_count, face_recognition.EMBEDDING_DIM), dtype=np.float32)
-        with patch.object(face_recognition, "extract_face_embeddings", lambda _b, f=faces: f):
+        with patch.object(face_recognition, "extract_main_face", lambda _b, f=faces: f):
             response = client.post(_url(classroom, student), files=_photos(), headers=headers)
         assert response.status_code == 422
         assert "exactly one face" in response.json()["detail"]
@@ -189,18 +189,41 @@ def test_augment_variants_are_mild_and_same_shape():
 def test_augmented_enrollment_embeds_copies_and_skips_lost_faces():
     calls = []
 
-    def fake_embed(image):
+    def fake_detect(image):
         calls.append(image)
         # The darkest copy "loses" the face; it must be skipped, not fail enrollment.
         if image.mean() < 100:
-            return np.empty((0, face_recognition.EMBEDDING_DIM), dtype=np.float32)
-        return np.eye(1, face_recognition.EMBEDDING_DIM, 3, dtype=np.float32)
+            return (
+                np.empty((0, face_recognition.EMBEDDING_DIM), dtype=np.float32),
+                np.empty(0, dtype=np.float32),
+            )
+        face = np.eye(1, face_recognition.EMBEDDING_DIM, 3, dtype=np.float32)
+        return face, np.array([1000.0], dtype=np.float32)
 
-    with patch.object(face_recognition, "embed_image", fake_embed):
+    with patch.object(face_recognition, "_detect", fake_detect):
         stored = face_recognition.build_enrollment_embedding([_jpeg_bytes()], augment=True)
 
     assert len(calls) == 4  # original + mirror + brighter + darker
     assert np.isclose(face_recognition.embedding_from_bytes(stored)[3], 1.0, atol=1e-5)
+
+
+def test_augmentation_ignores_a_bystander_seen_after_the_subject_is_lost():
+    subject = np.eye(1, face_recognition.EMBEDDING_DIM, 3, dtype=np.float32)
+    bystander = np.eye(1, face_recognition.EMBEDDING_DIM, 9, dtype=np.float32)
+
+    def fake_detect(image):
+        # Original: subject dominant over a small bystander. Darkest copy: only the bystander.
+        if image.mean() < 100:
+            return bystander, np.array([50.0], dtype=np.float32)
+        faces = np.concatenate([subject, bystander])
+        return faces, np.array([5000.0, 50.0], dtype=np.float32)
+
+    with patch.object(face_recognition, "_detect", fake_detect):
+        stored = face_recognition.build_enrollment_embedding([_jpeg_bytes()], augment=True)
+
+    result = face_recognition.embedding_from_bytes(stored)
+    assert np.isclose(result[3], 1.0, atol=1e-5)
+    assert np.isclose(result[9], 0.0, atol=1e-5)
 
 
 def test_enroll_endpoint_uses_augment_setting(

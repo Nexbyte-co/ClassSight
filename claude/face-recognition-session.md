@@ -21,7 +21,7 @@ Pipeline: detect -> align -> embed -> cosine match against enrolled student embe
 - `services/s3_service.py`: `key_from_url`, `get_object_bytes`.
 - `services/face_recognition.py`: real pipeline.
   - `match_embeddings`: cosine similarity matrix + Hungarian assignment (one face per student). Accept only if score >= `MATCH_THRESHOLD` (0.5) and it beats the runner-up by `AMBIGUITY_MARGIN` (0.05). Thresholds are untuned placeholders.
-  - `build_enrollment_embedding`: requires exactly one face per photo, averages, normalises. Raises `EnrollmentError`.
+  - `build_enrollment_embedding`: requires exactly one face (or one clearly dominant face) per photo, averages, normalises. Raises `EnrollmentError`.
   - Lazy, thread-safe model load; embedding byte helpers.
 - `api/attendance.py` `/process`: collects students with embeddings, fetches photo from S3, calls `recognize_faces(image_bytes, candidates)`. If nobody has an embedding it skips S3 and recognition.
 - `api/classrooms.py`: `POST /classrooms/{id}/students/{student_id}/face` (1-5 JPEG/PNG photos, <=10 MB each, ownership via `get_owned_classroom`). `FaceEnrollmentOut` in `schemas/student.py`.
