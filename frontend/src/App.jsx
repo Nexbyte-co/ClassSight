@@ -14,6 +14,7 @@ import ReportDetails from "./pages/ReportDetails";
 import Settings from "./pages/Settings";
 import Admin from "./pages/Admin";
 import Verify from "./pages/Verify";
+import TakeAttendance from "./pages/TakeAttendance";
 
 import { ThemeProvider } from "./context/ThemeContext";
 import { AttendanceProvider } from "./context/AttendanceContext";
@@ -58,7 +59,7 @@ function App() {
               <Route path="/classrooms" element={<Classrooms />} />
               <Route path="/classes" element={<Classes />} />
               <Route path="/classes/schedule" element={<ClassSchedule />} />
-              <Route path="/attendance" element={<Attendance />} />
+              <Route path="/attendance" element={<TakeAttendance />} />
               <Route path="/attendance/unverified" element={<UnverifiedStudents />} />
               <Route path="/attendance/verified" element={<VerifiedStudents />} />
               <Route path="/attendance/:sessionId" element={<Attendance />} />

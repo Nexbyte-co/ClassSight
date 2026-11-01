@@ -57,13 +57,12 @@ function EnrollModal({ classroomId, student, onClose, onDone }) {
       </p>
 
       <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
-        <label className="mg-btn secondary" style={{ cursor: "pointer" }}>
+        <label className="mg-btn secondary mg-file">
           Choose photos
           <input
             type="file"
             accept="image/jpeg,image/png"
             multiple
-            hidden
             onChange={(e) => {
               addPhotos([...e.target.files]);
               e.target.value = "";

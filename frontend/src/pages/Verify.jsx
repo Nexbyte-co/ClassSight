@@ -90,12 +90,11 @@ function Verify() {
               <button type="button" className="mg-btn" onClick={() => setCameraOn((on) => !on)}>
                 <ScanFace size={16} style={{ verticalAlign: "-3px" }} /> {cameraOn ? "Close camera" : "Open camera"}
               </button>
-              <label className="mg-btn secondary" style={{ cursor: "pointer" }}>
+              <label className="mg-btn secondary mg-file">
                 Choose a photo
                 <input
                   type="file"
                   accept="image/jpeg,image/png"
-                  hidden
                   onChange={(e) => {
                     const file = e.target.files[0];
                     e.target.value = "";
