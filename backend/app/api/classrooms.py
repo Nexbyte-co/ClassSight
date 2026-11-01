@@ -276,7 +276,7 @@ def verify_student(
         )
 
     try:
-        faces = face_recognition.extract_face_embeddings(content)
+        faces = face_recognition.extract_main_face(content)
     except face_recognition.InvalidImageError as exc:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(exc)

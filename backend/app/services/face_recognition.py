@@ -34,6 +34,9 @@ UNASSIGNED = "unassigned"  # more faces than candidates; no student left to comp
 
 # Light enrollment augmentation: a mirror copy plus one copy per brightness offset.
 AUGMENT_BRIGHTNESS_SHIFTS = (40, -40)
+# A face counts as "the" subject when its box is at least this many times the area of the
+# next largest. Untuned: the 2026-10-23 test photos had a 8-48x gap.
+DOMINANT_FACE_AREA_RATIO = 5.0
 
 _model = None
 _model_lock = threading.Lock()
@@ -171,17 +174,51 @@ def decode_image(image_bytes: bytes) -> np.ndarray:
     return image
 
 
-def embed_image(image: np.ndarray) -> np.ndarray:
-    """Detect every face in a decoded image and return their embeddings (F x 512)."""
+def _detect(image: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+    """Detect every face; return their embeddings (F x 512) and box areas (F)."""
     faces = _get_model().get(image)
     if not faces:
-        return np.empty((0, EMBEDDING_DIM), dtype=np.float32)
-    return np.stack([face.normed_embedding for face in faces]).astype(np.float32)
+        return np.empty((0, EMBEDDING_DIM), dtype=np.float32), np.empty(0, dtype=np.float32)
+    embeddings = np.stack([face.normed_embedding for face in faces]).astype(np.float32)
+    areas = np.array(
+        [(f.bbox[2] - f.bbox[0]) * (f.bbox[3] - f.bbox[1]) for f in faces], dtype=np.float32
+    )
+    return embeddings, areas
+
+
+def embed_image(image: np.ndarray) -> np.ndarray:
+    """Detect every face in a decoded image and return their embeddings (F x 512)."""
+    return _detect(image)[0]
+
+
+def dominant_face_only(embeddings: np.ndarray, areas: np.ndarray) -> np.ndarray:
+    """Keep only the largest face if it dwarfs the rest, else return all faces unchanged."""
+    if len(embeddings) < 2:
+        return embeddings
+    order = np.argsort(areas)[::-1]
+    largest, runner_up = areas[order[0]], areas[order[1]]
+    if largest > 0 and largest >= DOMINANT_FACE_AREA_RATIO * runner_up:
+        logger.info(
+            "dominant face kept: %d face(s) detected, area ratio %.1f", len(embeddings),
+            largest / max(runner_up, 1e-6),
+        )
+        return embeddings[order[:1]]
+    return embeddings
 
 
 def extract_face_embeddings(image_bytes: bytes) -> np.ndarray:
     """Detect every face in an image and return their embeddings (F x 512)."""
     return embed_image(decode_image(image_bytes))
+
+
+def extract_main_face(image_bytes: bytes) -> np.ndarray:
+    """Embeddings for a one-person photo: a clearly dominant face wins over background faces.
+
+    Returns 1 x 512 when there is one face or one dominant face, otherwise every face
+    found (0 or several), which the caller rejects.
+    """
+    embeddings, areas = _detect(decode_image(image_bytes))
+    return dominant_face_only(embeddings, areas)
 
 
 def augment_variants(image: np.ndarray) -> list[np.ndarray]:
@@ -194,12 +231,19 @@ def augment_variants(image: np.ndarray) -> list[np.ndarray]:
     return variants
 
 
-def _augmented_embeddings(image_bytes: bytes, position: int) -> list[np.ndarray]:
-    """Embeddings of the augmented copies; a copy where the face is lost is skipped."""
+def _augmented_embeddings(
+    image_bytes: bytes, position: int, original: np.ndarray
+) -> list[np.ndarray]:
+    """Embeddings of the augmented copies of one photo.
+
+    A copy is kept only if it has one (dominant) face that still looks like the original
+    subject; otherwise a bystander seen after the subject's face was lost could be
+    averaged into the student's template.
+    """
     kept: list[np.ndarray] = []
     for variant in augment_variants(decode_image(image_bytes)):
-        faces = embed_image(variant)
-        if len(faces) == 1:
+        faces = dominant_face_only(*_detect(variant))
+        if len(faces) == 1 and float(faces[0] @ original) >= MATCH_THRESHOLD:
             kept.append(faces[0])
     logger.info("enroll photo %d: %d augmented copies used", position, len(kept))
     return kept
@@ -212,13 +256,13 @@ class EnrollmentError(ValueError):
 def build_enrollment_embedding(images: list[bytes], augment: bool = False) -> bytes:
     """Turn 1+ close-up photos of one student into the bytes stored on the student.
 
-    Every photo must contain exactly one face so a group shot can't be enrolled
-    under the wrong student. The photos themselves are never persisted.
+    Every photo must contain exactly one face (or one clearly dominant face) so a group
+    shot can't be enrolled under the wrong student. The photos themselves are never persisted.
     """
     embeddings: list[np.ndarray] = []
     for position, image_bytes in enumerate(images, start=1):
         try:
-            faces = extract_face_embeddings(image_bytes)
+            faces = extract_main_face(image_bytes)
         except ValueError as exc:
             raise EnrollmentError(f"Photo {position}: {exc}") from exc
         logger.info("enroll photo %d: %d face(s) found", position, len(faces))
@@ -228,7 +272,7 @@ def build_enrollment_embedding(images: list[bytes], augment: bool = False) -> by
             )
         embeddings.append(faces[0])
         if augment:
-            embeddings.extend(_augmented_embeddings(image_bytes, position))
+            embeddings.extend(_augmented_embeddings(image_bytes, position, faces[0]))
     return embedding_to_bytes(mean_embedding(embeddings))
 
 
