@@ -18,7 +18,7 @@ class StudentOut(BaseModel):
     id: int
     roll_number: str
     name: str
-    classroom_id: int
+    section_id: int
     face_enrolled: bool
 
     model_config = {"from_attributes": True}

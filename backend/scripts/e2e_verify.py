@@ -4,10 +4,11 @@
       python scripts/e2e_verify.py --data-dir ~/classsight-data --label augment-off
 
 The admin must already exist (python -m app.db.seed). The run creates two teachers, one
-classroom and one student per enrollment folder, with roll numbers prefixed by a run tag so
+section, one classroom and one student per enrollment folder, with roll numbers prefixed by a run tag so
 they can't collide with real data. It never prints or stores photos.
 
-Probes (every one goes through POST /classrooms/{id}/verify):
+Probes (every one goes through POST /classrooms/{id}/verify). The roster is admin-managed, so
+students are added and enrolled through /sections with the admin login:
   held-out  enroll a student without photo P, then verify P            (should match)
   known     verify verify/known photos against the full enrollment      (should match)
   stranger  remove one student's face data, then verify that student's
@@ -50,7 +51,7 @@ class Run:
         self.probes: list[dict] = []
         self.findings: list[str] = []  # photos the API refused; working as designed, but worth knowing
         self._photo_cache: dict[Path, bytes] = {}
-        self.created: dict = {"token": None, "classroom": None, "students": []}
+        self.created: dict = {"token": None, "classroom": None, "section": None, "students": []}
 
     def photo(self, path: Path) -> bytes:
         if path not in self._photo_cache:
@@ -101,20 +102,21 @@ def upload(run: Run, paths: list[Path]):
     return [("files", (p.name, run.photo(p), "image/jpeg")) for p in paths]
 
 
-def enroll(run, token, cid, sid, paths, note=""):
+def enroll(run, token, secid, sid, paths, note=""):
+    # The roster is admin-managed: enrolling goes through the section.
     return run.call(
-        "POST", f"/classrooms/{cid}/students/{sid}/face", token, files=upload(run, paths), note=note
+        "POST", f"/sections/{secid}/students/{sid}/face", token, files=upload(run, paths), note=note
     )
 
 
-def enroll_usable(run, token, cid, sid, paths, note=""):
+def enroll_usable(run, token, secid, sid, paths, note=""):
     """Enroll, dropping any photo the API refuses ("Photo k: ...") and retrying.
 
     Returns (status, body, photos actually used). A refused photo is recorded as a finding.
     """
     paths = list(paths)
     while paths:
-        status, body = enroll(run, token, cid, sid, paths, note)
+        status, body = enroll(run, token, secid, sid, paths, note)
         detail = body.get("detail") if isinstance(body, dict) else None
         refused = re.match(r"Photo (\d+): (.*)", detail) if status == 422 and isinstance(detail, str) else None
         if not refused:
@@ -193,22 +195,28 @@ def run_experiments(run: Run, ds: Dataset, admin_email: str, admin_password: str
         teachers[letter] = {"id": user["id"], "token": body["access_token"]}
     ta, tb = teachers["a"]["token"], teachers["b"]["token"]
 
+    # A section of its own: sections share their students, so never reuse a real one.
+    section_name = f"E2E-{tag}"
+    status, section = run.call("POST", "/sections", admin, json_body={"name": section_name})
+    if not run.check("admin creates section", status == 201):
+        sys.exit("Cannot create the section.")
+    secid = section["id"]
     status, classroom = run.call(
         "POST",
         "/classrooms",
-        ta,
-        json_body={"course": f"E2E {tag}", "section": "A", "teacher_id": teachers["a"]["id"]},
+        admin,
+        json_body={"course": f"E2E {tag}", "section": section_name, "teacher_id": teachers["a"]["id"]},
     )
-    run.check("teacher A creates classroom", status == 201)
+    run.check("admin creates classroom for teacher A", status == 201)
     cid = classroom["id"]
-    run.created.update(token=ta, classroom=cid)
+    run.created.update(token=admin, classroom=cid, section=secid)
 
     sid_of: dict[str, int] = {}
     for roll in ds.rolls:
         status, student = run.call(
             "POST",
-            f"/classrooms/{cid}/students",
-            ta,
+            f"/sections/{secid}/students",
+            admin,
             json_body={"roll_number": tag + roll, "name": ds.names[roll]},
         )
         if not run.check(f"create student {roll}", status == 201):
@@ -221,8 +229,14 @@ def run_experiments(run: Run, ds: Dataset, admin_email: str, admin_password: str
     status, _ = run.call("GET", f"/classrooms/{cid}/students", tb)
     run.check("teacher B cannot list A's students", status == 403, f"status {status}")
     some_roll = ds.rolls[0]
-    status, _ = enroll(run, tb, cid, sid_of[some_roll], ds.enroll[some_roll][:1])
-    run.check("teacher B cannot enroll into A's classroom", status == 403, f"status {status}")
+    status, _ = enroll(run, tb, secid, sid_of[some_roll], ds.enroll[some_roll][:1])
+    run.check("teacher cannot enroll students (admin only)", status == 403, f"status {status}")
+    status, _ = run.call(
+        "POST", f"/sections/{secid}/students", ta, json_body={"roll_number": tag + "X", "name": "X"}
+    )
+    run.check("teacher cannot add students (admin only)", status == 403, f"status {status}")
+    status, _ = run.call("GET", f"/sections/{secid}/students/{sid_of[some_roll]}", ta)
+    run.check("teacher cannot open a student profile (admin only)", status == 403, f"status {status}")
     status, _ = run.call(
         "POST",
         f"/classrooms/{cid}/verify",
@@ -244,7 +258,7 @@ def run_experiments(run: Run, ds: Dataset, admin_email: str, admin_password: str
     print("== enroll everyone with all photos")
     usable: dict[str, list[Path]] = {}  # photos the API accepted; later steps use only these
     for roll in ds.rolls:
-        status, body, usable[roll] = enroll_usable(run, ta, cid, sid_of[roll], ds.enroll[roll])
+        status, body, usable[roll] = enroll_usable(run, admin, secid, sid_of[roll], ds.enroll[roll])
         run.check(
             f"enroll {roll}",
             status == 200 and body.get("photos_used") == len(usable[roll]),
@@ -256,7 +270,7 @@ def run_experiments(run: Run, ds: Dataset, admin_email: str, admin_password: str
         status == 200 and all(s["face_enrolled"] for s in roster) and len(roster) == len(ds.rolls),
     )
     roll = ds.rolls[0]
-    status, profile = run.call("GET", f"/classrooms/{cid}/students/{sid_of[roll]}", ta)
+    status, profile = run.call("GET", f"/sections/{secid}/students/{sid_of[roll]}", admin)
     run.check(
         "profile lists the stored photos",
         status == 200 and len(profile["photos"]) == len(usable[roll]),
@@ -278,24 +292,24 @@ def run_experiments(run: Run, ds: Dataset, admin_email: str, admin_password: str
             continue
         for held_out in photos:
             rest = [p for p in photos if p != held_out]
-            status, _ = enroll(run, ta, cid, sid_of[roll], rest, note=f"without {held_out.name}")
+            status, _ = enroll(run, admin, secid, sid_of[roll], rest, note=f"without {held_out.name}")
             if status != 200:
                 run.check(f"re-enroll {roll} without {held_out.name}", False, f"status {status}")
                 continue
             probe = verify_probe(run, ta, cid, tag, "held-out", roll, held_out)
             print(f"  {roll} minus {held_out.name}: {probe['outcome']} ({probe['confidence']})")
-        status, _ = enroll(run, ta, cid, sid_of[roll], photos, note="restore full enrollment")
+        status, _ = enroll(run, admin, secid, sid_of[roll], photos, note="restore full enrollment")
         run.check(f"restore full enrollment {roll}", status == 200)
 
     print("== stranger: remove one student, verify their photos against everyone else")
     for roll in ds.rolls:
-        status, _ = run.call("DELETE", f"/classrooms/{cid}/students/{sid_of[roll]}/face", ta)
+        status, _ = run.call("DELETE", f"/sections/{secid}/students/{sid_of[roll]}/face", admin)
         if not run.check(f"remove face data {roll}", status == 204, f"status {status}"):
             continue
         for photo in usable[roll] + ds.known.get(roll, []):
             probe = verify_probe(run, ta, cid, tag, "stranger", None, photo)
             print(f"  {roll} {photo.name}: {probe['outcome']} ({probe['confidence']})")
-        status, _ = enroll(run, ta, cid, sid_of[roll], usable[roll], note="restore")
+        status, _ = enroll(run, admin, secid, sid_of[roll], usable[roll], note="restore")
         run.check(f"restore enrollment {roll}", status == 200)
     for photo in ds.unknown:
         probe = verify_probe(run, ta, cid, tag, "stranger", None, photo)
@@ -303,13 +317,13 @@ def run_experiments(run: Run, ds: Dataset, admin_email: str, admin_password: str
 
     print("== delete removes the stored photos")
     roll = ds.rolls[-1]
-    status, profile = run.call("GET", f"/classrooms/{cid}/students/{sid_of[roll]}", ta)
+    status, profile = run.call("GET", f"/sections/{secid}/students/{sid_of[roll]}", admin)
     link = profile["photos"][0]["url"]
     before = requests.get(link, timeout=60)
     run.check("photo link opens before delete", before.status_code == 200, f"{before.status_code}")
-    status, _ = run.call("DELETE", f"/classrooms/{cid}/students/{sid_of[roll]}/face", ta)
+    status, _ = run.call("DELETE", f"/sections/{secid}/students/{sid_of[roll]}/face", admin)
     run.check("delete face data", status == 204)
-    status, profile = run.call("GET", f"/classrooms/{cid}/students/{sid_of[roll]}", ta)
+    status, profile = run.call("GET", f"/sections/{secid}/students/{sid_of[roll]}", admin)
     run.check(
         "profile empty after delete", status == 200 and not profile["photos"] and not profile["face_enrolled"]
     )
@@ -321,13 +335,13 @@ def run_experiments(run: Run, ds: Dataset, admin_email: str, admin_password: str
 def remove_face_data(run: Run):
     """Delete stored photos for every student this run created, even after a crash."""
     made = run.created
-    if not made["token"] or made["classroom"] is None:
+    if not made["token"] or made["section"] is None:
         return
     print("== cleanup: remove face data (S3 objects)")
     for sid in made["students"]:
         try:
             run.call(
-                "DELETE", f"/classrooms/{made['classroom']}/students/{sid}/face", made["token"],
+                "DELETE", f"/sections/{made['section']}/students/{sid}/face", made["token"],
                 note="cleanup",
             )
         except requests.RequestException as exc:

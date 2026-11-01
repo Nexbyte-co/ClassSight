@@ -5,7 +5,7 @@ from unittest.mock import patch
 import numpy as np
 
 from app.models import AttendanceSession
-from tests.conftest import auth_headers
+from tests.conftest import auth_headers, make_classroom
 
 
 def _create_session(client, headers, classroom_id, session_date="2026-01-15"):
@@ -102,10 +102,10 @@ def test_process_matches_enrolled_students_from_s3_photo(
     bob = Student(
         roll_number="R002",
         name="Bob",
-        classroom_id=classroom.id,
+        section_id=classroom.section_id,
         face_embedding=face_recognition.embedding_to_bytes(unit(1)),
     )
-    carol = Student(roll_number="R003", name="Carol", classroom_id=classroom.id)
+    carol = Student(roll_number="R003", name="Carol", section_id=classroom.section_id)
     db_session.add_all([bob, carol])
     db_session.commit()
 
@@ -152,10 +152,8 @@ def test_confirm_rejects_student_outside_classroom(
 ):
     from app.models import Classroom, Student
 
-    other_room = Classroom(course="CS102", section="B", teacher_id=teacher_user.id)
-    db_session.add(other_room)
-    db_session.commit()
-    other_student = Student(roll_number="X1", name="Eve", classroom_id=other_room.id)
+    other_room = make_classroom(db_session, "CS102", "B", teacher_user.id)
+    other_student = Student(roll_number="X1", name="Eve", section_id=other_room.section_id)
     db_session.add(other_student)
     db_session.commit()
     db_session.refresh(other_student)

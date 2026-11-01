@@ -6,7 +6,7 @@ import pytest
 
 from app.models import Student
 from app.services import face_recognition
-from tests.conftest import auth_headers
+from tests.conftest import auth_headers, make_classroom
 
 TEACHER = ("teacher1@classsight.example", "teacherpass123")
 
@@ -22,10 +22,10 @@ def enrolled(db_session, classroom, student):
     bob = Student(
         roll_number="R002",
         name="Bob",
-        classroom_id=classroom.id,
+        section_id=classroom.section_id,
         face_embedding=face_recognition.embedding_to_bytes(_unit(1)),
     )
-    carol = Student(roll_number="R003", name="Carol", classroom_id=classroom.id)
+    carol = Student(roll_number="R003", name="Carol", section_id=classroom.section_id)
     db_session.add_all([bob, carol])
     db_session.commit()
     return {"alice": student, "bob": bob, "carol": carol}
@@ -114,14 +114,12 @@ def test_only_students_of_this_classroom_are_candidates(
 ):
     from app.models import Classroom
 
-    other_room = Classroom(course="CS102", section="B", teacher_id=teacher_user.id)
-    db_session.add(other_room)
-    db_session.commit()
+    other_room = make_classroom(db_session, "CS102", "B", teacher_user.id)
     db_session.add(
         Student(
             roll_number="X1",
             name="Eve",
-            classroom_id=other_room.id,
+            section_id=other_room.section_id,
             face_embedding=face_recognition.embedding_to_bytes(_unit(9)),
         )
     )

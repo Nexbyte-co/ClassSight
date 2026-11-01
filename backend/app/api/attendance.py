@@ -131,7 +131,7 @@ def process_session(
             detail="Upload a session photo before processing",
         )
 
-    students = db.query(Student).filter(Student.classroom_id == classroom.id).all()
+    students = db.query(Student).filter(Student.section_id == classroom.section_id).all()
     students_by_id = {student.id: student for student in students}
 
     candidates = [
@@ -190,7 +190,7 @@ def confirm_session(
     valid_student_ids = {
         student.id
         for student in db.query(Student.id)
-        .filter(Student.classroom_id == classroom.id, Student.id.in_(student_ids))
+        .filter(Student.section_id == classroom.section_id, Student.id.in_(student_ids))
         .all()
     }
     unknown_ids = set(student_ids) - valid_student_ids
@@ -254,7 +254,7 @@ def get_analytics(
         or 0
     )
     total_students = (
-        db.query(func.count(Student.id)).filter(Student.classroom_id == classroom_id).scalar()
+        db.query(func.count(Student.id)).filter(Student.section_id == classroom.section_id).scalar()
         or 0
     )
 
