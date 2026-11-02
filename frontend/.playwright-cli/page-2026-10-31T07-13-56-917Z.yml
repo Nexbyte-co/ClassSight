@@ -1,0 +1,305 @@
+- generic [ref=f5e3]:
+  - banner [ref=f5e4]:
+    - generic [ref=f5e5]:
+      - button "Toggle navigation" [expanded] [ref=f5e6] [cursor=pointer]
+      - link "ClassSight" [ref=f5e8] [cursor=pointer]:
+        - /url: /dashboard
+    - generic [ref=f5e17]:
+      - generic [ref=f5e18]: Sat, Oct 31, 2026
+      - button "Night mode" [ref=f5e22] [cursor=pointer]
+      - button "Notifications (1)" [ref=f5e30] [cursor=pointer]
+      - button "Professor Jhonsy — account menu" [ref=f5e36] [cursor=pointer]:
+        - generic [aria-hidden] [ref=f5e37]: PJ
+        - generic [ref=f5e38]:
+          - generic [ref=f5e39]: Prof. Jhonsy
+          - generic [ref=f5e40]: Dept. of CS & Eng
+  - generic [ref=f5e43]:
+    - complementary "Main navigation" [ref=f5e44]:
+      - navigation [ref=f5e45]:
+        - link "Dashboard" [ref=f5e46] [cursor=pointer]:
+          - /url: /dashboard
+        - link "Classes" [ref=f5e53] [cursor=pointer]:
+          - /url: /classes
+        - link "Attendance" [ref=f5e57] [cursor=pointer]:
+          - /url: /attendance
+        - link "Students" [ref=f5e62] [cursor=pointer]:
+          - /url: /students
+        - link "Reports" [ref=f5e67] [cursor=pointer]:
+          - /url: /reports
+        - link "Settings" [ref=f5e71] [cursor=pointer]:
+          - /url: /settings
+      - generic [ref=f5e76]:
+        - generic [ref=f5e77]:
+          - generic [ref=f5e78]: Spring Term 2026
+          - generic [ref=f5e79]: CSE Dept. • Semester 6
+          - generic [ref=f5e80]: Academic Week 8
+        - button "Log Out Faculty" [ref=f5e81] [cursor=pointer]
+    - main [ref=f5e86]:
+      - generic [ref=f5e87]:
+        - generic [ref=f5e88]:
+          - generic [ref=f5e93]:
+            - heading "Reports" [level=1] [ref=f5e94]
+            - paragraph [ref=f5e95]: Attendance analytics and exports across your classes
+          - generic [ref=f5e96]:
+            - generic [ref=f5e97]:
+              - generic [ref=f5e102]:
+                - generic [ref=f5e103]: Lectures held
+                - generic [ref=f5e104]: "0"
+              - generic [ref=f5e110]:
+                - generic [ref=f5e111]: Labs held
+                - generic [ref=f5e112]: "64"
+            - generic [ref=f5e118]:
+              - generic [ref=f5e119]: Total batches
+              - generic [ref=f5e120]: "8"
+          - region "Batch selected" [ref=f5e121]:
+            - generic [ref=f5e122]:
+              - generic [ref=f5e127]:
+                - heading "Batch selected" [level=2] [ref=f5e128]
+                - generic [ref=f5e129]: 2Q3B · Database Management System II
+              - generic [ref=f5e130]:
+                - generic [ref=f5e131]:
+                  - generic [ref=f5e132]: Subject
+                  - combobox "Subject" [ref=f5e133] [cursor=pointer]:
+                    - option "Database Management System II" [selected]
+                    - option "Software Engineering"
+                    - option "Operating Systems"
+                - generic [ref=f5e134]:
+                  - generic [ref=f5e135]: Batch
+                  - combobox "Batch" [ref=f5e136] [cursor=pointer]:
+                    - option "2Q3B" [selected]
+                    - option "2Q3C"
+            - generic [ref=f5e137]:
+              - generic [ref=f5e138]: Average attendance · 31 Aug – 22 Oct
+              - generic [ref=f5e141]:
+                - generic [ref=f5e142]:
+                  - generic [ref=f5e143]: 88%
+                  - generic [ref=f5e144]: ▲ +1% vs subject avg
+                - generic [ref=f5e145]:
+                  - generic [ref=f5e146]:
+                    - generic [ref=f5e147]:
+                      - generic [ref=f5e148]: Lecs held
+                      - generic [ref=f5e149]: "0"
+                    - generic [ref=f5e150]:
+                      - generic [ref=f5e151]: Labs held
+                      - generic [ref=f5e152]: "8"
+                  - generic [ref=f5e153]:
+                    - generic [ref=f5e154]:
+                      - generic [ref=f5e155]: Best week
+                      - generic [ref=f5e156]: W2 · 91%
+                    - generic [ref=f5e157]:
+                      - generic [ref=f5e158]: Lowest week
+                      - generic [ref=f5e159]: W6 · 83%
+              - button "All classes average" [ref=f5e160] [cursor=pointer]
+        - generic [ref=f5e163]:
+          - region "Attendance trend" [ref=f5e164]:
+            - generic [ref=f5e165]:
+              - generic [ref=f5e171]:
+                - heading "Attendance trend" [level=4] [ref=f5e172]
+                - generic [ref=f5e173]: 2Q3B · Database Management System II · 31 Aug – 22 Oct
+              - generic [ref=f5e174]:
+                - button "Export CSV" [ref=f5e175] [cursor=pointer]
+                - button "View more" [ref=f5e178] [cursor=pointer]
+            - img "Attendance trend" [ref=f5e182]:
+              - generic [ref=f5e183]: 80%
+              - generic [ref=f5e185]: 85%
+              - generic [ref=f5e187]: 90%
+              - generic [ref=f5e189]: 95%
+              - generic [ref=f5e193]:
+                - generic [ref=f5e194]: W1
+                - generic [ref=f5e195] [cursor=pointer]
+              - generic [ref=f5e196]:
+                - generic [ref=f5e197]: W2
+                - generic [ref=f5e198] [cursor=pointer]
+              - generic [ref=f5e199]:
+                - generic [ref=f5e200]: W3
+                - generic [ref=f5e201] [cursor=pointer]
+              - generic [ref=f5e202]:
+                - generic [ref=f5e203]: W4
+                - generic [ref=f5e204] [cursor=pointer]
+              - generic [ref=f5e205]:
+                - generic [ref=f5e206]: W5
+                - generic [ref=f5e207] [cursor=pointer]
+              - generic [ref=f5e208]:
+                - generic [ref=f5e209]: W6
+                - generic [ref=f5e210] [cursor=pointer]
+              - generic [ref=f5e211]:
+                - generic [ref=f5e212]: W7
+                - generic [ref=f5e213] [cursor=pointer]
+              - generic [ref=f5e214]:
+                - generic [ref=f5e215]: W8
+                - generic [ref=f5e216] [cursor=pointer]
+          - region "Date range" [ref=f5e217]:
+            - generic [ref=f5e218]:
+              - button "Previous month" [ref=f5e219] [cursor=pointer]
+              - generic [ref=f5e222]: October 2026
+              - button "Next month" [disabled] [ref=f5e223]
+            - generic [ref=f5e226]:
+              - generic [ref=f5e227]: Su
+              - generic [ref=f5e228]: Mo
+              - generic [ref=f5e229]: Tu
+              - generic [ref=f5e230]: We
+              - generic [ref=f5e231]: Th
+              - generic [ref=f5e232]: Fr
+              - generic [ref=f5e233]: Sa
+              - button "Sun Sep 27 2026" [ref=f5e234] [cursor=pointer]: "27"
+              - button "Mon Sep 28 2026" [ref=f5e235] [cursor=pointer]: "28"
+              - button "Tue Sep 29 2026" [ref=f5e236] [cursor=pointer]: "29"
+              - button "Wed Sep 30 2026" [ref=f5e237] [cursor=pointer]: "30"
+              - button "Thu Oct 01 2026" [pressed] [ref=f5e238] [cursor=pointer]: "1"
+              - button "Fri Oct 02 2026" [pressed] [ref=f5e239] [cursor=pointer]: "2"
+              - button "Sat Oct 03 2026" [pressed] [ref=f5e240] [cursor=pointer]: "3"
+              - button "Sun Oct 04 2026" [pressed] [ref=f5e241] [cursor=pointer]: "4"
+              - button "Mon Oct 05 2026" [pressed] [ref=f5e242] [cursor=pointer]: "5"
+              - button "Tue Oct 06 2026" [pressed] [ref=f5e243] [cursor=pointer]: "6"
+              - button "Wed Oct 07 2026" [pressed] [ref=f5e244] [cursor=pointer]: "7"
+              - button "Thu Oct 08 2026" [pressed] [ref=f5e245] [cursor=pointer]: "8"
+              - button "Fri Oct 09 2026" [pressed] [ref=f5e246] [cursor=pointer]: "9"
+              - button "Sat Oct 10 2026" [pressed] [ref=f5e247] [cursor=pointer]: "10"
+              - button "Sun Oct 11 2026" [pressed] [ref=f5e248] [cursor=pointer]: "11"
+              - button "Mon Oct 12 2026" [pressed] [ref=f5e249] [cursor=pointer]: "12"
+              - button "Tue Oct 13 2026" [pressed] [ref=f5e250] [cursor=pointer]: "13"
+              - button "Wed Oct 14 2026" [pressed] [ref=f5e251] [cursor=pointer]: "14"
+              - button "Thu Oct 15 2026" [pressed] [ref=f5e252] [cursor=pointer]: "15"
+              - button "Fri Oct 16 2026" [pressed] [ref=f5e253] [cursor=pointer]: "16"
+              - button "Sat Oct 17 2026" [pressed] [ref=f5e254] [cursor=pointer]: "17"
+              - button "Sun Oct 18 2026" [pressed] [ref=f5e255] [cursor=pointer]: "18"
+              - button "Mon Oct 19 2026" [pressed] [ref=f5e256] [cursor=pointer]: "19"
+              - button "Tue Oct 20 2026" [pressed] [ref=f5e257] [cursor=pointer]: "20"
+              - button "Wed Oct 21 2026" [pressed] [ref=f5e258] [cursor=pointer]: "21"
+              - button "Thu Oct 22 2026" [pressed] [ref=f5e259] [cursor=pointer]: "22"
+              - button "Fri Oct 23 2026" [disabled] [ref=f5e260]: "23"
+              - button "Sat Oct 24 2026" [disabled] [ref=f5e261]: "24"
+              - button "Sun Oct 25 2026" [disabled] [ref=f5e262]: "25"
+              - button "Mon Oct 26 2026" [disabled] [ref=f5e263]: "26"
+              - button "Tue Oct 27 2026" [disabled] [ref=f5e264]: "27"
+              - button "Wed Oct 28 2026" [disabled] [ref=f5e265]: "28"
+              - button "Thu Oct 29 2026" [disabled] [ref=f5e266]: "29"
+              - button "Fri Oct 30 2026" [disabled] [ref=f5e267]: "30"
+              - button "Sat Oct 31 2026" [disabled] [ref=f5e268]: "31"
+              - button "Sun Nov 01 2026" [disabled] [ref=f5e269]: "1"
+              - button "Mon Nov 02 2026" [disabled] [ref=f5e270]: "2"
+              - button "Tue Nov 03 2026" [disabled] [ref=f5e271]: "3"
+              - button "Wed Nov 04 2026" [disabled] [ref=f5e272]: "4"
+              - button "Thu Nov 05 2026" [disabled] [ref=f5e273]: "5"
+              - button "Fri Nov 06 2026" [disabled] [ref=f5e274]: "6"
+              - button "Sat Nov 07 2026" [disabled] [ref=f5e275]: "7"
+            - generic [ref=f5e276]: Full semester
+          - region "Weekly breakdown" [ref=f5e278]:
+            - heading "Weekly breakdown" [level=4] [ref=f5e279]
+            - generic [ref=f5e280]: 2Q3B · 31 Aug – 22 Oct
+            - table [ref=f5e282]:
+              - rowgroup [ref=f5e283]:
+                - row [ref=f5e284]:
+                  - columnheader "Week" [ref=f5e285]
+                  - columnheader "Attendance" [ref=f5e286]
+                  - columnheader "Change" [ref=f5e287]
+                  - columnheader "Lec / Lab" [ref=f5e288]
+              - rowgroup [ref=f5e289]:
+                - row [ref=f5e290]:
+                  - rowheader "W1" [ref=f5e291]
+                  - cell "90%" [ref=f5e292]
+                  - cell "–" [ref=f5e294]
+                  - cell "0 / 1" [ref=f5e296]
+                - row [ref=f5e297]:
+                  - rowheader "W2 Best" [ref=f5e298]:
+                    - text: W2
+                    - generic [ref=f5e299]: Best
+                  - cell "91%" [ref=f5e300]
+                  - cell "1% up from the previous week" [ref=f5e302]:
+                    - generic [ref=f5e303]:
+                      - text: 1%
+                      - generic [ref=f5e306]: up from the previous week
+                  - cell "0 / 1" [ref=f5e307]
+                - row [ref=f5e308]:
+                  - rowheader "W3" [ref=f5e309]
+                  - cell "88%" [ref=f5e310]
+                  - cell "3% down from the previous week" [ref=f5e312]:
+                    - generic [ref=f5e313]:
+                      - text: 3%
+                      - generic [ref=f5e316]: down from the previous week
+                  - cell "0 / 1" [ref=f5e317]
+                - row [ref=f5e318]:
+                  - rowheader "W4" [ref=f5e319]
+                  - cell "90%" [ref=f5e320]
+                  - cell "2% up from the previous week" [ref=f5e322]:
+                    - generic [ref=f5e323]:
+                      - text: 2%
+                      - generic [ref=f5e326]: up from the previous week
+                  - cell "0 / 1" [ref=f5e327]
+                - row [ref=f5e328]:
+                  - rowheader "W5" [ref=f5e329]
+                  - cell "87%" [ref=f5e330]
+                  - cell "3% down from the previous week" [ref=f5e332]:
+                    - generic [ref=f5e333]:
+                      - text: 3%
+                      - generic [ref=f5e336]: down from the previous week
+                  - cell "0 / 1" [ref=f5e337]
+                - row [ref=f5e338]:
+                  - rowheader "W6 Low" [ref=f5e339]:
+                    - text: W6
+                    - generic [ref=f5e340]: Low
+                  - cell "83%" [ref=f5e341]
+                  - cell "4% down from the previous week" [ref=f5e343]:
+                    - generic [ref=f5e344]:
+                      - text: 4%
+                      - generic [ref=f5e347]: down from the previous week
+                  - cell "0 / 1" [ref=f5e348]
+                - row [ref=f5e349]:
+                  - rowheader "W7" [ref=f5e350]
+                  - cell "87%" [ref=f5e351]
+                  - cell "4% up from the previous week" [ref=f5e353]:
+                    - generic [ref=f5e354]:
+                      - text: 4%
+                      - generic [ref=f5e357]: up from the previous week
+                  - cell "0 / 1" [ref=f5e358]
+                - row [ref=f5e359]:
+                  - rowheader "W8" [ref=f5e360]
+                  - cell "86%" [ref=f5e361]
+                  - cell "1% down from the previous week" [ref=f5e363]:
+                    - generic [ref=f5e364]:
+                      - text: 1%
+                      - generic [ref=f5e367]: down from the previous week
+                  - cell "0 / 1" [ref=f5e368]
+        - region "Lowest attendance students" [ref=f5e369]:
+          - complementary [ref=f5e370]:
+            - heading "Lowest attendance students" [level=4] [ref=f5e371]
+            - generic [ref=f5e372]:
+              - generic [ref=f5e373]: 2Q3B · Lab
+              - generic [ref=f5e374]: Database Management System II
+              - generic [ref=f5e375]: 31 Aug – 22 Oct
+            - generic [ref=f5e376]:
+              - generic [ref=f5e377]: 3 students
+              - button "Export" [ref=f5e378] [cursor=pointer]
+          - generic [ref=f5e381]:
+            - generic [ref=f5e382]:
+              - searchbox "Search students by name or roll number" [ref=f5e384]
+              - button "View more" [ref=f5e385] [cursor=pointer]
+            - generic [ref=f5e388]:
+              - generic [ref=f5e389]:
+                - generic "Aditya Malhotra, 25% attendance" [ref=f5e390]:
+                  - generic [ref=f5e391]: AM
+                  - generic [ref=f5e392]:
+                    - generic [ref=f5e393]: Aditya Malhotra
+                    - generic [ref=f5e394]: "102203007"
+                    - generic [ref=f5e395]: 2 of 8 labs attended
+                  - img [aria-hidden] [ref=f5e397]:
+                    - generic [ref=f5e400]: 25%
+                - generic "Rahul Gupta, 50% attendance" [ref=f5e401]:
+                  - generic [ref=f5e402]: RG
+                  - generic [ref=f5e403]:
+                    - generic [ref=f5e404]: Rahul Gupta
+                    - generic [ref=f5e405]: "102203009"
+                    - generic [ref=f5e406]: 4 of 8 labs attended
+                  - img [aria-hidden] [ref=f5e408]:
+                    - generic [ref=f5e411]: 50%
+                - generic "Aarav Sharma, 63% attendance" [ref=f5e412]:
+                  - generic [ref=f5e413]: AS
+                  - generic [ref=f5e414]:
+                    - generic [ref=f5e415]: Aarav Sharma
+                    - generic [ref=f5e416]: "102203001"
+                    - generic [ref=f5e417]: 5 of 8 labs attended
+                  - img [aria-hidden] [ref=f5e419]:
+                    - generic [ref=f5e422]: 63%
+              - generic [ref=f5e423]:
+                - button "Show previous students" [disabled] [ref=f5e424]
+                - button "Show more students" [ref=f5e427] [cursor=pointer]

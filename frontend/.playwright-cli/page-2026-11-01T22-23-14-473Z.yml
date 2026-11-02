@@ -1,0 +1,344 @@
+- generic [ref=f13e3]:
+  - banner [ref=f13e4]:
+    - generic [ref=f13e5]:
+      - button "Toggle navigation" [expanded] [ref=f13e6] [cursor=pointer]
+      - link "ClassSight" [ref=f13e8] [cursor=pointer]:
+        - /url: /dashboard
+    - generic [ref=f13e17]:
+      - generic [ref=f13e18]: Mon, Nov 2, 2026
+      - button "Night mode" [ref=f13e22] [cursor=pointer]
+      - button "Notifications (1)" [ref=f13e30] [cursor=pointer]
+      - button "Professor Jhonsy — account menu" [ref=f13e36] [cursor=pointer]:
+        - generic [aria-hidden] [ref=f13e37]: PJ
+        - generic [ref=f13e38]:
+          - generic [ref=f13e39]: Prof. Jhonsy
+          - generic [ref=f13e40]: Dept. of CS & Eng
+  - generic [ref=f13e43]:
+    - complementary "Main navigation" [ref=f13e44]:
+      - navigation [ref=f13e45]:
+        - link "Dashboard" [ref=f13e46] [cursor=pointer]:
+          - /url: /dashboard
+        - link "Classes" [ref=f13e53] [cursor=pointer]:
+          - /url: /classes
+        - link "Attendance" [ref=f13e57] [cursor=pointer]:
+          - /url: /attendance
+        - link "Students" [ref=f13e62] [cursor=pointer]:
+          - /url: /students
+        - link "Reports" [ref=f13e67] [cursor=pointer]:
+          - /url: /reports
+        - link "Settings" [ref=f13e71] [cursor=pointer]:
+          - /url: /settings
+      - generic [ref=f13e76]:
+        - generic [ref=f13e77]:
+          - generic [ref=f13e78]: Spring Term 2026
+          - generic [ref=f13e79]: CSE Dept. • Semester 6
+          - generic [ref=f13e80]: Academic Week 8
+        - button "Log Out Faculty" [ref=f13e81] [cursor=pointer]
+    - main [ref=f13e86]:
+      - generic [ref=f13e87]:
+        - generic [ref=f13e88]:
+          - generic [ref=f13e94]:
+            - heading "Students" [level=1] [ref=f13e95]
+            - paragraph [ref=f13e96]: Attendance standing for every student in your batches
+          - button "Export CSV" [ref=f13e97] [cursor=pointer]
+        - generic [ref=f13e100]:
+          - region "Batch overview" [ref=f13e101]:
+            - generic [ref=f13e102]:
+              - img "87%" [ref=f13e103]:
+                - generic [ref=f13e107]: AVG
+              - generic [ref=f13e108]: 2% vs subject
+              - generic [ref=f13e111]: 30 students · Mon 09:40
+            - generic [ref=f13e112]:
+              - generic [ref=f13e113]:
+                - generic [ref=f13e114]:
+                  - generic [ref=f13e115]: Subject
+                  - combobox "Subject" [ref=f13e116] [cursor=pointer]:
+                    - option "All subjects"
+                    - option "Database Management System II"
+                    - option "Software Engineering" [selected]
+                    - option "Operating Systems"
+                - generic [ref=f13e117]:
+                  - generic [ref=f13e118]: Batch
+                  - combobox "Batch" [ref=f13e119] [cursor=pointer]:
+                    - option "All batches"
+                    - option "3C2C" [selected]
+                    - option "3C81B"
+                    - option "3P1A"
+                - button "All students" [ref=f13e120] [cursor=pointer]
+              - img "3 critical, 0 warning, 27 good" [ref=f13e126]
+              - generic [ref=f13e129]:
+                - generic [ref=f13e130]:
+                  - generic [ref=f13e131]:
+                    - text: Critical
+                    - emphasis [ref=f13e132]: < 65%
+                  - generic [ref=f13e133]: "3"
+                - generic [ref=f13e134]:
+                  - generic [ref=f13e135]:
+                    - text: Warning
+                    - emphasis [ref=f13e136]: 65–74%
+                  - generic [ref=f13e137]: "0"
+                - generic [ref=f13e138]:
+                  - generic [ref=f13e139]:
+                    - text: Good
+                    - emphasis [ref=f13e140]: 75%+
+                  - generic [ref=f13e141]: "27"
+              - generic [ref=f13e142]:
+                - generic [ref=f13e143]: Last lab
+                - generic [ref=f13e144]: Mon 19 Oct
+                - generic [ref=f13e145]: 25 present
+                - generic [ref=f13e146]: 5 absent
+                - button "Open record" [ref=f13e147] [cursor=pointer]
+          - region "Selected student" [ref=f13e150]:
+            - generic [ref=f13e151]:
+              - img "38%" [ref=f13e152]
+              - generic [ref=f13e156]:
+                - generic [ref=f13e157]: Navya Bansal
+                - generic [ref=f13e158]: 102203202 · 3C2C
+              - generic [ref=f13e159]:
+                - generic [ref=f13e160]: Critical · 3 of 8 labs
+                - generic [ref=f13e161]: Last attended 12 Oct
+            - generic [ref=f13e162]:
+              - generic [ref=f13e163]: Attendance by day
+              - generic "On days with 2 or more classes the square fills by time attended. Hover it for details." [ref=f13e164]: 14 Sept – 19 Oct
+            - generic [ref=f13e165]:
+              - button "Earlier days" [ref=f13e166] [cursor=pointer]
+              - generic [ref=f13e169]:
+                - 'generic "Mon 14 Sept: attended 100 of 150 minutes" [ref=f13e170]':
+                  - generic [ref=f13e171]: Mon
+                  - emphasis [ref=f13e174]: "2"
+                  - generic [ref=f13e175]: 14 Sept
+                - generic "Mon 21 Sept · Lab 09:40 · Absent" [ref=f13e176]:
+                  - generic [ref=f13e177]: Mon
+                  - generic [ref=f13e178]: Absent
+                  - generic [ref=f13e183]: 21 Sept
+                - generic "Mon 28 Sept · Lab 09:40 · Absent" [ref=f13e184]:
+                  - generic [ref=f13e185]: Mon
+                  - generic [ref=f13e186]: Absent
+                  - generic [ref=f13e191]: 28 Sept
+                - 'generic "Mon 5 Oct: attended 50 of 150 minutes" [ref=f13e192]':
+                  - generic [ref=f13e193]: Mon
+                  - emphasis [ref=f13e196]: "2"
+                  - generic [ref=f13e197]: 5 Oct
+                - generic "Mon 12 Oct · Lab 09:40 · Present" [ref=f13e198]:
+                  - generic [ref=f13e199]: Mon
+                  - generic [ref=f13e200]: Present
+                  - generic [ref=f13e204]: 12 Oct
+                - generic "Mon 19 Oct · Lab 09:40 · Absent" [ref=f13e205]:
+                  - generic [ref=f13e206]: Mon
+                  - generic [ref=f13e207]: Absent
+                  - generic [ref=f13e212]: 19 Oct
+              - button "Later days" [disabled] [ref=f13e213]
+            - generic [ref=f13e216]: Missed 28 Sept, 5 Oct, 19 Oct and 2 more. Attending the next 12 labs in a row brings them up to 75%.
+        - generic [ref=f13e220]:
+          - region "Critical students" [ref=f13e221]:
+            - generic [ref=f13e222]:
+              - generic [ref=f13e226]:
+                - heading "Critical" [level=4] [ref=f13e227]
+                - paragraph [ref=f13e228]: Below 65%
+              - generic [ref=f13e229]: "3"
+            - generic [ref=f13e230]:
+              - button "Navya Bansal 102203202 · 3C2C 38%" [pressed] [ref=f13e231] [cursor=pointer]:
+                - generic [aria-hidden] [ref=f13e232]: NB
+                - generic [ref=f13e233]:
+                  - generic [ref=f13e234]: Navya Bansal
+                  - generic [ref=f13e235]: 102203202 · 3C2C
+                - img "38%" [ref=f13e236]
+              - button "Pooja Kapoor 102203224 · 3C2C 38%" [ref=f13e240] [cursor=pointer]:
+                - generic [aria-hidden] [ref=f13e241]: PK
+                - generic [ref=f13e242]:
+                  - generic [ref=f13e243]: Pooja Kapoor
+                  - generic [ref=f13e244]: 102203224 · 3C2C
+                - img "38%" [ref=f13e245]
+              - button "Vihaan Bhatia 102203226 · 3C2C 63%" [ref=f13e249] [cursor=pointer]:
+                - generic [aria-hidden] [ref=f13e250]: VB
+                - generic [ref=f13e251]:
+                  - generic [ref=f13e252]: Vihaan Bhatia
+                  - generic [ref=f13e253]: 102203226 · 3C2C
+                - img "63%" [ref=f13e254]
+            - generic [ref=f13e258]:
+              - generic [ref=f13e259]: Showing 3 of 3
+              - button "View all" [ref=f13e260] [cursor=pointer]
+          - region "Warning students" [ref=f13e266]:
+            - generic [ref=f13e267]:
+              - generic [ref=f13e271]:
+                - heading "Warning" [level=4] [ref=f13e272]
+                - paragraph [ref=f13e273]: 65–74%
+              - generic [ref=f13e274]: "0"
+            - generic [ref=f13e276]:
+              - generic [ref=f13e277]: No students here
+              - text: Nobody in this band right now.
+            - generic [ref=f13e278]:
+              - generic [ref=f13e279]: Showing 0 of 0
+              - button "View all" [disabled] [ref=f13e280]
+          - region "Good students" [ref=f13e286]:
+            - generic [ref=f13e287]:
+              - generic [ref=f13e291]:
+                - heading "Good" [level=4] [ref=f13e292]
+                - paragraph [ref=f13e293]: 75% and above
+              - generic [ref=f13e294]: "27"
+            - generic [ref=f13e295]:
+              - button "Rohan Singh 102203205 · 3C2C 75%" [ref=f13e296] [cursor=pointer]:
+                - generic [aria-hidden] [ref=f13e297]: RS
+                - generic [ref=f13e298]:
+                  - generic [ref=f13e299]: Rohan Singh
+                  - generic [ref=f13e300]: 102203205 · 3C2C
+                - img "75%" [ref=f13e301]
+              - button "Riya Arora 102203206 · 3C2C 75%" [ref=f13e305] [cursor=pointer]:
+                - generic [aria-hidden] [ref=f13e306]: RA
+                - generic [ref=f13e307]:
+                  - generic [ref=f13e308]: Riya Arora
+                  - generic [ref=f13e309]: 102203206 · 3C2C
+                - img "75%" [ref=f13e310]
+              - button "Aditya Goyal 102203219 · 3C2C 75%" [ref=f13e314] [cursor=pointer]:
+                - generic [aria-hidden] [ref=f13e315]: AG
+                - generic [ref=f13e316]:
+                  - generic [ref=f13e317]: Aditya Goyal
+                  - generic [ref=f13e318]: 102203219 · 3C2C
+                - img "75%" [ref=f13e319]
+              - button "Tanvi Mehta 102203228 · 3C2C 75%" [ref=f13e323] [cursor=pointer]:
+                - generic [aria-hidden] [ref=f13e324]: TM
+                - generic [ref=f13e325]:
+                  - generic [ref=f13e326]: Tanvi Mehta
+                  - generic [ref=f13e327]: 102203228 · 3C2C
+                - img "75%" [ref=f13e328]
+              - button "Dev Jain 102203207 · 3C2C 88%" [ref=f13e332] [cursor=pointer]:
+                - generic [aria-hidden] [ref=f13e333]: DJ
+                - generic [ref=f13e334]:
+                  - generic [ref=f13e335]: Dev Jain
+                  - generic [ref=f13e336]: 102203207 · 3C2C
+                - img "88%" [ref=f13e337]
+              - button "Diya Khanna 102203210 · 3C2C 88%" [ref=f13e341] [cursor=pointer]:
+                - generic [aria-hidden] [ref=f13e342]: DK
+                - generic [ref=f13e343]:
+                  - generic [ref=f13e344]: Diya Khanna
+                  - generic [ref=f13e345]: 102203210 · 3C2C
+                - img "88%" [ref=f13e346]
+              - button "Aarav Mehta 102203213 · 3C2C 88%" [ref=f13e350] [cursor=pointer]:
+                - generic [aria-hidden] [ref=f13e351]: AM
+                - generic [ref=f13e352]:
+                  - generic [ref=f13e353]: Aarav Mehta
+                  - generic [ref=f13e354]: 102203213 · 3C2C
+                - img "88%" [ref=f13e355]
+              - button "Yash Sethi 102203215 · 3C2C 88%" [ref=f13e359] [cursor=pointer]:
+                - generic [aria-hidden] [ref=f13e360]: YS
+                - generic [ref=f13e361]:
+                  - generic [ref=f13e362]: Yash Sethi
+                  - generic [ref=f13e363]: 102203215 · 3C2C
+                - img "88%" [ref=f13e364]
+              - button "Veer Bansal 102203217 · 3C2C 88%" [ref=f13e368] [cursor=pointer]:
+                - generic [aria-hidden] [ref=f13e369]: VB
+                - generic [ref=f13e370]:
+                  - generic [ref=f13e371]: Veer Bansal
+                  - generic [ref=f13e372]: 102203217 · 3C2C
+                - img "88%" [ref=f13e373]
+              - button "Sneha Singh 102203220 · 3C2C 88%" [ref=f13e377] [cursor=pointer]:
+                - generic [aria-hidden] [ref=f13e378]: SS
+                - generic [ref=f13e379]:
+                  - generic [ref=f13e380]: Sneha Singh
+                  - generic [ref=f13e381]: 102203220 · 3C2C
+                - img "88%" [ref=f13e382]
+              - button "Ananya Jain 102203222 · 3C2C 88%" [ref=f13e386] [cursor=pointer]:
+                - generic [aria-hidden] [ref=f13e387]: AJ
+                - generic [ref=f13e388]:
+                  - generic [ref=f13e389]: Ananya Jain
+                  - generic [ref=f13e390]: 102203222 · 3C2C
+                - img "88%" [ref=f13e391]
+              - button "Pranav Khanna 102203225 · 3C2C 88%" [ref=f13e395] [cursor=pointer]:
+                - generic [aria-hidden] [ref=f13e396]: PK
+                - generic [ref=f13e397]:
+                  - generic [ref=f13e398]: Pranav Khanna
+                  - generic [ref=f13e399]: 102203225 · 3C2C
+                - img "88%" [ref=f13e400]
+              - button "Arjun Verma 102203227 · 3C2C 88%" [ref=f13e404] [cursor=pointer]:
+                - generic [aria-hidden] [ref=f13e405]: AV
+                - generic [ref=f13e406]:
+                  - generic [ref=f13e407]: Arjun Verma
+                  - generic [ref=f13e408]: 102203227 · 3C2C
+                - img "88%" [ref=f13e409]
+              - button "Karan Malhotra 102203229 · 3C2C 88%" [ref=f13e413] [cursor=pointer]:
+                - generic [aria-hidden] [ref=f13e414]: KM
+                - generic [ref=f13e415]:
+                  - generic [ref=f13e416]: Karan Malhotra
+                  - generic [ref=f13e417]: 102203229 · 3C2C
+                - img "88%" [ref=f13e418]
+              - button "Meera Gupta 102203201 · 3C2C 100%" [ref=f13e422] [cursor=pointer]:
+                - generic [aria-hidden] [ref=f13e423]: MG
+                - generic [ref=f13e424]:
+                  - generic [ref=f13e425]: Meera Gupta
+                  - generic [ref=f13e426]: 102203201 · 3C2C
+                - img "100%" [ref=f13e427]
+              - button "Manav Chopra 102203203 · 3C2C 100%" [ref=f13e431] [cursor=pointer]:
+                - generic [aria-hidden] [ref=f13e432]: MC
+                - generic [ref=f13e433]:
+                  - generic [ref=f13e434]: Manav Chopra
+                  - generic [ref=f13e435]: 102203203 · 3C2C
+                - img "100%" [ref=f13e436]
+              - button "Kavya Goyal 102203204 · 3C2C 100%" [ref=f13e440] [cursor=pointer]:
+                - generic [aria-hidden] [ref=f13e441]: KG
+                - generic [ref=f13e442]:
+                  - generic [ref=f13e443]: Kavya Goyal
+                  - generic [ref=f13e444]: 102203204 · 3C2C
+                - img "100%" [ref=f13e445]
+              - button "Simran Sharma 102203208 · 3C2C 100%" [ref=f13e449] [cursor=pointer]:
+                - generic [aria-hidden] [ref=f13e450]: SS
+                - generic [ref=f13e451]:
+                  - generic [ref=f13e452]: Simran Sharma
+                  - generic [ref=f13e453]: 102203208 · 3C2C
+                - img "100%" [ref=f13e454]
+              - button "Ishita Kapoor 102203209 · 3C2C 100%" [ref=f13e458] [cursor=pointer]:
+                - generic [aria-hidden] [ref=f13e459]: IK
+                - generic [ref=f13e460]:
+                  - generic [ref=f13e461]: Ishita Kapoor
+                  - generic [ref=f13e462]: 102203209 · 3C2C
+                - img "100%" [ref=f13e463]
+              - button "Harsh Bhatia 102203211 · 3C2C 100%" [ref=f13e467] [cursor=pointer]:
+                - generic [aria-hidden] [ref=f13e468]: HB
+                - generic [ref=f13e469]:
+                  - generic [ref=f13e470]: Harsh Bhatia
+                  - generic [ref=f13e471]: 102203211 · 3C2C
+                - img "100%" [ref=f13e472]
+              - button "Nisha Verma 102203212 · 3C2C 100%" [ref=f13e476] [cursor=pointer]:
+                - generic [aria-hidden] [ref=f13e477]: NV
+                - generic [ref=f13e478]:
+                  - generic [ref=f13e479]: Nisha Verma
+                  - generic [ref=f13e480]: 102203212 · 3C2C
+                - img "100%" [ref=f13e481]
+              - button "Saanvi Malhotra 102203214 · 3C2C 100%" [ref=f13e485] [cursor=pointer]:
+                - generic [aria-hidden] [ref=f13e486]: SM
+                - generic [ref=f13e487]:
+                  - generic [ref=f13e488]: Saanvi Malhotra
+                  - generic [ref=f13e489]: 102203214 · 3C2C
+                - img "100%" [ref=f13e490]
+              - button "Aisha Gupta 102203216 · 3C2C 100%" [ref=f13e494] [cursor=pointer]:
+                - generic [aria-hidden] [ref=f13e495]: AG
+                - generic [ref=f13e496]:
+                  - generic [ref=f13e497]: Aisha Gupta
+                  - generic [ref=f13e498]: 102203216 · 3C2C
+                - img "100%" [ref=f13e499]
+              - button "Kabir Chopra 102203218 · 3C2C 100%" [ref=f13e503] [cursor=pointer]:
+                - generic [aria-hidden] [ref=f13e504]: KC
+                - generic [ref=f13e505]:
+                  - generic [ref=f13e506]: Kabir Chopra
+                  - generic [ref=f13e507]: 102203218 · 3C2C
+                - img "100%" [ref=f13e508]
+              - button "Rahul Arora 102203221 · 3C2C 100%" [ref=f13e512] [cursor=pointer]:
+                - generic [aria-hidden] [ref=f13e513]: RA
+                - generic [ref=f13e514]:
+                  - generic [ref=f13e515]: Rahul Arora
+                  - generic [ref=f13e516]: 102203221 · 3C2C
+                - img "100%" [ref=f13e517]
+              - button "Kunal Sharma 102203223 · 3C2C 100%" [ref=f13e521] [cursor=pointer]:
+                - generic [aria-hidden] [ref=f13e522]: KS
+                - generic [ref=f13e523]:
+                  - generic [ref=f13e524]: Kunal Sharma
+                  - generic [ref=f13e525]: 102203223 · 3C2C
+                - img "100%" [ref=f13e526]
+              - button "Mansi Sethi 102203230 · 3C2C 100%" [ref=f13e530] [cursor=pointer]:
+                - generic [aria-hidden] [ref=f13e531]: MS
+                - generic [ref=f13e532]:
+                  - generic [ref=f13e533]: Mansi Sethi
+                  - generic [ref=f13e534]: 102203230 · 3C2C
+                - img "100%" [ref=f13e535]
+            - generic [ref=f13e539]:
+              - generic [ref=f13e540]: Showing 5 of 27
+              - button "View all" [ref=f13e541] [cursor=pointer]

@@ -1,0 +1,90 @@
+- generic [ref=f35e3]:
+  - banner [ref=f35e5]:
+    - generic [ref=f35e6]:
+      - button "Toggle navigation" [expanded] [ref=f35e7] [cursor=pointer]
+      - link "ClassSight" [ref=f35e9] [cursor=pointer]:
+        - /url: /student
+      - generic [ref=f35e18]: Student · Demo
+    - generic [ref=f35e19]:
+      - generic [ref=f35e20]: Mon, Nov 2, 2026
+      - button "Night mode" [ref=f35e24] [cursor=pointer]
+      - button "Notifications (2)" [ref=f35e28] [cursor=pointer]
+      - button "Account menu for Parv Rawat" [ref=f35e34] [cursor=pointer]:
+        - generic [aria-hidden] [ref=f35e35]: P
+        - generic [ref=f35e36]:
+          - generic [ref=f35e37]: Parv
+          - generic [ref=f35e38]: Student
+  - generic [ref=f35e41]:
+    - complementary "Student navigation" [ref=f35e43]:
+      - navigation [ref=f35e44]:
+        - link "Dashboard" [ref=f35e45] [cursor=pointer]:
+          - /url: /student
+        - link "Timetable" [ref=f35e52] [cursor=pointer]:
+          - /url: /student/timetable
+        - link "My Courses" [ref=f35e56] [cursor=pointer]:
+          - /url: /student/courses
+        - link "Attendance" [ref=f35e60] [cursor=pointer]:
+          - /url: /student/attendance
+        - link "Settings" [ref=f35e65] [cursor=pointer]:
+          - /url: /student/settings
+      - generic [ref=f35e70]:
+        - generic [ref=f35e71]:
+          - generic [ref=f35e72]: Odd Semester
+          - generic [ref=f35e73]: 2026–27
+          - generic [ref=f35e74]: Student portal · Demo
+        - button "Log Out" [ref=f35e75] [cursor=pointer]
+    - main [ref=f35e80]:
+      - generic [ref=f35e81]:
+        - generic [ref=f35e82]:
+          - generic [ref=f35e83]:
+            - heading "My Courses" [level=1] [ref=f35e84]
+            - paragraph [ref=f35e85]: 3 courses · 2 below the 75% requirement
+          - generic [ref=f35e86]: Spring Term 2026
+        - generic [ref=f35e90]:
+          - generic [ref=f35e91]:
+            - button "UCS303P Warning Database Management System II 71% attendance 5 / 7 attended 2 missed Today · 11:20 Professor Jhonsy · 2Q3B" [ref=f35e92] [cursor=pointer]:
+              - generic [ref=f35e93]:
+                - generic [ref=f35e94]: UCS303P
+                - generic [ref=f35e96]: Warning
+              - generic [ref=f35e97]: Database Management System II
+              - generic [ref=f35e98]:
+                - generic [ref=f35e99]: 71%
+                - generic [ref=f35e100]: attendance
+              - generic [ref=f35e104]:
+                - generic [ref=f35e105]: 5 / 7 attended
+                - generic [ref=f35e106]: 2 missed
+              - generic [ref=f35e107]:
+                - generic [ref=f35e108]: Today · 11:20
+                - generic [ref=f35e113]: Professor Jhonsy · 2Q3B
+            - button "UCS503P Healthy Software Engineering 100% attendance 7 / 7 attended 0 missed Today · 09:40 Professor Jhonsy · 3C2C" [ref=f35e117] [cursor=pointer]:
+              - generic [ref=f35e118]:
+                - generic [ref=f35e119]: UCS503P
+                - generic [ref=f35e121]: Healthy
+              - generic [ref=f35e122]: Software Engineering
+              - generic [ref=f35e123]:
+                - generic [ref=f35e124]: 100%
+                - generic [ref=f35e125]: attendance
+              - generic [ref=f35e129]:
+                - generic [ref=f35e130]: 7 / 7 attended
+                - generic [ref=f35e131]: 0 missed
+              - generic [ref=f35e132]:
+                - generic [ref=f35e133]: Today · 09:40
+                - generic [ref=f35e138]: Professor Jhonsy · 3C2C
+            - button "MCA103P Warning Operating Systems 71% attendance 5 / 7 attended 2 missed Tomorrow · 11:20 Professor Jhonsy · 1MCA 2" [ref=f35e142] [cursor=pointer]:
+              - generic [ref=f35e143]:
+                - generic [ref=f35e144]: MCA103P
+                - generic [ref=f35e146]: Warning
+              - generic [ref=f35e147]: Operating Systems
+              - generic [ref=f35e148]:
+                - generic [ref=f35e149]: 71%
+                - generic [ref=f35e150]: attendance
+              - generic [ref=f35e154]:
+                - generic [ref=f35e155]: 5 / 7 attended
+                - generic [ref=f35e156]: 2 missed
+              - generic [ref=f35e157]:
+                - generic [ref=f35e158]: Tomorrow · 11:20
+                - generic [ref=f35e163]: Professor Jhonsy · 1MCA 2
+          - complementary "Course details" [ref=f35e167]:
+            - generic [ref=f35e168]:
+              - heading "Select a course" [level=2] [ref=f35e175]
+              - paragraph [ref=f35e176]: Choose a course to see its schedule, how close you are to the requirement and your attendance history.

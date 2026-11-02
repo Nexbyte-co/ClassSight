@@ -1,0 +1,29 @@
+- generic [ref=f2e4]:
+  - complementary "Student navigation" [ref=f2e5]:
+    - link "ClassSight" [ref=f2e7] [cursor=pointer]:
+      - /url: /student
+    - navigation [ref=f2e16]:
+      - link "Timetable" [ref=f2e17] [cursor=pointer]:
+        - /url: /student/timetable
+      - link "Attendance Reports" [ref=f2e21] [cursor=pointer]:
+        - /url: /student/attendance-reports
+      - link "Settings" [ref=f2e26] [cursor=pointer]:
+        - /url: /student/settings
+    - generic [ref=f2e32]:
+      - strong [ref=f2e33]: Odd Semester
+      - text: 2026–27
+  - generic [ref=f2e34]:
+    - banner [ref=f2e35]:
+      - generic [ref=f2e36]: Student portal · Demo
+      - generic [ref=f2e38]:
+        - button "Toggle color theme" [ref=f2e39] [cursor=pointer]
+        - generic "Signed in (demo) as prawat_be24@thapar.edu" [ref=f2e42]:
+          - generic [ref=f2e43]: P
+          - generic [ref=f2e44]: Parv Rawat
+        - button "Sign out" [ref=f2e45] [cursor=pointer]
+    - main [ref=f2e50]:
+      - generic [ref=f2e51]:
+        - generic [ref=f2e53]:
+          - heading "Timetable" [level=1] [ref=f2e54]
+          - paragraph [ref=f2e55]: Your weekly class schedule.
+        - generic [ref=f2e56]: This page is not available yet in the frontend demo.

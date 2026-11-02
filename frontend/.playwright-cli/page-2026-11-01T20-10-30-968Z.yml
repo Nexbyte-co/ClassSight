@@ -1,0 +1,255 @@
+- generic [ref=f4e3]:
+  - banner [ref=f4e4]:
+    - generic [ref=f4e5]:
+      - button "Toggle navigation" [expanded] [ref=f4e6] [cursor=pointer]
+      - link "ClassSight" [ref=f4e8] [cursor=pointer]:
+        - /url: /dashboard
+    - generic [ref=f4e17]:
+      - generic [ref=f4e18]: Mon, Nov 2, 2026
+      - button "Night mode" [ref=f4e22] [cursor=pointer]
+      - button "Notifications (1)" [ref=f4e26] [cursor=pointer]
+      - button "Professor Jhonsy — account menu" [ref=f4e32] [cursor=pointer]:
+        - generic [aria-hidden] [ref=f4e33]: PJ
+        - generic [ref=f4e34]:
+          - generic [ref=f4e35]: Prof. Jhonsy
+          - generic [ref=f4e36]: Dept. of CS & Eng
+  - generic [ref=f4e39]:
+    - complementary "Main navigation" [ref=f4e40]:
+      - navigation [ref=f4e41]:
+        - link "Dashboard" [ref=f4e42] [cursor=pointer]:
+          - /url: /dashboard
+        - link "Classes" [ref=f4e49] [cursor=pointer]:
+          - /url: /classes
+        - link "Attendance" [ref=f4e53] [cursor=pointer]:
+          - /url: /attendance
+        - link "Students" [ref=f4e58] [cursor=pointer]:
+          - /url: /students
+        - link "Reports" [ref=f4e63] [cursor=pointer]:
+          - /url: /reports
+        - link "Settings" [ref=f4e67] [cursor=pointer]:
+          - /url: /settings
+      - generic [ref=f4e72]:
+        - generic [ref=f4e73]:
+          - generic [ref=f4e74]: Spring Term 2026
+          - generic [ref=f4e75]: CSE Dept. • Semester 6
+          - generic [ref=f4e76]: Academic Week 8
+        - button "Log Out Faculty" [ref=f4e77] [cursor=pointer]
+    - main [ref=f4e82]:
+      - region [ref=f4e83]:
+        - generic [ref=f4e84]:
+          - generic [ref=f4e89]:
+            - heading "My Classes" [level=1] [ref=f4e90]
+            - paragraph [ref=f4e91]: Your courses, groups and weekly lab slots
+          - generic [ref=f4e92]: Spring Term 2026
+        - navigation "Classes views" [ref=f4e95]:
+          - link "All Classes" [ref=f4e96] [cursor=pointer]:
+            - /url: /classes
+          - link "Class Schedule" [ref=f4e102] [cursor=pointer]:
+            - /url: /classes/schedule
+        - generic [ref=f4e106]:
+          - generic [ref=f4e107]:
+            - generic [ref=f4e108]:
+              - term [ref=f4e109]: Courses
+              - definition [ref=f4e110]: "3"
+            - generic [ref=f4e111]:
+              - term [ref=f4e112]: Groups
+              - definition [ref=f4e113]: "8"
+            - generic [ref=f4e114]:
+              - term [ref=f4e115]: Avg. attendance
+              - definition [ref=f4e116]: 85%
+            - generic [ref=f4e117]:
+              - term [ref=f4e118]: Below 85%
+              - definition [ref=f4e119]: "3"
+          - generic [ref=f4e120]:
+            - generic [ref=f4e121]:
+              - searchbox "Search classes" [ref=f4e123]
+              - combobox "Sort classes by" [ref=f4e128] [cursor=pointer]:
+                - option "Course name, A–Z" [selected]
+                - option "Course name, Z–A"
+                - option "Next lecture, soonest"
+                - option "Attendance, highest"
+                - option "Attendance, lowest"
+            - generic [ref=f4e129]:
+              - generic [ref=f4e130]:
+                - generic [aria-hidden] [ref=f4e131]: Year
+                - combobox "Filter by year" [ref=f4e132] [cursor=pointer]:
+                  - option "All" [selected]
+                  - option "2nd Year"
+                  - option "3rd Year"
+                  - option "PG (1 MCA)"
+              - generic [ref=f4e133]:
+                - generic [aria-hidden] [ref=f4e134]: Group
+                - combobox "Filter by group" [ref=f4e135] [cursor=pointer]:
+                  - option "All" [selected]
+                  - option "1MCA 2"
+                  - option "1MCA 3"
+                  - option "1MCA 5"
+                  - option "2Q3B"
+                  - option "2Q3C"
+                  - option "3C2C"
+                  - option "3C81B"
+                  - option "3P1A"
+              - generic [ref=f4e136]:
+                - generic [aria-hidden] [ref=f4e137]: Day
+                - combobox "Filter by day" [ref=f4e138] [cursor=pointer]:
+                  - option "All" [selected]
+                  - option "Mon"
+                  - option "Tue"
+                  - option "Wed"
+                  - option "Thu"
+                  - option "Fri"
+              - generic [ref=f4e139]:
+                - generic [aria-hidden] [ref=f4e140]: Course
+                - combobox "Filter by course" [ref=f4e141] [cursor=pointer]:
+                  - option "All" [selected]
+                  - option "MCA103P"
+                  - option "UCS303P"
+                  - option "UCS503P"
+          - status [ref=f4e143]: Showing 8 of 8 classes
+          - list [ref=f4e145]:
+            - listitem [ref=f4e146]:
+              - button "Database Management System II, UCS303P, group 2Q3B. 88% attendance, healthy. Next lecture Today at 11:20, L207" [ref=f4e147] [cursor=pointer]:
+                - generic [ref=f4e148]:
+                  - generic [ref=f4e149]: 2nd Year
+                  - generic [ref=f4e150]: Healthy
+                - generic [ref=f4e151]: Database Management System II
+                - generic [ref=f4e152]: UCS303P · 2Q3B
+                - generic [ref=f4e154]:
+                  - generic [ref=f4e155]: 88%
+                  - generic [ref=f4e156]: avg. attendance
+                - generic [ref=f4e160]:
+                  - generic [ref=f4e161]: Today · 11:20
+                  - generic [ref=f4e166]: L207
+            - listitem [ref=f4e170]:
+              - button "Database Management System II, UCS303P, group 2Q3C. 88% attendance, healthy. Next lecture Thu 5 Nov at 09:40, L207" [ref=f4e171] [cursor=pointer]:
+                - generic [ref=f4e172]:
+                  - generic [ref=f4e173]: 2nd Year
+                  - generic [ref=f4e174]: Healthy
+                - generic [ref=f4e175]: Database Management System II
+                - generic [ref=f4e176]: UCS303P · 2Q3C
+                - generic [ref=f4e178]:
+                  - generic [ref=f4e179]: 88%
+                  - generic [ref=f4e180]: avg. attendance
+                - generic [ref=f4e184]:
+                  - generic [ref=f4e185]: Thu 5 Nov · 09:40
+                  - generic [ref=f4e190]: L207
+            - listitem [ref=f4e194]:
+              - button "Operating Systems, MCA103P, group 1MCA 2. 83% attendance, needs attention. Next lecture Tomorrow at 11:20, L401" [pressed] [ref=f4e195] [cursor=pointer]:
+                - generic [ref=f4e196]:
+                  - generic [ref=f4e197]: PG (1 MCA)
+                  - generic [ref=f4e198]: Needs attention
+                - generic [ref=f4e199]: Operating Systems
+                - generic [ref=f4e200]: MCA103P · 1MCA 2
+                - generic [ref=f4e202]:
+                  - generic [ref=f4e203]: 83%
+                  - generic [ref=f4e204]: avg. attendance
+                - generic [ref=f4e208]:
+                  - generic [ref=f4e209]: Tomorrow · 11:20
+                  - generic [ref=f4e214]: L401
+            - listitem [ref=f4e218]:
+              - button "Operating Systems, MCA103P, group 1MCA 5. 83% attendance, needs attention. Next lecture Thu 5 Nov at 13:50, L101" [ref=f4e219] [cursor=pointer]:
+                - generic [ref=f4e220]:
+                  - generic [ref=f4e221]: PG (1 MCA)
+                  - generic [ref=f4e222]: Needs attention
+                - generic [ref=f4e223]: Operating Systems
+                - generic [ref=f4e224]: MCA103P · 1MCA 5
+                - generic [ref=f4e226]:
+                  - generic [ref=f4e227]: 83%
+                  - generic [ref=f4e228]: avg. attendance
+                - generic [ref=f4e232]:
+                  - generic [ref=f4e233]: Thu 5 Nov · 13:50
+                  - generic [ref=f4e238]: L101
+            - listitem [ref=f4e242]:
+              - button "Operating Systems, MCA103P, group 1MCA 3. 83% attendance, needs attention. Next lecture Fri 6 Nov at 11:20, L401" [ref=f4e243] [cursor=pointer]:
+                - generic [ref=f4e244]:
+                  - generic [ref=f4e245]: PG (1 MCA)
+                  - generic [ref=f4e246]: Needs attention
+                - generic [ref=f4e247]: Operating Systems
+                - generic [ref=f4e248]: MCA103P · 1MCA 3
+                - generic [ref=f4e250]:
+                  - generic [ref=f4e251]: 83%
+                  - generic [ref=f4e252]: avg. attendance
+                - generic [ref=f4e256]:
+                  - generic [ref=f4e257]: Fri 6 Nov · 11:20
+                  - generic [ref=f4e262]: L401
+            - listitem [ref=f4e266]:
+              - button "Software Engineering, UCS503P, group 3C2C. 86% attendance, healthy. Next lecture Today at 09:40, L105" [ref=f4e267] [cursor=pointer]:
+                - generic [ref=f4e268]:
+                  - generic [ref=f4e269]: 3rd Year
+                  - generic [ref=f4e270]: Healthy
+                - generic [ref=f4e271]: Software Engineering
+                - generic [ref=f4e272]: UCS503P · 3C2C
+                - generic [ref=f4e274]:
+                  - generic [ref=f4e275]: 86%
+                  - generic [ref=f4e276]: avg. attendance
+                - generic [ref=f4e280]:
+                  - generic [ref=f4e281]: Today · 09:40
+                  - generic [ref=f4e286]: L105
+            - listitem [ref=f4e290]:
+              - button "Software Engineering, UCS503P, group 3C81B. 86% attendance, healthy. Next lecture Today at 13:50, L105" [ref=f4e291] [cursor=pointer]:
+                - generic [ref=f4e292]:
+                  - generic [ref=f4e293]: 3rd Year
+                  - generic [ref=f4e294]: Healthy
+                - generic [ref=f4e295]: Software Engineering
+                - generic [ref=f4e296]: UCS503P · 3C81B
+                - generic [ref=f4e298]:
+                  - generic [ref=f4e299]: 86%
+                  - generic [ref=f4e300]: avg. attendance
+                - generic [ref=f4e304]:
+                  - generic [ref=f4e305]: Today · 13:50
+                  - generic [ref=f4e310]: L105
+            - listitem [ref=f4e314]:
+              - button "Software Engineering, UCS503P, group 3P1A. 86% attendance, healthy. Next lecture Wed 4 Nov at 09:40, L501" [ref=f4e315] [cursor=pointer]:
+                - generic [ref=f4e316]:
+                  - generic [ref=f4e317]: 3rd Year
+                  - generic [ref=f4e318]: Healthy
+                - generic [ref=f4e319]: Software Engineering
+                - generic [ref=f4e320]: UCS503P · 3P1A
+                - generic [ref=f4e322]:
+                  - generic [ref=f4e323]: 86%
+                  - generic [ref=f4e324]: avg. attendance
+                - generic [ref=f4e328]:
+                  - generic [ref=f4e329]: Wed 4 Nov · 09:40
+                  - generic [ref=f4e334]: L501
+  - dialog [ref=f4e339]:
+    - generic [ref=f4e340]:
+      - generic [ref=f4e341]:
+        - generic [ref=f4e342]:
+          - generic [ref=f4e343]: MCA103P
+          - generic [ref=f4e344]: 1MCA 2
+        - heading "Operating Systems" [level=2] [ref=f4e345]
+        - paragraph [ref=f4e346]: PG (1 MCA)
+      - button "Close class details" [active] [ref=f4e347] [cursor=pointer]
+    - generic [ref=f4e351]:
+      - region "Attendance" [ref=f4e352]:
+        - img "83% average attendance, 2 pts below the 85% target" [ref=f4e353]:
+          - generic [ref=f4e358]:
+            - generic [ref=f4e359]: 83%
+            - generic [ref=f4e360]: average
+        - generic [ref=f4e361]:
+          - generic [ref=f4e362]: Needs attention
+          - paragraph [ref=f4e363]: 2 pts below the 85% target
+          - paragraph [ref=f4e364]: Course average across 3 groups
+      - region "Upcoming lecture" [ref=f4e365]:
+        - generic [ref=f4e371]:
+          - generic [ref=f4e372]: Next lecture
+          - generic [ref=f4e373]: Tomorrow, 11:20
+          - generic [ref=f4e374]: 11:20–13:00 · L401
+      - generic [ref=f4e375]:
+        - generic [ref=f4e376]:
+          - term [ref=f4e379]: Weekly slot
+          - definition [ref=f4e380]: Tue, 11:20–13:00
+        - generic [ref=f4e381]:
+          - term [ref=f4e385]: Venue
+          - definition [ref=f4e386]: L401
+        - generic [ref=f4e387]:
+          - term [ref=f4e391]: Format
+          - definition [ref=f4e392]: Lab · 2 periods (100 min)
+        - generic [ref=f4e393]:
+          - term [ref=f4e397]: Year
+          - definition [ref=f4e398]: PG (1 MCA)
+        - generic [ref=f4e399]:
+          - term [ref=f4e403]: Faculty
+          - definition [ref=f4e404]: Professor Jhonsy
+    - link "Start attendance" [ref=f4e406] [cursor=pointer]:
+      - /url: /attendance

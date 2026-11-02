@@ -1,0 +1,66 @@
+- generic [ref=f40e3]:
+  - banner [ref=f40e5]:
+    - generic [ref=f40e6]:
+      - button "Toggle navigation" [expanded] [ref=f40e7] [cursor=pointer]
+      - link "ClassSight" [ref=f40e9] [cursor=pointer]:
+        - /url: /student
+    - generic [ref=f40e18]:
+      - button "Night mode" [ref=f40e19] [cursor=pointer]
+      - button "Notifications (2)" [ref=f40e23] [cursor=pointer]
+      - button "Account menu for Parv Rawat" [ref=f40e29] [cursor=pointer]:
+        - generic [aria-hidden] [ref=f40e30]: P
+  - main [ref=f40e32]:
+    - generic [ref=f40e33]:
+      - generic [ref=f40e34]:
+        - generic [ref=f40e35]:
+          - heading "My Courses" [level=1] [ref=f40e36]
+          - paragraph [ref=f40e37]: 3 courses · 2 below the 75% requirement
+        - generic [ref=f40e38]: Spring Term 2026
+      - generic [ref=f40e42]:
+        - generic [ref=f40e43]:
+          - button "UCS303P Warning Database Management System II 71% attendance 5 / 7 attended 2 missed Today · 11:20 Professor Jhonsy · 2Q3B" [ref=f40e44] [cursor=pointer]:
+            - generic [ref=f40e45]:
+              - generic [ref=f40e46]: UCS303P
+              - generic [ref=f40e48]: Warning
+            - generic [ref=f40e49]: Database Management System II
+            - generic [ref=f40e50]:
+              - generic [ref=f40e51]: 71%
+              - generic [ref=f40e52]: attendance
+            - generic [ref=f40e56]:
+              - generic [ref=f40e57]: 5 / 7 attended
+              - generic [ref=f40e58]: 2 missed
+            - generic [ref=f40e59]:
+              - generic [ref=f40e60]: Today · 11:20
+              - generic [ref=f40e65]: Professor Jhonsy · 2Q3B
+          - button "UCS503P Healthy Software Engineering 100% attendance 7 / 7 attended 0 missed Today · 09:40 Professor Jhonsy · 3C2C" [ref=f40e69] [cursor=pointer]:
+            - generic [ref=f40e70]:
+              - generic [ref=f40e71]: UCS503P
+              - generic [ref=f40e73]: Healthy
+            - generic [ref=f40e74]: Software Engineering
+            - generic [ref=f40e75]:
+              - generic [ref=f40e76]: 100%
+              - generic [ref=f40e77]: attendance
+            - generic [ref=f40e81]:
+              - generic [ref=f40e82]: 7 / 7 attended
+              - generic [ref=f40e83]: 0 missed
+            - generic [ref=f40e84]:
+              - generic [ref=f40e85]: Today · 09:40
+              - generic [ref=f40e90]: Professor Jhonsy · 3C2C
+          - button "MCA103P Warning Operating Systems 71% attendance 5 / 7 attended 2 missed Tomorrow · 11:20 Professor Jhonsy · 1MCA 2" [ref=f40e94] [cursor=pointer]:
+            - generic [ref=f40e95]:
+              - generic [ref=f40e96]: MCA103P
+              - generic [ref=f40e98]: Warning
+            - generic [ref=f40e99]: Operating Systems
+            - generic [ref=f40e100]:
+              - generic [ref=f40e101]: 71%
+              - generic [ref=f40e102]: attendance
+            - generic [ref=f40e106]:
+              - generic [ref=f40e107]: 5 / 7 attended
+              - generic [ref=f40e108]: 2 missed
+            - generic [ref=f40e109]:
+              - generic [ref=f40e110]: Tomorrow · 11:20
+              - generic [ref=f40e115]: Professor Jhonsy · 1MCA 2
+        - complementary "Course details" [ref=f40e119]:
+          - generic [ref=f40e120]:
+            - heading "Select a course" [level=2] [ref=f40e127]
+            - paragraph [ref=f40e128]: Choose a course to see its schedule, how close you are to the requirement and your attendance history.

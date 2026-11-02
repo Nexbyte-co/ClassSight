@@ -1,0 +1,25 @@
+- generic [ref=e24]:
+  - button "Toggle dark mode" [ref=e25] [cursor=pointer]
+  - generic [ref=e28]:
+    - generic [ref=e29]:
+      - link "ClassSight" [ref=e30] [cursor=pointer]:
+        - /url: /
+      - heading "Welcome back" [level=1] [ref=e31]
+      - paragraph [ref=e32]: Sign in to access your ClassSight account.
+    - generic [ref=e33]:
+      - generic [ref=e34]:
+        - generic [ref=e35]: College Email
+        - textbox "College Email" [ref=e40]:
+          - /placeholder: Enter your college email
+          - text: jhonsy.bansal@thapar.edu
+        - alert [ref=e41]
+      - button "Sign In" [ref=e42] [cursor=pointer]
+    - generic [ref=e43]:
+      - strong [ref=e44]: Demo sign-in.
+      - text: No password is needed and nothing is checked by a server — this only switches between the two demo experiences.
+      - generic [ref=e45]:
+        - button "Use teacher demo" [active] [ref=e46] [cursor=pointer]
+        - button "Use student demo" [ref=e47] [cursor=pointer]
+    - generic [ref=e48]:
+      - generic [ref=e49]: ClassSight
+      - generic [ref=e50]: College Attendance System

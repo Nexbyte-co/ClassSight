@@ -1,0 +1,114 @@
+- generic [ref=f7e3]:
+  - banner [ref=f7e5]:
+    - generic [ref=f7e6]:
+      - button "Toggle navigation" [expanded] [ref=f7e7] [cursor=pointer]
+      - link "ClassSight" [ref=f7e9] [cursor=pointer]:
+        - /url: /student
+      - generic [ref=f7e18]: Student · Demo
+    - generic [ref=f7e19]:
+      - generic [ref=f7e20]: Mon, Nov 2, 2026
+      - button "Night mode" [ref=f7e24] [cursor=pointer]
+      - button "Notifications (2)" [ref=f7e28] [cursor=pointer]
+      - button "Account menu for Parv Rawat" [ref=f7e34] [cursor=pointer]:
+        - generic [aria-hidden] [ref=f7e35]: P
+        - generic [ref=f7e36]:
+          - generic [ref=f7e37]: Parv
+          - generic [ref=f7e38]: Student
+  - generic [ref=f7e41]:
+    - complementary "Student navigation" [ref=f7e43]:
+      - navigation [ref=f7e44]:
+        - link "Dashboard" [ref=f7e45] [cursor=pointer]:
+          - /url: /student
+        - link "Timetable" [ref=f7e52] [cursor=pointer]:
+          - /url: /student/timetable
+        - link "My Courses" [ref=f7e56] [cursor=pointer]:
+          - /url: /student/courses
+        - link "Attendance" [ref=f7e60] [cursor=pointer]:
+          - /url: /student/attendance
+        - link "Settings" [ref=f7e65] [cursor=pointer]:
+          - /url: /student/settings
+      - generic [ref=f7e70]:
+        - generic [ref=f7e71]:
+          - generic [ref=f7e72]: Odd Semester
+          - generic [ref=f7e73]: 2026–27
+          - generic [ref=f7e74]: Student portal · Demo
+        - button "Log Out" [ref=f7e75] [cursor=pointer]
+    - main [ref=f7e80]:
+      - generic [ref=f7e81]:
+        - generic [ref=f7e82]:
+          - generic [ref=f7e83]:
+            - heading "Timetable" [level=1] [ref=f7e84]
+            - paragraph [ref=f7e85]: Your weekly classes from the college timetable.
+          - generic [ref=f7e86]:
+            - group "Week" [ref=f7e87]:
+              - button "Previous week" [ref=f7e88] [cursor=pointer]
+              - generic [ref=f7e91]: 25 Oct – 31 Oct 2026
+              - button "Next week" [ref=f7e92] [cursor=pointer]
+            - button "This week" [ref=f7e95] [cursor=pointer]
+        - generic [ref=f7e98]:
+          - region "Weekly timetable" [ref=f7e99]:
+            - generic [ref=f7e100]:
+              - group "Filter by course" [ref=f7e101]:
+                - button "All courses" [ref=f7e102] [cursor=pointer]
+                - button "Database Management System II" [ref=f7e103] [cursor=pointer]
+                - button "Software Engineering" [ref=f7e105] [cursor=pointer]
+                - button "Operating Systems" [active] [pressed] [ref=f7e107] [cursor=pointer]
+              - tablist "Day" [ref=f7e109]:
+                - tab "Week" [selected] [ref=f7e110] [cursor=pointer]
+                - tab [ref=f7e239] [cursor=pointer]:
+                  - text: Mon
+                  - emphasis [ref=f7e112]: "0"
+                - tab [ref=f7e113] [cursor=pointer]:
+                  - text: Tue
+                  - emphasis [ref=f7e114]: "1"
+                - tab [ref=f7e115] [cursor=pointer]:
+                  - text: Wed
+                  - emphasis [ref=f7e116]: "0"
+                - tab [ref=f7e117] [cursor=pointer]:
+                  - text: Thu
+                  - emphasis [ref=f7e118]: "0"
+                - tab [ref=f7e119] [cursor=pointer]:
+                  - text: Fri
+                  - emphasis [ref=f7e120]: "0"
+                - tab [ref=f7e121] [cursor=pointer]:
+                  - text: Sat
+                  - emphasis [ref=f7e122]: "0"
+            - generic [ref=f7e123]:
+              - region "Mon 26 October" [ref=f7e187]:
+                - generic [ref=f7e188]:
+                  - generic [ref=f7e189]: Mon
+                  - generic [ref=f7e190]: "26"
+                - paragraph [ref=f7e240]: No classes
+              - region "Tue 27 October" [ref=f7e207]:
+                - generic [ref=f7e208]:
+                  - generic [ref=f7e209]: Tue
+                  - generic [ref=f7e210]: "27"
+                - button "11:20–13:00 Operating Systems L401 · 1MCA 2 Present" [ref=f7e211] [cursor=pointer]:
+                  - generic [ref=f7e212]: 11:20–13:00
+                  - generic [ref=f7e213]: Operating Systems
+                  - generic [ref=f7e214]: L401 · 1MCA 2
+                  - generic [ref=f7e218]: Present
+              - region "Wed 28 October" [ref=f7e219]:
+                - generic [ref=f7e220]:
+                  - generic [ref=f7e221]: Wed
+                  - generic [ref=f7e222]: "28"
+                - paragraph [ref=f7e223]: No classes
+              - region "Thu 29 October" [ref=f7e224]:
+                - generic [ref=f7e225]:
+                  - generic [ref=f7e226]: Thu
+                  - generic [ref=f7e227]: "29"
+                - paragraph [ref=f7e228]: No classes
+              - region "Fri 30 October" [ref=f7e229]:
+                - generic [ref=f7e230]:
+                  - generic [ref=f7e231]: Fri
+                  - generic [ref=f7e232]: "30"
+                - paragraph [ref=f7e233]: No classes
+              - region "Sat 31 October" [ref=f7e234]:
+                - generic [ref=f7e235]:
+                  - generic [ref=f7e236]: Sat
+                  - generic [ref=f7e237]: "31"
+                - paragraph [ref=f7e238]: No classes
+          - complementary "Class details" [ref=f7e177]:
+            - generic [ref=f7e241]:
+              - heading "Select a class" [level=2] [ref=f7e248]
+              - paragraph [ref=f7e249]: Choose a class to see its room, instructor, batch, attendance status and your course attendance.

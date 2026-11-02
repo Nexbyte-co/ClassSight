@@ -1,0 +1,117 @@
+- generic [ref=f7e3]:
+  - banner [ref=f7e5]:
+    - generic [ref=f7e6]:
+      - button "Toggle navigation" [expanded] [ref=f7e7] [cursor=pointer]
+      - link "ClassSight" [ref=f7e9] [cursor=pointer]:
+        - /url: /student
+      - generic [ref=f7e18]: Student · Demo
+    - generic [ref=f7e19]:
+      - generic [ref=f7e20]: Mon, Nov 2, 2026
+      - button "Night mode" [ref=f7e24] [cursor=pointer]
+      - button "Notifications (2)" [ref=f7e28] [cursor=pointer]
+      - button "Account menu for Parv Rawat" [ref=f7e34] [cursor=pointer]:
+        - generic [aria-hidden] [ref=f7e35]: P
+        - generic [ref=f7e36]:
+          - generic [ref=f7e37]: Parv
+          - generic [ref=f7e38]: Student
+  - generic [ref=f7e41]:
+    - complementary "Student navigation" [ref=f7e43]:
+      - navigation [ref=f7e44]:
+        - link "Dashboard" [ref=f7e45] [cursor=pointer]:
+          - /url: /student
+        - link "Timetable" [ref=f7e52] [cursor=pointer]:
+          - /url: /student/timetable
+        - link "My Courses" [ref=f7e56] [cursor=pointer]:
+          - /url: /student/courses
+        - link "Attendance" [ref=f7e60] [cursor=pointer]:
+          - /url: /student/attendance
+        - link "Settings" [ref=f7e65] [cursor=pointer]:
+          - /url: /student/settings
+      - generic [ref=f7e70]:
+        - generic [ref=f7e71]:
+          - generic [ref=f7e72]: Odd Semester
+          - generic [ref=f7e73]: 2026–27
+          - generic [ref=f7e74]: Student portal · Demo
+        - button "Log Out" [ref=f7e75] [cursor=pointer]
+    - main [ref=f7e80]:
+      - generic [ref=f7e81]:
+        - generic [ref=f7e82]:
+          - generic [ref=f7e83]:
+            - heading "Timetable" [level=1] [ref=f7e84]
+            - paragraph [ref=f7e85]: Your weekly classes from the college timetable.
+          - generic [ref=f7e86]:
+            - group "Week" [ref=f7e87]:
+              - button "Previous week" [ref=f7e88] [cursor=pointer]
+              - generic [ref=f7e91]: 25 Oct – 31 Oct 2026
+              - button "Next week" [ref=f7e92] [cursor=pointer]
+            - button "This week" [ref=f7e95] [cursor=pointer]
+        - generic [ref=f7e98]:
+          - region "Weekly timetable" [ref=f7e99]:
+            - generic [ref=f7e100]:
+              - group "Filter by course" [ref=f7e101]:
+                - button "All courses" [pressed] [ref=f7e102] [cursor=pointer]
+                - button "Database Management System II" [ref=f7e103] [cursor=pointer]
+                - button "Software Engineering" [ref=f7e105] [cursor=pointer]
+                - button "Operating Systems" [ref=f7e107] [cursor=pointer]
+              - tablist "Day" [ref=f7e109]:
+                - tab "Week" [ref=f7e110] [cursor=pointer]
+                - tab [ref=f7e250] [cursor=pointer]:
+                  - text: Mon
+                  - emphasis [ref=f7e112]: "2"
+                - tab [active] [selected] [ref=f7e113] [cursor=pointer]:
+                  - text: Tue
+                  - emphasis [ref=f7e114]: "1"
+                - tab [ref=f7e115] [cursor=pointer]:
+                  - text: Wed
+                  - emphasis [ref=f7e116]: "0"
+                - tab [ref=f7e117] [cursor=pointer]:
+                  - text: Thu
+                  - emphasis [ref=f7e118]: "0"
+                - tab [ref=f7e119] [cursor=pointer]:
+                  - text: Fri
+                  - emphasis [ref=f7e120]: "0"
+                - tab [ref=f7e121] [cursor=pointer]:
+                  - text: Sat
+                  - emphasis [ref=f7e122]: "0"
+            - region "Tue 27 October" [ref=f7e207]:
+              - generic [ref=f7e208]:
+                - generic [ref=f7e209]: Tue
+                - generic [ref=f7e210]: "27"
+              - button "11:20–13:00 Operating Systems L401 · 1MCA 2 Present" [ref=f7e211] [cursor=pointer]:
+                - generic [ref=f7e212]: 11:20–13:00
+                - generic [ref=f7e213]: Operating Systems
+                - generic [ref=f7e214]: L401 · 1MCA 2
+                - generic [ref=f7e218]: Present
+          - complementary "Class details" [ref=f7e177]:
+            - generic [ref=f7e267]:
+              - generic [ref=f7e268]: UCS503P · 3C2C
+              - heading "Software Engineering" [level=2] [ref=f7e270]
+              - paragraph [ref=f7e271]: Monday 26 October
+            - generic [ref=f7e272]:
+              - generic [ref=f7e273]: Present
+              - generic [ref=f7e275]:
+                - generic [ref=f7e276]:
+                  - term [ref=f7e277]: Time
+                  - definition [ref=f7e278]:
+                    - text: 09:40–11:20
+                    - generic [ref=f7e279]: 100 min lab
+                - generic [ref=f7e280]:
+                  - term [ref=f7e281]: Room
+                  - definition [ref=f7e282]: L105
+                - generic [ref=f7e283]:
+                  - term [ref=f7e284]: Instructor
+                  - definition [ref=f7e285]: Professor Jhonsy
+                - generic [ref=f7e286]:
+                  - term [ref=f7e287]: Batch
+                  - definition [ref=f7e288]:
+                    - text: 3C2C
+                    - generic [ref=f7e289]: 3rd Year
+              - generic [ref=f7e290]:
+                - generic [ref=f7e291]: This course
+                - generic [ref=f7e292]:
+                  - generic [ref=f7e293]:
+                    - text: 100%
+                    - generic [ref=f7e294]: 7 of 7 attended
+                  - generic [ref=f7e295]: Healthy
+              - link "Open course details" [ref=f7e296] [cursor=pointer]:
+                - /url: /student/courses

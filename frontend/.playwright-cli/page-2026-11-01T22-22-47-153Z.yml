@@ -1,0 +1,36 @@
+- generic [ref=f6e3]:
+  - banner [ref=f6e5]:
+    - generic [ref=f6e6]:
+      - button "Toggle navigation" [expanded] [ref=f6e7] [cursor=pointer]
+      - link "ClassSight" [ref=f6e9] [cursor=pointer]:
+        - /url: /student
+      - generic [ref=f6e18]: Student · Demo
+    - generic [ref=f6e19]:
+      - generic [ref=f6e20]: Mon, Nov 2, 2026
+      - button "Night mode" [ref=f6e24] [cursor=pointer]
+      - button "Notifications (2)" [ref=f6e28] [cursor=pointer]
+      - button "Account menu for Parv Rawat" [ref=f6e34] [cursor=pointer]:
+        - generic [aria-hidden] [ref=f6e35]: P
+        - generic [ref=f6e36]:
+          - generic [ref=f6e37]: Parv
+          - generic [ref=f6e38]: Student
+  - generic [ref=f6e41]:
+    - complementary "Student navigation" [ref=f6e43]:
+      - navigation [ref=f6e44]:
+        - link "Dashboard" [ref=f6e45] [cursor=pointer]:
+          - /url: /student
+        - link "Timetable" [ref=f6e52] [cursor=pointer]:
+          - /url: /student/timetable
+        - link "My Courses" [ref=f6e56] [cursor=pointer]:
+          - /url: /student/courses
+        - link "Attendance" [ref=f6e60] [cursor=pointer]:
+          - /url: /student/attendance
+        - link "Settings" [ref=f6e65] [cursor=pointer]:
+          - /url: /student/settings
+      - generic [ref=f6e70]:
+        - generic [ref=f6e71]:
+          - generic [ref=f6e72]: Odd Semester
+          - generic [ref=f6e73]: 2026–27
+          - generic [ref=f6e74]: Student portal · Demo
+        - button "Log Out" [ref=f6e75] [cursor=pointer]
+    - main [ref=f6e80]

@@ -1,0 +1,105 @@
+- generic [ref=f2e30]:
+  - banner [ref=f2e31]:
+    - generic [ref=f2e32]:
+      - button "Toggle navigation" [expanded] [ref=f2e33] [cursor=pointer]
+      - link "ClassSight" [ref=f2e35] [cursor=pointer]:
+        - /url: /dashboard
+    - generic [ref=f2e44]:
+      - generic [ref=f2e45]: Tue, Oct 27, 2026
+      - button "Night mode" [ref=f2e49] [cursor=pointer]
+      - button "Notifications (3)" [ref=f2e53] [cursor=pointer]
+      - button "Professor Jhonsy — account menu" [ref=f2e59] [cursor=pointer]:
+        - generic [aria-hidden] [ref=f2e60]: PJ
+        - generic [ref=f2e61]:
+          - generic [ref=f2e62]: Prof. Jhonsy
+          - generic [ref=f2e63]: Dept. of CS & Eng
+  - generic [ref=f2e66]:
+    - complementary "Main navigation" [ref=f2e67]:
+      - navigation [ref=f2e68]:
+        - link "Dashboard" [ref=f2e69] [cursor=pointer]:
+          - /url: /dashboard
+        - link "Classes" [ref=f2e76] [cursor=pointer]:
+          - /url: /classes
+        - link "Attendance" [ref=f2e80] [cursor=pointer]:
+          - /url: /attendance
+        - link "Students" [ref=f2e85] [cursor=pointer]:
+          - /url: /students
+        - link "Reports" [ref=f2e90] [cursor=pointer]:
+          - /url: /reports
+        - link "Settings" [ref=f2e94] [cursor=pointer]:
+          - /url: /settings
+      - generic [ref=f2e99]:
+        - generic [ref=f2e100]:
+          - generic [ref=f2e101]: Spring Term 2026
+          - generic [ref=f2e102]: CSE Dept. • Semester 6
+          - generic [ref=f2e103]: Academic Week 8
+        - button "Log Out Faculty" [ref=f2e104] [cursor=pointer]
+    - main [ref=f2e109]:
+      - generic [ref=f2e110]:
+        - generic [ref=f2e111]:
+          - generic [ref=f2e113]:
+            - heading "Good evening, Professor Jhonsy" [level=1] [ref=f2e114]
+            - paragraph [ref=f2e115]: Ready to verify today's lectures, monitor biometric check-ins, and synchronize attendance.
+          - generic [ref=f2e116]:
+            - generic [ref=f2e117]: NO ACTIVE SESSION
+            - paragraph [ref=f2e120]: No lecture is in progress. Start one from Today's Class Schedule to begin live attendance.
+          - generic [ref=f2e121]:
+            - generic [ref=f2e122]:
+              - generic [ref=f2e123]:
+                - heading "Mark Attendance" [level=2] [ref=f2e124]
+                - paragraph [ref=f2e125]: Biometric facial AI or contactless card scans
+              - generic [ref=f2e126]: System Ready
+            - tablist "Attendance method" [ref=f2e128]:
+              - tab "AI Photo Scan" [selected] [ref=f2e130] [cursor=pointer]
+              - tab "NFC Library Card" [ref=f2e134] [cursor=pointer]
+            - tabpanel [ref=f2e138]:
+              - generic [ref=f2e139]:
+                - heading "Upload Classroom Photo to Mark Attendance" [level=3] [ref=f2e150]
+                - paragraph [ref=f2e151]: Take or upload a panoramic photo of the lecture hall. Neural network instantly matches student face embeddings.
+                - button "Upload Classroom Photo" [ref=f2e152] [cursor=pointer]
+                - generic [ref=f2e153]: Supports JPG, PNG up to 20MB • Wide panoramic angle recommended
+              - generic [ref=f2e154]:
+                - generic [ref=f2e155]:
+                  - generic [ref=f2e156]: ✓
+                  - generic [ref=f2e157]:
+                    - generic [ref=f2e158]: "Last Batch Scan: 1MCA 2 (11:20 AM)"
+                    - generic [ref=f2e159]: 42 faces recognized • 80.8% match rate
+                - link "Log" [ref=f2e160] [cursor=pointer]:
+                  - /url: /attendance/class-1_2026-10-27
+        - generic [ref=f2e161]:
+          - generic [ref=f2e162]:
+            - generic [ref=f2e163]:
+              - generic [ref=f2e164]:
+                - heading "Schedule Overview" [level=2] [ref=f2e165]
+                - paragraph [ref=f2e166]: Monitor daily progression, attendance rates, and manage class details.
+              - button "Export Daily Ledger" [ref=f2e167] [cursor=pointer]
+            - generic [ref=f2e171]:
+              - generic [ref=f2e172]:
+                - generic [ref=f2e173]: Today's Total
+                - generic [ref=f2e174]: 1 Lectures
+                - generic [ref=f2e175]: Scheduled today
+              - generic [ref=f2e176]:
+                - generic [ref=f2e177]: Next Lecture
+                - generic [ref=f2e178]: Operating SystemsMCA103P
+                - generic [ref=f2e179]: 11:20 AM
+                - generic [ref=f2e180]: L401
+              - generic [ref=f2e181]:
+                - generic [ref=f2e182]: Completed
+                - generic [ref=f2e183]: 0 of 1
+                - generic [ref=f2e184]: 0 Currently in-session
+          - generic [ref=f2e185]:
+            - generic [ref=f2e187]:
+              - heading "Today's Lectures" [level=2] [ref=f2e188]
+              - paragraph [ref=f2e189]: Review attendance, start a lecture, or open class details.
+            - generic [ref=f2e191]:
+              - generic [ref=f2e192]:
+                - generic [ref=f2e193]:
+                  - text: 11:20
+                  - generic [ref=f2e194]: AM
+                - generic [ref=f2e195]:
+                  - generic [ref=f2e196]:
+                    - text: Operating Systems
+                    - generic [ref=f2e197]: Next Up
+                  - paragraph [ref=f2e198]: 1MCA 2 • L401 • MCA103P
+                  - generic [ref=f2e199]: 52 total students
+              - button "Start Early" [ref=f2e201] [cursor=pointer]

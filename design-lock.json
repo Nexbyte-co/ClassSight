@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "designs": {
+    "Linear-design-analysis": {
+      "source": "voltagent/awesome-design-md",
+      "sourcePath": "design-md/linear.app/DESIGN.md",
+      "outputPath": "DESIGN.md",
+      "ref": "HEAD",
+      "commitSha": "3b605329240ce735b510037cca322f1831fdd7f8",
+      "contentHash": "30bd30e72c48a16e4bdbd010f2d1c85fab657c6fae3cc85389399aab10f9cb5f",
+      "fetchedAt": "2026-10-24T08:14:30.164Z"
+    }
+  }
+}

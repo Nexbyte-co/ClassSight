@@ -1,0 +1,151 @@
+- generic [ref=f5e3]:
+  - banner [ref=f5e4]:
+    - generic [ref=f5e5]:
+      - button "Toggle navigation" [expanded] [ref=f5e6] [cursor=pointer]
+      - link "ClassSight" [ref=f5e8] [cursor=pointer]:
+        - /url: /dashboard
+    - generic [ref=f5e17]:
+      - generic [ref=f5e18]: Mon, Nov 2, 2026
+      - button "Night mode" [ref=f5e22] [cursor=pointer]
+      - button "Notifications (3)" [ref=f5e26] [cursor=pointer]
+      - button "Professor Jhonsy — account menu" [ref=f5e32] [cursor=pointer]:
+        - generic [aria-hidden] [ref=f5e33]: PJ
+        - generic [ref=f5e34]:
+          - generic [ref=f5e35]: Prof. Jhonsy
+          - generic [ref=f5e36]: Dept. of CS & Eng
+  - generic [ref=f5e39]:
+    - complementary "Main navigation" [ref=f5e40]:
+      - navigation [ref=f5e41]:
+        - link "Dashboard" [ref=f5e42] [cursor=pointer]:
+          - /url: /dashboard
+        - link "Classes" [ref=f5e49] [cursor=pointer]:
+          - /url: /classes
+        - link "Attendance Live" [ref=f5e53] [cursor=pointer]:
+          - /url: /attendance
+          - generic [ref=f5e57]: Attendance
+          - generic [ref=f5e58]: Live
+        - link "Students" [ref=f5e59] [cursor=pointer]:
+          - /url: /students
+        - link "Reports" [ref=f5e64] [cursor=pointer]:
+          - /url: /reports
+        - link "Settings" [ref=f5e68] [cursor=pointer]:
+          - /url: /settings
+      - generic [ref=f5e73]:
+        - generic [ref=f5e74]:
+          - generic [ref=f5e75]: Spring Term 2026
+          - generic [ref=f5e76]: CSE Dept. • Semester 6
+          - generic [ref=f5e77]: Academic Week 8
+        - button "Log Out Faculty" [ref=f5e78] [cursor=pointer]
+    - main [ref=f5e83]:
+      - generic [ref=f5e84]:
+        - generic [ref=f5e85]:
+          - generic [ref=f5e87]:
+            - heading "Good morning, Professor Jhonsy" [level=1] [ref=f5e88]
+            - paragraph [ref=f5e89]: Ready to verify today's lectures, monitor biometric check-ins, and synchronize attendance.
+          - generic [ref=f5e90]:
+            - generic [ref=f5e91]:
+              - generic [ref=f5e92]: ACTIVE SESSION NOW
+              - generic [ref=f5e94]: Lecture Started 35m ago
+            - button "Software Engineering UCS503P" [ref=f5e95] [cursor=pointer]:
+              - generic [ref=f5e96]: Software Engineering
+              - generic [ref=f5e97]: UCS503P
+            - generic [ref=f5e98]:
+              - button "Batch / Section 3C2C Computer Science & Eng." [ref=f5e99] [cursor=pointer]:
+                - generic [ref=f5e100]: Batch / Section
+                - generic [ref=f5e101]: 3C2C
+                - generic [ref=f5e102]: Computer Science & Eng.
+              - button "Venue L105" [ref=f5e103] [cursor=pointer]:
+                - generic [ref=f5e104]: Venue
+                - generic [ref=f5e105]: L105
+              - button "Time 09:40 AM – 11:20 AM" [ref=f5e106] [cursor=pointer]:
+                - generic [ref=f5e107]: Time
+                - generic [ref=f5e108]: 09:40 AM – 11:20 AM
+          - generic [ref=f5e109]:
+            - generic [ref=f5e110]:
+              - generic [ref=f5e111]:
+                - heading "Mark Attendance" [level=2] [ref=f5e112]
+                - paragraph [ref=f5e113]: Biometric facial AI or contactless card scans
+              - generic [ref=f5e114]: System Ready
+            - tablist "Attendance method" [ref=f5e116]:
+              - tab "AI Photo Scan" [selected] [ref=f5e118] [cursor=pointer]
+              - tab "NFC Library Card" [ref=f5e122] [cursor=pointer]
+            - tabpanel [ref=f5e126]:
+              - generic [ref=f5e127]:
+                - heading "Upload Classroom Photo to Mark Attendance" [level=3] [ref=f5e138]
+                - paragraph [ref=f5e139]: Take or upload a panoramic photo of the lecture hall. Neural network instantly matches student face embeddings.
+                - button "Upload Classroom Photo" [ref=f5e140] [cursor=pointer]
+                - generic [ref=f5e141]: Supports JPG, PNG up to 20MB • Wide panoramic angle recommended
+              - generic [ref=f5e142]:
+                - generic [ref=f5e143]:
+                  - generic [ref=f5e144]: ✓
+                  - generic [ref=f5e145]:
+                    - generic [ref=f5e146]: "Last Batch Scan: 3C2C (09:40 AM)"
+                    - generic [ref=f5e147]: 42 faces recognized • 80.8% match rate
+                - link "Log" [ref=f5e148] [cursor=pointer]:
+                  - /url: /attendance/class-1_2026-11-02
+        - generic [ref=f5e149]:
+          - generic [ref=f5e150]:
+            - generic [ref=f5e151]:
+              - generic [ref=f5e152]:
+                - heading "Schedule Overview" [level=2] [ref=f5e153]
+                - paragraph [ref=f5e154]: Monitor daily progression, attendance rates, and manage class details.
+              - button "Export Daily Ledger" [ref=f5e155] [cursor=pointer]
+            - generic [ref=f5e159]:
+              - generic [ref=f5e160]:
+                - generic [ref=f5e161]: Today's Total
+                - generic [ref=f5e162]: 3 Lectures
+                - generic [ref=f5e163]: Scheduled today
+              - generic [ref=f5e164]:
+                - generic [ref=f5e165]: Next Lecture
+                - generic [ref=f5e166]: Database Management System IIUCS303P
+                - generic [ref=f5e167]: 11:20 AM
+                - generic [ref=f5e168]: L207
+              - generic [ref=f5e169]:
+                - generic [ref=f5e170]: Completed
+                - generic [ref=f5e171]: 0 of 3
+                - generic [ref=f5e172]: 1 Currently in-session
+          - generic [ref=f5e173]:
+            - generic [ref=f5e174]:
+              - generic [ref=f5e175]:
+                - heading "Today's Lectures" [level=2] [ref=f5e176]
+                - paragraph [ref=f5e177]: Review attendance, start a lecture, or open class details.
+              - generic [ref=f5e178]: Scroll for more
+            - generic [ref=f5e179]:
+              - generic [ref=f5e180]:
+                - generic [ref=f5e181]:
+                  - generic [ref=f5e182]:
+                    - text: 09:40
+                    - generic [ref=f5e183]: AM
+                  - generic [ref=f5e184]:
+                    - generic [ref=f5e185]:
+                      - text: Software Engineering
+                      - generic [ref=f5e186]: Active Now
+                    - paragraph [ref=f5e187]: 3C2C • L105 • UCS503P
+                    - generic [ref=f5e188]: Pending live class verification
+                - generic [ref=f5e189]:
+                  - button "Take Attendance" [ref=f5e190] [cursor=pointer]
+                  - button "Dismiss Lecture" [ref=f5e191] [cursor=pointer]
+              - generic [ref=f5e192]:
+                - generic [ref=f5e193]:
+                  - generic [ref=f5e194]:
+                    - text: 11:20
+                    - generic [ref=f5e195]: AM
+                  - generic [ref=f5e196]:
+                    - generic [ref=f5e197]:
+                      - text: Database Management System II
+                      - generic [ref=f5e198]: Next Up
+                    - paragraph [ref=f5e199]: 2Q3B • L207 • UCS303P
+                    - generic [ref=f5e200]: 52 total students
+                - button "Start Early" [ref=f5e202] [cursor=pointer]
+              - generic [ref=f5e203]:
+                - generic [ref=f5e204]:
+                  - generic [ref=f5e205]:
+                    - text: 01:50
+                    - generic [ref=f5e206]: PM
+                  - generic [ref=f5e207]:
+                    - generic [ref=f5e208]:
+                      - text: Software Engineering
+                      - generic [ref=f5e209]: Scheduled
+                    - paragraph [ref=f5e210]: 3C81B • L105 • UCS503P
+                    - generic [ref=f5e211]: 52 total students
+                - button "Class Details" [ref=f5e213] [cursor=pointer]

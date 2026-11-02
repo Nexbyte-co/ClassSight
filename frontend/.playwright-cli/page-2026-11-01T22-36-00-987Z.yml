@@ -1,0 +1,124 @@
+- generic [ref=f24e3]:
+  - banner [ref=f24e5]:
+    - generic [ref=f24e6]:
+      - button "Toggle navigation" [expanded] [ref=f24e7] [cursor=pointer]
+      - link "ClassSight" [ref=f24e9] [cursor=pointer]:
+        - /url: /student
+      - generic [ref=f24e18]: Student · Demo
+    - generic [ref=f24e19]:
+      - generic [ref=f24e20]: Mon, Nov 2, 2026
+      - button "Night mode" [ref=f24e24] [cursor=pointer]
+      - button "Notifications (2)" [ref=f24e28] [cursor=pointer]
+      - button "Account menu for Parv Rawat" [ref=f24e34] [cursor=pointer]:
+        - generic [aria-hidden] [ref=f24e35]: P
+        - generic [ref=f24e36]:
+          - generic [ref=f24e37]: Parv
+          - generic [ref=f24e38]: Student
+  - generic [ref=f24e41]:
+    - complementary "Student navigation" [ref=f24e43]:
+      - navigation [ref=f24e44]:
+        - link "Dashboard" [ref=f24e45] [cursor=pointer]:
+          - /url: /student
+        - link "Timetable" [ref=f24e52] [cursor=pointer]:
+          - /url: /student/timetable
+        - link "My Courses" [ref=f24e56] [cursor=pointer]:
+          - /url: /student/courses
+        - link "Attendance" [ref=f24e60] [cursor=pointer]:
+          - /url: /student/attendance
+        - link "Settings" [ref=f24e65] [cursor=pointer]:
+          - /url: /student/settings
+      - generic [ref=f24e70]:
+        - generic [ref=f24e71]:
+          - generic [ref=f24e72]: Odd Semester
+          - generic [ref=f24e73]: 2026–27
+          - generic [ref=f24e74]: Student portal · Demo
+        - button "Log Out" [ref=f24e75] [cursor=pointer]
+    - main [ref=f24e80]:
+      - generic [ref=f24e81]:
+        - generic [ref=f24e82]:
+          - generic [ref=f24e83]:
+            - heading "Timetable" [level=1] [ref=f24e84]
+            - paragraph [ref=f24e85]: Your weekly classes from the college timetable.
+          - generic [ref=f24e86]:
+            - group "Week" [ref=f24e87]:
+              - button "Previous week" [ref=f24e88] [cursor=pointer]
+              - generic [ref=f24e91]: 1 Nov – 7 Nov 2026
+              - button "Next week" [ref=f24e92] [cursor=pointer]
+            - button "This week" [disabled] [ref=f24e95]
+        - generic [ref=f24e98]:
+          - region "Weekly timetable" [ref=f24e99]:
+            - generic [ref=f24e100]:
+              - group "Filter by course" [ref=f24e101]:
+                - button "All courses" [pressed] [ref=f24e102] [cursor=pointer]
+                - button "Database Management System II" [ref=f24e103] [cursor=pointer]
+                - button "Software Engineering" [ref=f24e105] [cursor=pointer]
+                - button "Operating Systems" [ref=f24e107] [cursor=pointer]
+              - tablist "Day" [ref=f24e109]:
+                - tab "Week" [selected] [ref=f24e110] [cursor=pointer]
+                - tab [ref=f24e111] [cursor=pointer]:
+                  - text: Mon
+                  - emphasis [ref=f24e112]: "2"
+                - tab [ref=f24e113] [cursor=pointer]:
+                  - text: Tue
+                  - emphasis [ref=f24e114]: "1"
+                - tab [ref=f24e115] [cursor=pointer]:
+                  - text: Wed
+                  - emphasis [ref=f24e116]: "0"
+                - tab [ref=f24e117] [cursor=pointer]:
+                  - text: Thu
+                  - emphasis [ref=f24e118]: "0"
+                - tab [ref=f24e119] [cursor=pointer]:
+                  - text: Fri
+                  - emphasis [ref=f24e120]: "0"
+                - tab [ref=f24e121] [cursor=pointer]:
+                  - text: Sat
+                  - emphasis [ref=f24e122]: "0"
+            - generic [ref=f24e123]:
+              - region "Mon 2 November" [ref=f24e124]:
+                - generic [ref=f24e125]:
+                  - generic [ref=f24e126]: Mon
+                  - generic [ref=f24e127]: "2"
+                  - emphasis [ref=f24e128]: Today
+                - button "09:40–11:20 Software Engineering L105 · 3C2C Upcoming" [ref=f24e129] [cursor=pointer]:
+                  - generic [ref=f24e130]: 09:40–11:20
+                  - generic [ref=f24e131]: Software Engineering
+                  - generic [ref=f24e132]: L105 · 3C2C
+                  - generic [ref=f24e136]: Upcoming
+                - button "11:20–13:00 Database Management System II L207 · 2Q3B Upcoming" [ref=f24e137] [cursor=pointer]:
+                  - generic [ref=f24e138]: 11:20–13:00
+                  - generic [ref=f24e139]: Database Management System II
+                  - generic [ref=f24e140]: L207 · 2Q3B
+                  - generic [ref=f24e144]: Upcoming
+              - region "Tue 3 November" [ref=f24e145]:
+                - generic [ref=f24e146]:
+                  - generic [ref=f24e147]: Tue
+                  - generic [ref=f24e148]: "3"
+                - button "11:20–13:00 Operating Systems L401 · 1MCA 2 Upcoming" [ref=f24e149] [cursor=pointer]:
+                  - generic [ref=f24e150]: 11:20–13:00
+                  - generic [ref=f24e151]: Operating Systems
+                  - generic [ref=f24e152]: L401 · 1MCA 2
+                  - generic [ref=f24e156]: Upcoming
+              - region "Wed 4 November" [ref=f24e157]:
+                - generic [ref=f24e158]:
+                  - generic [ref=f24e159]: Wed
+                  - generic [ref=f24e160]: "4"
+                - paragraph [ref=f24e161]: No classes
+              - region "Thu 5 November" [ref=f24e162]:
+                - generic [ref=f24e163]:
+                  - generic [ref=f24e164]: Thu
+                  - generic [ref=f24e165]: "5"
+                - paragraph [ref=f24e166]: No classes
+              - region "Fri 6 November" [ref=f24e167]:
+                - generic [ref=f24e168]:
+                  - generic [ref=f24e169]: Fri
+                  - generic [ref=f24e170]: "6"
+                - paragraph [ref=f24e171]: No classes
+              - region "Sat 7 November" [ref=f24e172]:
+                - generic [ref=f24e173]:
+                  - generic [ref=f24e174]: Sat
+                  - generic [ref=f24e175]: "7"
+                - paragraph [ref=f24e176]: No classes
+          - complementary "Class details" [ref=f24e177]:
+            - generic [ref=f24e178]:
+              - heading "Select a class" [level=2] [ref=f24e185]
+              - paragraph [ref=f24e186]: Choose a class to see its room, instructor, batch, attendance status and your course attendance.

@@ -1,0 +1,250 @@
+- generic [ref=f3e3]:
+  - banner [ref=f3e5]:
+    - generic [ref=f3e6]:
+      - button "Toggle navigation" [expanded] [ref=f3e7] [cursor=pointer]
+      - link "ClassSight" [ref=f3e9] [cursor=pointer]:
+        - /url: /student
+      - generic [ref=f3e18]: Student · Demo
+    - generic [ref=f3e19]:
+      - generic [ref=f3e20]: Mon, Nov 2, 2026
+      - button "Night mode" [ref=f3e24] [cursor=pointer]
+      - button "Notifications (2)" [ref=f3e28] [cursor=pointer]
+      - button "Account menu for Parv Rawat" [ref=f3e34] [cursor=pointer]:
+        - generic [aria-hidden] [ref=f3e35]: P
+        - generic [ref=f3e36]:
+          - generic [ref=f3e37]: Parv
+          - generic [ref=f3e38]: Student
+  - generic [ref=f3e41]:
+    - complementary "Student navigation" [ref=f3e43]:
+      - navigation [ref=f3e44]:
+        - link "Dashboard" [ref=f3e45] [cursor=pointer]:
+          - /url: /student
+        - link "Timetable" [ref=f3e52] [cursor=pointer]:
+          - /url: /student/timetable
+        - link "My Courses" [ref=f3e56] [cursor=pointer]:
+          - /url: /student/courses
+        - link "Attendance" [ref=f3e60] [cursor=pointer]:
+          - /url: /student/attendance
+        - link "Settings" [ref=f3e65] [cursor=pointer]:
+          - /url: /student/settings
+      - generic [ref=f3e70]:
+        - generic [ref=f3e71]:
+          - generic [ref=f3e72]: Odd Semester
+          - generic [ref=f3e73]: 2026–27
+          - generic [ref=f3e74]: Student portal · Demo
+        - button "Log Out" [ref=f3e75] [cursor=pointer]
+    - main [ref=f3e80]:
+      - generic [ref=f3e81]:
+        - generic [ref=f3e83]:
+          - heading "Good evening, Parv" [level=1] [ref=f3e84]
+          - paragraph [ref=f3e85]: Here's where your attendance stands.
+        - note [ref=f3e86]:
+          - generic [ref=f3e89]: Frontend demo. Your classes come from the real timetable, but attendance marks are sample data, not records linked to your account.
+        - generic [ref=f3e90]:
+          - region "Overall attendance" [ref=f3e91]:
+            - generic [ref=f3e93]: 81%
+            - generic [ref=f3e97]: Meeting the 75% requirement
+          - region "Classes attended" [ref=f3e98]:
+            - generic [ref=f3e100]:
+              - text: "17"
+              - generic [ref=f3e101]: of 21
+            - generic [ref=f3e102]: 4 missed
+          - region "At-risk courses" [ref=f3e103]:
+            - generic [ref=f3e105]:
+              - text: "2"
+              - generic [ref=f3e106]: of 3
+            - generic [ref=f3e107]: Database Management System II, Operating Systems
+          - region "Next class" [ref=f3e108]:
+            - generic [ref=f3e110]: Software Engineering
+            - generic [ref=f3e111]: Today · 09:40 · L105
+        - generic [ref=f3e112]:
+          - generic [ref=f3e113]:
+            - region [ref=f3e114]:
+              - generic [ref=f3e115]:
+                - heading "Today's schedule" [level=2] [ref=f3e116]
+                - link "Timetable" [ref=f3e117] [cursor=pointer]:
+                  - /url: /student/timetable
+              - list [ref=f3e120]:
+                - listitem [ref=f3e121]:
+                  - generic [ref=f3e122]:
+                    - text: 09:40
+                    - generic [ref=f3e123]: 11:20
+                  - generic [ref=f3e124]:
+                    - generic [ref=f3e125]: Software Engineering
+                    - generic [ref=f3e126]: L105 · 3C2C
+                  - generic [ref=f3e130]: Upcoming
+                - listitem [ref=f3e131]:
+                  - generic [ref=f3e132]:
+                    - text: 11:20
+                    - generic [ref=f3e133]: 13:00
+                  - generic [ref=f3e134]:
+                    - generic [ref=f3e135]: Database Management System II
+                    - generic [ref=f3e136]: L207 · 2Q3B
+                  - generic [ref=f3e140]: Upcoming
+            - region [ref=f3e141]:
+              - heading "Upcoming classes" [level=2] [ref=f3e143]
+              - list [ref=f3e144]:
+                - listitem [ref=f3e145]:
+                  - generic [ref=f3e146]:
+                    - generic [ref=f3e147]: "2"
+                    - generic [ref=f3e148]: Mon
+                  - generic [ref=f3e149]:
+                    - generic [ref=f3e150]: Software Engineering
+                    - generic [ref=f3e151]: 09:40–11:20 · L105
+                  - generic [ref=f3e156]: Today
+                - listitem [ref=f3e157]:
+                  - generic [ref=f3e158]:
+                    - generic [ref=f3e159]: "2"
+                    - generic [ref=f3e160]: Mon
+                  - generic [ref=f3e161]:
+                    - generic [ref=f3e162]: Database Management System II
+                    - generic [ref=f3e163]: 11:20–13:00 · L207
+                  - generic [ref=f3e168]: Today
+                - listitem [ref=f3e169]:
+                  - generic [ref=f3e170]:
+                    - generic [ref=f3e171]: "3"
+                    - generic [ref=f3e172]: Tue
+                  - generic [ref=f3e173]:
+                    - generic [ref=f3e174]: Operating Systems
+                    - generic [ref=f3e175]: 11:20–13:00 · L401
+                  - generic [ref=f3e180]: Tomorrow
+                - listitem [ref=f3e181]:
+                  - generic [ref=f3e182]:
+                    - generic [ref=f3e183]: "9"
+                    - generic [ref=f3e184]: Mon
+                  - generic [ref=f3e185]:
+                    - generic [ref=f3e186]: Software Engineering
+                    - generic [ref=f3e187]: 09:40–11:20 · L105
+                  - generic [ref=f3e192]: Mon 9 Nov
+          - generic [ref=f3e193]:
+            - region [ref=f3e194]:
+              - generic [ref=f3e195]:
+                - heading "Attendance alerts" [level=2] [ref=f3e196]
+                - generic [ref=f3e197]: "2"
+              - list [ref=f3e198]:
+                - listitem [ref=f3e199]:
+                  - generic [ref=f3e202]:
+                    - generic [ref=f3e203]: "Database Management System II: 71%"
+                    - generic [ref=f3e204]: Below the 75% requirement. Attend the next 1 class in a row to reach it.
+                - listitem [ref=f3e205]:
+                  - generic [ref=f3e208]:
+                    - generic [ref=f3e209]: "Operating Systems: 71%"
+                    - generic [ref=f3e210]: Below the 75% requirement. Attend the next 1 class in a row to reach it.
+            - region [ref=f3e211]:
+              - generic [ref=f3e212]:
+                - heading "Courses" [level=2] [ref=f3e213]
+                - link "All courses" [ref=f3e214] [cursor=pointer]:
+                  - /url: /student/courses
+              - list [ref=f3e217]:
+                - listitem [ref=f3e218]:
+                  - generic [ref=f3e219]:
+                    - generic [ref=f3e220]: Database Management System II
+                    - generic [ref=f3e221]: Warning
+                  - generic [ref=f3e222]: 71%
+                  - generic [ref=f3e227]: 5 of 7 classes attended
+                - listitem [ref=f3e228]:
+                  - generic [ref=f3e229]:
+                    - generic [ref=f3e230]: Operating Systems
+                    - generic [ref=f3e231]: Warning
+                  - generic [ref=f3e232]: 71%
+                  - generic [ref=f3e237]: 5 of 7 classes attended
+                - listitem [ref=f3e238]:
+                  - generic [ref=f3e239]:
+                    - generic [ref=f3e240]: Software Engineering
+                    - generic [ref=f3e241]: Healthy
+                  - generic [ref=f3e242]: 100%
+                  - generic [ref=f3e247]: 7 of 7 classes attended
+        - region [ref=f3e248]:
+          - generic [ref=f3e249]:
+            - heading "This week" [level=2] [ref=f3e250]
+            - generic [ref=f3e251]: Classes attended out of classes held
+          - list [ref=f3e252]:
+            - listitem [ref=f3e253]:
+              - generic [ref=f3e254]: Sun
+              - generic [ref=f3e255]: "1"
+              - generic "No classes" [ref=f3e257]
+            - listitem [ref=f3e258]:
+              - generic [ref=f3e259]: Mon
+              - generic [ref=f3e260]: "2"
+              - generic [ref=f3e261]:
+                - generic "Software Engineering · 9:40 AM · Upcoming" [ref=f3e262]
+                - generic "Database Management System II · 11:20 AM · Upcoming" [ref=f3e263]
+              - generic [ref=f3e264]: Upcoming
+            - listitem [ref=f3e265]:
+              - generic [ref=f3e266]: Tue
+              - generic [ref=f3e267]: "3"
+              - generic "Operating Systems · 11:20 AM · Upcoming" [ref=f3e269]
+              - generic [ref=f3e270]: Upcoming
+            - listitem [ref=f3e271]:
+              - generic [ref=f3e272]: Wed
+              - generic [ref=f3e273]: "4"
+              - generic "No classes" [ref=f3e275]
+            - listitem [ref=f3e276]:
+              - generic [ref=f3e277]: Thu
+              - generic [ref=f3e278]: "5"
+              - generic "No classes" [ref=f3e280]
+            - listitem [ref=f3e281]:
+              - generic [ref=f3e282]: Fri
+              - generic [ref=f3e283]: "6"
+              - generic "No classes" [ref=f3e285]
+            - listitem [ref=f3e286]:
+              - generic [ref=f3e287]: Sat
+              - generic [ref=f3e288]: "7"
+              - generic "No classes" [ref=f3e290]
+          - paragraph [ref=f3e291]:
+            - generic [ref=f3e292]: Present
+            - generic [ref=f3e294]: Absent
+            - generic [ref=f3e296]: Unverified
+            - generic [ref=f3e298]: Upcoming
+        - region [ref=f3e300]:
+          - generic [ref=f3e301]:
+            - heading "Weekly attendance detail" [level=2] [ref=f3e302]
+            - generic [ref=f3e303]: Hover, tap or tab to a class to see its details.
+          - generic [ref=f3e304]:
+            - img "Attendance this week by day, stacked by subject" [ref=f3e306]:
+              - generic [ref=f3e307]: "0"
+              - generic [ref=f3e309]: "1"
+              - generic [ref=f3e311]: "2"
+              - generic [ref=f3e313]: Classes
+              - generic [ref=f3e314]:
+                - generic [ref=f3e315]: —
+                - generic [ref=f3e316]: Sun
+                - generic [ref=f3e317]: 01 Nov
+              - generic [ref=f3e318]:
+                - button "Software Engineering, Mon, 02 Nov 2026, Upcoming" [ref=f3e319] [cursor=pointer]
+                - button "Database Management System II, Mon, 02 Nov 2026, Upcoming" [ref=f3e321] [cursor=pointer]
+                - generic [ref=f3e323]: Upcoming
+                - generic [ref=f3e324]: Mon
+                - generic [ref=f3e325]: Today
+              - generic [ref=f3e326]:
+                - button "Operating Systems, Tue, 03 Nov 2026, Upcoming" [ref=f3e327] [cursor=pointer]
+                - generic [ref=f3e329]: Upcoming
+                - generic [ref=f3e330]: Tue
+                - generic [ref=f3e331]: 03 Nov
+              - generic [ref=f3e332]:
+                - generic [ref=f3e333]: —
+                - generic [ref=f3e334]: Wed
+                - generic [ref=f3e335]: 04 Nov
+              - generic [ref=f3e336]:
+                - generic [ref=f3e337]: —
+                - generic [ref=f3e338]: Thu
+                - generic [ref=f3e339]: 05 Nov
+              - generic [ref=f3e340]:
+                - generic [ref=f3e341]: —
+                - generic [ref=f3e342]: Fri
+                - generic [ref=f3e343]: 06 Nov
+              - generic [ref=f3e344]:
+                - generic [ref=f3e345]: —
+                - generic [ref=f3e346]: Sat
+                - generic [ref=f3e347]: 07 Nov
+            - generic [ref=f3e348]: Hover over, tap or tab to a class to see its details.
+          - generic [ref=f3e349]:
+            - generic [ref=f3e350]:
+              - generic [ref=f3e351]: Database Management System II
+              - generic [ref=f3e353]: Software Engineering
+              - generic [ref=f3e355]: Operating Systems
+            - generic [ref=f3e357]:
+              - generic [ref=f3e358]: Present ✓ (solid)
+              - generic [ref=f3e361]: Absent ✕ (light)
+              - generic [ref=f3e364]: Unverified ? (striped)
+              - generic [ref=f3e367]: Upcoming (outline)

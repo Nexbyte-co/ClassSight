@@ -1,0 +1,136 @@
+- generic [ref=f16e3]:
+  - banner [ref=f16e4]:
+    - generic [ref=f16e5]:
+      - button "Toggle navigation" [expanded] [ref=f16e6] [cursor=pointer]
+      - link "ClassSight" [ref=f16e8] [cursor=pointer]:
+        - /url: /dashboard
+    - generic [ref=f16e17]:
+      - generic [ref=f16e18]: Mon, Nov 2, 2026
+      - button "Night mode" [ref=f16e22] [cursor=pointer]
+      - button "Notifications (1)" [ref=f16e30] [cursor=pointer]
+      - button "Professor Jhonsy — account menu" [ref=f16e36] [cursor=pointer]:
+        - generic [aria-hidden] [ref=f16e37]: PJ
+        - generic [ref=f16e38]:
+          - generic [ref=f16e39]: Prof. Jhonsy
+          - generic [ref=f16e40]: Dept. of CS & Eng
+  - generic [ref=f16e43]:
+    - complementary "Main navigation" [ref=f16e44]:
+      - navigation [ref=f16e45]:
+        - link "Dashboard" [ref=f16e46] [cursor=pointer]:
+          - /url: /dashboard
+        - link "Classes" [ref=f16e53] [cursor=pointer]:
+          - /url: /classes
+        - link "Attendance" [ref=f16e57] [cursor=pointer]:
+          - /url: /attendance
+        - link "Students" [ref=f16e62] [cursor=pointer]:
+          - /url: /students
+        - link "Reports" [ref=f16e67] [cursor=pointer]:
+          - /url: /reports
+        - link "Settings" [ref=f16e71] [cursor=pointer]:
+          - /url: /settings
+      - generic [ref=f16e76]:
+        - generic [ref=f16e77]:
+          - generic [ref=f16e78]: Spring Term 2026
+          - generic [ref=f16e79]: CSE Dept. • Semester 6
+          - generic [ref=f16e80]: Academic Week 8
+        - button "Log Out Faculty" [ref=f16e81] [cursor=pointer]
+    - main [ref=f16e86]:
+      - generic [ref=f16e87]:
+        - heading "Settings" [level=1] [ref=f16e88]
+        - paragraph [ref=f16e93]:
+          - text: Preferences marked
+          - strong [ref=f16e94]: Saved in this browser
+          - text: take effect immediately on this device. Sections marked
+          - strong [ref=f16e95]: Requires server
+          - text: are not available in this frontend demo.
+      - group [ref=f16e97]:
+        - heading "Attendance preferences" [level=2] [ref=f16e98]
+        - generic [ref=f16e99]:
+          - generic [ref=f16e100]:
+            - generic [ref=f16e101]:
+              - generic [ref=f16e102]: ATTENDANCE RULES
+              - generic [ref=f16e103]: Minimum attendance a student needs to be eligible
+            - generic [ref=f16e104]: Saved in this browser
+          - generic [ref=f16e105]:
+            - text: ATTENDANCE REQUIREMENT (%)
+            - generic [ref=f16e106]:
+              - textbox "ATTENDANCE REQUIREMENT (%)" [ref=f16e107]: "75"
+              - button "Save" [disabled] [ref=f16e108]
+              - button "Reset to 75%" [disabled] [ref=f16e109]
+            - paragraph [ref=f16e110]:
+              - text: "Allowed range 50–100%. With 75%: students at"
+              - strong [ref=f16e111]: 75% or above
+              - text: are in good standing,
+              - strong [ref=f16e112]: 65–74%
+              - text: are at risk, and below 65% are critical. Used by the Students list, detention badges in Reports, Report Details and the student view.
+            - status [ref=f16e113]
+        - generic [ref=f16e114]:
+          - generic [ref=f16e115]:
+            - generic [ref=f16e116]:
+              - generic [ref=f16e117]: CLASS & SCHEDULE
+              - generic [ref=f16e118]: Defaults for lectures you add on the Dashboard
+            - generic [ref=f16e119]: Saved in this browser
+          - generic [ref=f16e120]:
+            - generic [ref=f16e121]:
+              - generic [ref=f16e122]:
+                - text: DEFAULT LECTURE LENGTH (MINUTES)
+                - textbox "DEFAULT LECTURE LENGTH (MINUTES)" [ref=f16e123]: "50"
+                - paragraph [ref=f16e124]: Used when a lecture's time slot has only a start time (10–240).
+              - generic [ref=f16e125]:
+                - text: DEFAULT DEPARTMENT
+                - textbox "DEFAULT DEPARTMENT" [ref=f16e126]: Computer Science & Eng.
+                - paragraph [ref=f16e127]: Applied to new lectures you add on the Dashboard (shown in the active-session banner).
+            - generic [ref=f16e128]:
+              - button "Save" [disabled] [ref=f16e129]
+              - button "Reset to defaults" [ref=f16e130] [cursor=pointer]
+            - status [ref=f16e131]
+      - group [ref=f16e132]:
+        - heading "Appearance" [level=2] [ref=f16e133]
+        - generic [ref=f16e134]:
+          - generic [ref=f16e135]:
+            - generic [ref=f16e136]:
+              - generic [ref=f16e137]: APPEARANCE
+              - generic [ref=f16e138]: Colour theme for this browser
+            - generic [ref=f16e139]: Saved in this browser
+          - radiogroup "Colour theme" [ref=f16e141]:
+            - radio "Light" [ref=f16e142] [cursor=pointer]
+            - radio "Dark" [checked] [ref=f16e149] [cursor=pointer]
+      - group [ref=f16e152]:
+        - heading "Account" [level=2] [ref=f16e153]
+        - generic [ref=f16e154]:
+          - generic [ref=f16e155]:
+            - generic [ref=f16e156]:
+              - generic [ref=f16e157]: PROFILE
+              - generic [ref=f16e158]: Your teacher account
+            - generic [ref=f16e159]: Requires server
+          - generic [ref=f16e160]:
+            - generic [ref=f16e161]:
+              - generic [ref=f16e162]:
+                - generic [ref=f16e163]: Name
+                - strong [ref=f16e164]: Professor Jhonsy
+              - generic [ref=f16e165]:
+                - generic [ref=f16e166]: Email
+                - strong [ref=f16e167]: Jhonsy.Bansal@thapar.edu
+              - generic [ref=f16e168]:
+                - generic [ref=f16e169]: Department
+                - strong [ref=f16e170]: Computer Science & Engineering
+              - generic [ref=f16e171]:
+                - generic [ref=f16e172]: Term
+                - strong [ref=f16e173]: Spring Term 2026 · Semester 6
+            - paragraph [ref=f16e174]: Demo account details. Editing your profile needs the ClassSight server, which is not connected.
+            - link "Preview student view (demo)" [ref=f16e175] [cursor=pointer]:
+              - /url: /student/preview
+        - generic [ref=f16e180]:
+          - generic [ref=f16e181]:
+            - generic [ref=f16e182]:
+              - generic [ref=f16e183]: NOTIFICATIONS
+              - generic [ref=f16e184]: Attendance alerts and reminders
+            - generic [ref=f16e185]: Requires server
+          - paragraph [ref=f16e187]: Notification delivery (email or push) needs the ClassSight server and is not available yet. The alerts in the header are demo content.
+        - generic [ref=f16e188]:
+          - generic [ref=f16e189]:
+            - generic [ref=f16e190]:
+              - generic [ref=f16e191]: ACCOUNT & SECURITY
+              - generic [ref=f16e192]: Sign-in, password and sessions
+            - generic [ref=f16e193]: Requires server
+          - paragraph [ref=f16e195]: Sign-in, password changes and session management are handled by the ClassSight server, which is not connected to this frontend demo. No security settings are stored in the browser.

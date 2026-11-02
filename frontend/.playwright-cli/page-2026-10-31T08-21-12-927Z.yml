@@ -1,0 +1,198 @@
+- generic [ref=f1e3]:
+  - banner [ref=f1e4]:
+    - generic [ref=f1e5]:
+      - button "Toggle navigation" [expanded] [ref=f1e6] [cursor=pointer]
+      - link "ClassSight" [ref=f1e8] [cursor=pointer]:
+        - /url: /dashboard
+    - generic [ref=f1e17]:
+      - generic [ref=f1e18]: Sat, Oct 31, 2026
+      - button "Night mode" [ref=f1e22] [cursor=pointer]
+      - button "Notifications (1)" [ref=f1e26] [cursor=pointer]
+      - button "Professor Jhonsy — account menu" [ref=f1e32] [cursor=pointer]:
+        - generic [aria-hidden] [ref=f1e33]: PJ
+        - generic [ref=f1e34]:
+          - generic [ref=f1e35]: Prof. Jhonsy
+          - generic [ref=f1e36]: Dept. of CS & Eng
+  - generic [ref=f1e39]:
+    - complementary "Main navigation" [ref=f1e40]:
+      - navigation [ref=f1e41]:
+        - link "Dashboard" [ref=f1e42] [cursor=pointer]:
+          - /url: /dashboard
+        - link "Classes" [ref=f1e49] [cursor=pointer]:
+          - /url: /classes
+        - link "Attendance" [ref=f1e53] [cursor=pointer]:
+          - /url: /attendance
+        - link "Students" [ref=f1e58] [cursor=pointer]:
+          - /url: /students
+        - link "Reports" [ref=f1e63] [cursor=pointer]:
+          - /url: /reports
+        - link "Settings" [ref=f1e67] [cursor=pointer]:
+          - /url: /settings
+      - generic [ref=f1e72]:
+        - generic [ref=f1e73]:
+          - generic [ref=f1e74]: Spring Term 2026
+          - generic [ref=f1e75]: CSE Dept. • Semester 6
+          - generic [ref=f1e76]: Academic Week 8
+        - button "Log Out Faculty" [ref=f1e77] [cursor=pointer]
+    - main [ref=f1e82]:
+      - region [ref=f1e83]:
+        - generic [ref=f1e84]:
+          - generic [ref=f1e85]:
+            - generic [ref=f1e90]:
+              - heading "My Classes" [level=1] [ref=f1e91]
+              - paragraph [ref=f1e92]: Manage your courses, sections, and lecture schedules
+            - generic [ref=f1e93]: Spring Term 2026
+          - navigation "Classes views" [ref=f1e96]:
+            - link "All Classes" [ref=f1e97] [cursor=pointer]:
+              - /url: /classes
+            - link "Class Schedule" [ref=f1e103] [cursor=pointer]:
+              - /url: /classes/schedule
+          - generic [ref=f1e106]:
+            - generic [ref=f1e108]:
+              - generic [ref=f1e109]: Total Courses
+              - generic [ref=f1e110]: "3"
+            - generic [ref=f1e112]:
+              - generic [ref=f1e113]: Student Groups
+              - generic [ref=f1e114]: "8"
+            - generic [ref=f1e116]:
+              - generic [ref=f1e117]: Avg. Attendance
+              - generic [ref=f1e118]: 85%
+            - generic [ref=f1e120]:
+              - generic [ref=f1e121]: Need Attention
+              - generic [ref=f1e122]: "3"
+          - generic [ref=f1e123]:
+            - searchbox "Search classes" [ref=f1e125]
+            - generic [ref=f1e126]:
+              - button "All Years" [pressed] [ref=f1e127] [cursor=pointer]
+              - button "2nd Year" [ref=f1e128] [cursor=pointer]
+              - button "3rd Year" [ref=f1e129] [cursor=pointer]
+              - button "PG (1 MCA)" [ref=f1e130] [cursor=pointer]
+          - status [ref=f1e131]:
+            - generic [ref=f1e132]: Showing 8 of 8 classes
+            - button "Sort by course name, A to Z. Click to reverse" [ref=f1e134] [cursor=pointer]: A–Z
+          - list [ref=f1e140]:
+            - listitem [ref=f1e141] [cursor=pointer]:
+              - generic [ref=f1e142]:
+                - button "Open Database Management System II, 2Q3B" [ref=f1e143]: Database Management System II
+                - generic [ref=f1e144]: UCS303P · 2nd Year · Group 2Q32
+              - generic [ref=f1e145]:
+                - generic [ref=f1e146]: Mon
+                - generic [ref=f1e147]: 11:20–13:00
+              - generic [ref=f1e151]:
+                - generic [ref=f1e152]: 88%
+                - img "88% average attendance, 3 pts above the 85% target" [ref=f1e153]:
+                  - generic [aria-hidden]: 3 pts above the 85% target
+              - button "Actions for Database Management System II, 2Q3B" [ref=f1e156]
+            - listitem [ref=f1e161] [cursor=pointer]:
+              - generic [ref=f1e162]:
+                - button "Open Database Management System II, 2Q3C" [ref=f1e163]: Database Management System II
+                - generic [ref=f1e164]: UCS303P · 2nd Year · Group 2Q33
+              - generic [ref=f1e165]:
+                - generic [ref=f1e166]: Thu
+                - generic [ref=f1e167]: 09:40–11:20
+              - generic [ref=f1e171]:
+                - generic [ref=f1e172]: 88%
+                - img "88% average attendance, 3 pts above the 85% target" [ref=f1e173]:
+                  - generic [aria-hidden]: 3 pts above the 85% target
+              - button "Actions for Database Management System II, 2Q3C" [ref=f1e176]
+            - listitem [ref=f1e181] [cursor=pointer]:
+              - generic [ref=f1e182]:
+                - button "Open Operating Systems, 1MCA 2" [ref=f1e183]: Operating Systems
+                - generic [ref=f1e184]: MCA103P · PG (1 MCA)
+              - generic [ref=f1e185]:
+                - generic [ref=f1e186]: Tue
+                - generic [ref=f1e187]: 11:20–13:00
+              - generic [ref=f1e191]:
+                - generic [ref=f1e192]: 83%
+                - img "83% average attendance, 2 pts below the 85% target" [ref=f1e193]:
+                  - generic [aria-hidden]: 2 pts below the 85% target
+              - button "Actions for Operating Systems, 1MCA 2" [ref=f1e196]
+            - listitem [ref=f1e201] [cursor=pointer]:
+              - generic [ref=f1e202]:
+                - button "Open Operating Systems, 1MCA 5" [ref=f1e203]: Operating Systems
+                - generic [ref=f1e204]: MCA103P · PG (1 MCA)
+              - generic [ref=f1e205]:
+                - generic [ref=f1e206]: Thu
+                - generic [ref=f1e207]: 13:50–15:30
+              - generic [ref=f1e211]:
+                - generic [ref=f1e212]: 83%
+                - img "83% average attendance, 2 pts below the 85% target" [ref=f1e213]:
+                  - generic [aria-hidden]: 2 pts below the 85% target
+              - button "Actions for Operating Systems, 1MCA 5" [ref=f1e216]
+            - listitem [ref=f1e221] [cursor=pointer]:
+              - generic [ref=f1e222]:
+                - button "Open Operating Systems, 1MCA 3" [ref=f1e223]: Operating Systems
+                - generic [ref=f1e224]: MCA103P · PG (1 MCA)
+              - generic [ref=f1e225]:
+                - generic [ref=f1e226]: Fri
+                - generic [ref=f1e227]: 11:20–13:00
+              - generic [ref=f1e231]:
+                - generic [ref=f1e232]: 83%
+                - img "83% average attendance, 2 pts below the 85% target" [ref=f1e233]:
+                  - generic [aria-hidden]: 2 pts below the 85% target
+              - button "Actions for Operating Systems, 1MCA 3" [ref=f1e236]
+            - listitem [ref=f1e241] [cursor=pointer]:
+              - generic [ref=f1e242]:
+                - button "Open Software Engineering, 3C2C" [ref=f1e243]: Software Engineering
+                - generic [ref=f1e244]: UCS503P · 3rd Year · Group 3C23
+              - generic [ref=f1e245]:
+                - generic [ref=f1e246]: Mon
+                - generic [ref=f1e247]: 09:40–11:20
+              - generic [ref=f1e251]:
+                - generic [ref=f1e252]: 86%
+                - img "86% average attendance, 1 pt above the 85% target" [ref=f1e253]:
+                  - generic [aria-hidden]: 1 pt above the 85% target
+              - button "Actions for Software Engineering, 3C2C" [ref=f1e256]
+            - listitem [ref=f1e261] [cursor=pointer]:
+              - generic [ref=f1e262]:
+                - button "Open Software Engineering, 3C81B" [ref=f1e263]: Software Engineering
+                - generic [ref=f1e264]: UCS503P · 3rd Year · Group 3C812
+              - generic [ref=f1e265]:
+                - generic [ref=f1e266]: Mon
+                - generic [ref=f1e267]: 13:50–15:30
+              - generic [ref=f1e271]:
+                - generic [ref=f1e272]: 86%
+                - img "86% average attendance, 1 pt above the 85% target" [ref=f1e273]:
+                  - generic [aria-hidden]: 1 pt above the 85% target
+              - button "Actions for Software Engineering, 3C81B" [ref=f1e276]
+            - listitem [ref=f1e281] [cursor=pointer]:
+              - generic [ref=f1e282]:
+                - button "Open Software Engineering, 3P1A" [ref=f1e283]: Software Engineering
+                - generic [ref=f1e284]: UCS503P · 3rd Year · Group 3P11
+              - generic [ref=f1e285]:
+                - generic [ref=f1e286]: Wed
+                - generic [ref=f1e287]: 09:40–11:20
+              - generic [ref=f1e291]:
+                - generic [ref=f1e292]: 86%
+                - img "86% average attendance, 1 pt above the 85% target" [ref=f1e293]:
+                  - generic [aria-hidden]: 1 pt above the 85% target
+              - button "Actions for Software Engineering, 3P1A" [ref=f1e296]
+        - complementary "Selected class details" [ref=f1e301]:
+          - generic [ref=f1e303]:
+            - generic [ref=f1e304]:
+              - generic [ref=f1e305]: UCS303P
+              - generic [ref=f1e306]: 2Q3B
+            - heading "Database Management System II" [level=2] [ref=f1e307]
+            - paragraph [ref=f1e308]: 2nd Year · Group 2Q32 · Section 2Q3B
+          - generic [ref=f1e309]:
+            - generic [ref=f1e310]:
+              - generic [ref=f1e311]:
+                - generic [ref=f1e312]: Average attendance
+                - generic [ref=f1e313]: 88%
+                - emphasis [ref=f1e314]: Healthy
+              - paragraph [ref=f1e318]: 3 pts above the 85% target
+            - generic [ref=f1e319]:
+              - generic [ref=f1e320]:
+                - term [ref=f1e324]: Venue
+                - definition [ref=f1e325]: L207
+              - generic [ref=f1e326]:
+                - term [ref=f1e329]: When
+                - definition [ref=f1e330]: Mon, 11:20–13:00
+              - generic [ref=f1e331]:
+                - term [ref=f1e337]: Format
+                - definition [ref=f1e338]: Lab · 100 min
+              - generic [ref=f1e339]:
+                - term [ref=f1e342]: Year
+                - definition [ref=f1e343]: 2nd Year
+          - link "Start attendance" [ref=f1e345] [cursor=pointer]:
+            - /url: /attendance

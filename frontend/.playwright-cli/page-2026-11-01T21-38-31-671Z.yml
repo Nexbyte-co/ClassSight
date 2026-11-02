@@ -1,0 +1,205 @@
+- generic [ref=f3e3]:
+  - banner [ref=f3e5]:
+    - generic [ref=f3e6]:
+      - button "Toggle navigation" [expanded] [ref=f3e7] [cursor=pointer]
+      - link "ClassSight" [ref=f3e9] [cursor=pointer]:
+        - /url: /student
+      - generic [ref=f3e18]: Student · Demo
+    - generic [ref=f3e19]:
+      - generic [ref=f3e20]: Mon, Nov 2, 2026
+      - button "Night mode" [ref=f3e24] [cursor=pointer]
+      - button "Account menu for Parv Rawat" [ref=f3e28] [cursor=pointer]:
+        - generic [aria-hidden] [ref=f3e29]: P
+        - generic [ref=f3e30]:
+          - generic [ref=f3e31]: Parv
+          - generic [ref=f3e32]: Student
+  - generic [ref=f3e35]:
+    - complementary "Student navigation" [ref=f3e37]:
+      - navigation [ref=f3e38]:
+        - link "Dashboard" [ref=f3e39] [cursor=pointer]:
+          - /url: /student
+        - link "Timetable" [ref=f3e46] [cursor=pointer]:
+          - /url: /student/timetable
+        - link "Attendance Reports" [ref=f3e50] [cursor=pointer]:
+          - /url: /student/attendance-reports
+        - link "Settings" [ref=f3e55] [cursor=pointer]:
+          - /url: /student/settings
+      - generic [ref=f3e60]:
+        - generic [ref=f3e61]:
+          - generic [ref=f3e62]: Odd Semester
+          - generic [ref=f3e63]: 2026–27
+          - generic [ref=f3e64]: Student portal · Demo
+        - button "Log Out" [ref=f3e65] [cursor=pointer]
+    - main [ref=f3e70]:
+      - generic [ref=f3e71]:
+        - generic [ref=f3e73]:
+          - heading "Good evening, Parv" [level=1] [ref=f3e74]
+          - paragraph [ref=f3e75]: Here's your attendance this week.
+        - note [ref=f3e76]:
+          - strong [ref=f3e77]: Frontend demo.
+          - text: Your account is not linked to attendance recorded in ClassSight yet, so the figures below are
+          - strong [ref=f3e78]: sample demo data
+          - text: from a demo timetable — not your real attendance.
+        - generic [ref=f3e79]:
+          - generic [ref=f3e80]:
+            - text: THIS WEEK
+            - generic "Sample timetable data, not records linked to your account" [ref=f3e81]: Demo data
+          - generic [ref=f3e82]: Sun, 01 Nov 2026 – Sat, 07 Nov 2026 · classes attended out of classes held each day
+          - generic [ref=f3e83]:
+            - generic [ref=f3e84]:
+              - img "Attendance this week by day, stacked by subject" [ref=f3e86]:
+                - generic [ref=f3e87]: "0"
+                - generic [ref=f3e89]: "1"
+                - generic [ref=f3e91]: "2"
+                - generic [ref=f3e93]: Classes
+                - generic [ref=f3e94]:
+                  - generic [ref=f3e95]: —
+                  - generic [ref=f3e96]: Sun
+                  - generic [ref=f3e97]: 01 Nov
+                - generic [ref=f3e98]:
+                  - button "Data Structures, Mon, 02 Nov 2026, Upcoming" [ref=f3e99] [cursor=pointer]
+                  - button "Database Management, Mon, 02 Nov 2026, Upcoming" [ref=f3e101] [cursor=pointer]
+                  - generic [ref=f3e103]: Upcoming
+                  - generic [ref=f3e104]: Mon
+                  - generic [ref=f3e105]: Today
+                - generic [ref=f3e106]:
+                  - button "Discrete Mathematics, Tue, 03 Nov 2026, Upcoming" [ref=f3e107] [cursor=pointer]
+                  - button "Operating Systems, Tue, 03 Nov 2026, Upcoming" [ref=f3e109] [cursor=pointer]
+                  - generic [ref=f3e111]: Upcoming
+                  - generic [ref=f3e112]: Tue
+                  - generic [ref=f3e113]: 03 Nov
+                - generic [ref=f3e114]:
+                  - button "Data Structures, Wed, 04 Nov 2026, Upcoming" [ref=f3e115] [cursor=pointer]
+                  - generic [ref=f3e117]: Upcoming
+                  - generic [ref=f3e118]: Wed
+                  - generic [ref=f3e119]: 04 Nov
+                - generic [ref=f3e120]:
+                  - button "Operating Systems, Thu, 05 Nov 2026, Upcoming" [ref=f3e121] [cursor=pointer]
+                  - button "Database Management, Thu, 05 Nov 2026, Upcoming" [ref=f3e123] [cursor=pointer]
+                  - generic [ref=f3e125]: Upcoming
+                  - generic [ref=f3e126]: Thu
+                  - generic [ref=f3e127]: 05 Nov
+                - generic [ref=f3e128]:
+                  - button "Data Structures, Fri, 06 Nov 2026, Upcoming" [ref=f3e129] [cursor=pointer]
+                  - button "Discrete Mathematics, Fri, 06 Nov 2026, Upcoming" [ref=f3e131] [cursor=pointer]
+                  - generic [ref=f3e133]: Upcoming
+                  - generic [ref=f3e134]: Fri
+                  - generic [ref=f3e135]: 06 Nov
+                - generic [ref=f3e136]:
+                  - generic [ref=f3e137]: —
+                  - generic [ref=f3e138]: Sat
+                  - generic [ref=f3e139]: 07 Nov
+              - generic [ref=f3e140]: Hover over, tap or tab to a class to see its details.
+            - generic [ref=f3e141]:
+              - generic [ref=f3e142]:
+                - generic [ref=f3e143]: Data Structures
+                - generic [ref=f3e145]: Operating Systems
+                - generic [ref=f3e147]: Database Management
+                - generic [ref=f3e149]: Discrete Mathematics
+              - generic [ref=f3e151]:
+                - generic [ref=f3e152]: Present ✓ (solid)
+                - generic [ref=f3e155]: Absent ✕ (light)
+                - generic [ref=f3e158]: Unverified ? (striped)
+                - generic [ref=f3e161]: Upcoming (outline)
+        - generic [ref=f3e164]:
+          - generic [ref=f3e165]:
+            - text: SUBJECT-WISE ATTENDANCE
+            - generic "Sample timetable data, not records linked to your account" [ref=f3e166]: Demo data
+          - generic [ref=f3e167]: Sample data over the last 4 weeks · requirement 75%
+          - generic [ref=f3e168]:
+            - generic [ref=f3e169]:
+              - generic [ref=f3e170]: SUBJECT
+              - generic [ref=f3e171]: ATTENDANCE
+              - generic [ref=f3e172]: STATUS
+            - generic [ref=f3e173]:
+              - generic [ref=f3e174]:
+                - generic [ref=f3e175]: Data Structures
+                - generic [ref=f3e177]: 8 of 9 classes attended
+              - generic [ref=f3e178]:
+                - progressbar "Data Structures attendance" [ref=f3e179]
+                - generic [ref=f3e181]: 89%
+              - generic [ref=f3e182]: Meeting requirement
+            - generic [ref=f3e184]:
+              - generic [ref=f3e185]:
+                - generic [ref=f3e186]: Operating Systems
+                - generic [ref=f3e188]: 6 of 6 classes attended
+              - generic [ref=f3e189]:
+                - progressbar "Operating Systems attendance" [ref=f3e190]
+                - generic [ref=f3e192]: 100%
+              - generic [ref=f3e193]: Meeting requirement
+            - generic [ref=f3e195]:
+              - generic [ref=f3e196]:
+                - generic [ref=f3e197]: Database Management
+                - generic [ref=f3e199]: 4 of 6 classes attended
+              - generic [ref=f3e200]:
+                - progressbar "Database Management attendance" [ref=f3e201]
+                - generic [ref=f3e203]: 67%
+              - generic [ref=f3e204]: At risk
+            - generic [ref=f3e206]:
+              - generic [ref=f3e207]:
+                - generic [ref=f3e208]: Discrete Mathematics
+                - generic [ref=f3e210]: 6 of 6 classes attended
+              - generic [ref=f3e211]:
+                - progressbar "Discrete Mathematics attendance" [ref=f3e212]
+                - generic [ref=f3e214]: 100%
+              - generic [ref=f3e215]: Meeting requirement
+        - generic [ref=f3e217]:
+          - generic [ref=f3e218]:
+            - text: RECENT ATTENDANCE
+            - generic "Sample timetable data, not records linked to your account" [ref=f3e219]: Demo data
+          - generic [ref=f3e220]: Your most recent classes, newest first
+          - generic [ref=f3e221]:
+            - button "All (10)" [pressed] [ref=f3e222] [cursor=pointer]
+            - button "Present (9)" [ref=f3e223] [cursor=pointer]
+            - button "Absent (1)" [ref=f3e224] [cursor=pointer]
+          - generic [ref=f3e225]:
+            - generic [ref=f3e226]:
+              - generic [ref=f3e228]:
+                - generic [ref=f3e229]: Discrete Mathematics
+                - generic [ref=f3e230]: Fri, 30 Oct 2026 · 9:00 AM
+              - generic [ref=f3e231]: Present
+            - generic [ref=f3e232]:
+              - generic [ref=f3e234]:
+                - generic [ref=f3e235]: Data Structures
+                - generic [ref=f3e236]: Fri, 30 Oct 2026 · 8:00 AM
+              - generic [ref=f3e237]: Present
+            - generic [ref=f3e238]:
+              - generic [ref=f3e240]:
+                - generic [ref=f3e241]: Database Management
+                - generic [ref=f3e242]: Thu, 29 Oct 2026 · 2:00 PM
+              - generic [ref=f3e243]: Absent
+            - generic [ref=f3e244]:
+              - generic [ref=f3e246]:
+                - generic [ref=f3e247]: Operating Systems
+                - generic [ref=f3e248]: Thu, 29 Oct 2026 · 10:00 AM
+              - generic [ref=f3e249]: Present
+            - generic [ref=f3e250]:
+              - generic [ref=f3e252]:
+                - generic [ref=f3e253]: Data Structures
+                - generic [ref=f3e254]: Wed, 28 Oct 2026 · 8:00 AM
+              - generic [ref=f3e255]: Present
+            - generic [ref=f3e256]:
+              - generic [ref=f3e258]:
+                - generic [ref=f3e259]: Operating Systems
+                - generic [ref=f3e260]: Tue, 27 Oct 2026 · 10:00 AM
+              - generic [ref=f3e261]: Present
+            - generic [ref=f3e262]:
+              - generic [ref=f3e264]:
+                - generic [ref=f3e265]: Discrete Mathematics
+                - generic [ref=f3e266]: Tue, 27 Oct 2026 · 9:00 AM
+              - generic [ref=f3e267]: Present
+            - generic [ref=f3e268]:
+              - generic [ref=f3e270]:
+                - generic [ref=f3e271]: Database Management
+                - generic [ref=f3e272]: Mon, 26 Oct 2026 · 2:00 PM
+              - generic [ref=f3e273]: Present
+            - generic [ref=f3e274]:
+              - generic [ref=f3e276]:
+                - generic [ref=f3e277]: Data Structures
+                - generic [ref=f3e278]: Mon, 26 Oct 2026 · 8:00 AM
+              - generic [ref=f3e279]: Present
+            - generic [ref=f3e280]:
+              - generic [ref=f3e282]:
+                - generic [ref=f3e283]: Discrete Mathematics
+                - generic [ref=f3e284]: Fri, 23 Oct 2026 · 9:00 AM
+              - generic [ref=f3e285]: Present

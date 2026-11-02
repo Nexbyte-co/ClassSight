@@ -1,0 +1,109 @@
+- generic [ref=f1e3]:
+  - banner [ref=f1e4]:
+    - generic [ref=f1e5]:
+      - button "Toggle navigation" [expanded] [ref=f1e6] [cursor=pointer]
+      - link "ClassSight" [ref=f1e8] [cursor=pointer]:
+        - /url: /dashboard
+    - generic [ref=f1e17]:
+      - generic [ref=f1e18]: Mon, Nov 2, 2026
+      - button "Night mode" [ref=f1e22] [cursor=pointer]
+      - button "Notifications (1)" [ref=f1e26] [cursor=pointer]
+      - button "Professor Jhonsy — account menu" [ref=f1e32] [cursor=pointer]:
+        - generic [aria-hidden] [ref=f1e33]: PJ
+        - generic [ref=f1e34]:
+          - generic [ref=f1e35]: Prof. Jhonsy
+          - generic [ref=f1e36]: Dept. of CS & Eng
+  - generic [ref=f1e39]:
+    - complementary "Main navigation" [ref=f1e40]:
+      - navigation [ref=f1e41]:
+        - link "Dashboard" [ref=f1e42] [cursor=pointer]:
+          - /url: /dashboard
+        - link "Classes" [ref=f1e49] [cursor=pointer]:
+          - /url: /classes
+        - link "Attendance" [ref=f1e53] [cursor=pointer]:
+          - /url: /attendance
+        - link "Students" [ref=f1e58] [cursor=pointer]:
+          - /url: /students
+        - link "Reports" [ref=f1e63] [cursor=pointer]:
+          - /url: /reports
+        - link "Settings" [ref=f1e67] [cursor=pointer]:
+          - /url: /settings
+      - generic [ref=f1e72]:
+        - generic [ref=f1e73]:
+          - generic [ref=f1e74]: Spring Term 2026
+          - generic [ref=f1e75]: CSE Dept. • Semester 6
+          - generic [ref=f1e76]: Academic Week 8
+        - button "Log Out Faculty" [ref=f1e77] [cursor=pointer]
+    - main [ref=f1e82]:
+      - region [ref=f1e83]:
+        - generic [ref=f1e84]:
+          - generic [ref=f1e89]:
+            - heading "My Classes" [level=1] [ref=f1e90]
+            - paragraph [ref=f1e91]: Your courses, groups and weekly lab slots
+          - generic [ref=f1e92]: Spring Term 2026
+        - navigation "Classes views" [ref=f1e95]:
+          - link "All Classes" [ref=f1e96] [cursor=pointer]:
+            - /url: /classes
+          - link "Class Schedule" [ref=f1e102] [cursor=pointer]:
+            - /url: /classes/schedule
+        - generic [ref=f1e105]:
+          - generic [ref=f1e106]:
+            - generic [ref=f1e107]:
+              - generic [ref=f1e108]:
+                - searchbox "Search classes" [ref=f1e110]
+                - 'button "Sort classes by: Course name, A–Z" [ref=f1e112] [cursor=pointer]':
+                  - generic [ref=f1e116]: Course name, A–Z
+              - generic [ref=f1e119]:
+                - 'button "Filter by year: All" [ref=f1e121] [cursor=pointer]':
+                  - generic [ref=f1e122]: Year
+                  - generic [ref=f1e123]: All
+                - 'button "Filter by group: All" [ref=f1e127] [cursor=pointer]':
+                  - generic [ref=f1e128]: Group
+                  - generic [ref=f1e129]: All
+                - 'button "Filter by day: Fri" [active] [ref=f1e396] [cursor=pointer]':
+                  - generic [ref=f1e134]: Day
+                  - generic [ref=f1e135]: Fri
+                - 'button "Filter by course: All" [ref=f1e139] [cursor=pointer]':
+                  - generic [ref=f1e140]: Course
+                  - generic [ref=f1e141]: All
+            - generic [ref=f1e144]:
+              - status [ref=f1e145]: Showing 1 of 8 classes
+              - list "Active filters" [ref=f1e387]:
+                - listitem [ref=f1e388]:
+                  - generic [ref=f1e389]: "Day: Fri"
+                  - button "Remove day filter Fri" [ref=f1e397] [cursor=pointer]
+                - listitem [ref=f1e394]:
+                  - button "Clear all" [ref=f1e395] [cursor=pointer]
+            - list [ref=f1e147]:
+              - listitem [ref=f1e398]:
+                - button "Operating Systems, MCA103P, group 1MCA 3. 83% attendance, needs attention. Next lecture Fri 6 Nov at 11:20, L401" [ref=f1e399] [cursor=pointer]:
+                  - generic [ref=f1e400]:
+                    - generic [ref=f1e401]: PG (1 MCA)
+                    - generic [ref=f1e402]: Needs attention
+                  - generic [ref=f1e403]: Operating Systems
+                  - generic [ref=f1e404]: MCA103P · 1MCA 3
+                  - generic [ref=f1e406]:
+                    - generic [ref=f1e407]: 83%
+                    - generic [ref=f1e408]: avg. attendance
+                  - generic [ref=f1e412]:
+                    - generic [ref=f1e413]: Fri 6 Nov · 11:20
+                    - generic [ref=f1e418]: L401
+          - complementary "Class details" [ref=f1e340]:
+            - generic [ref=f1e341]:
+              - heading "Select a class" [level=2] [ref=f1e349]
+              - paragraph [ref=f1e350]: Choose a class to see its attendance, next lecture and details, and to start a session.
+              - generic [ref=f1e351]:
+                - generic [ref=f1e352]: This term
+                - generic [ref=f1e358]:
+                  - generic [ref=f1e359]:
+                    - term [ref=f1e360]: Courses
+                    - definition [ref=f1e361]: "3"
+                  - generic [ref=f1e362]:
+                    - term [ref=f1e363]: Groups
+                    - definition [ref=f1e364]: "8"
+                  - generic [ref=f1e365]:
+                    - term [ref=f1e366]: Avg. attendance
+                    - definition [ref=f1e367]: 85%
+                  - generic [ref=f1e368]:
+                    - term [ref=f1e369]: Below 85%
+                    - definition [ref=f1e370]: "3"

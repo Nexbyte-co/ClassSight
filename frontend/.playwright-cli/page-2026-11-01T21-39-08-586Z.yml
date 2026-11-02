@@ -1,0 +1,13 @@
+- generic [ref=f4e341]:
+  - banner [ref=f4e342]:
+    - link "ClassSight Home" [ref=f4e343] [cursor=pointer]:
+      - /url: /
+      - generic [ref=f4e351]: ClassSight
+    - button "Toggle dark mode" [ref=f4e353] [cursor=pointer]
+  - main [ref=f4e356]:
+    - generic [ref=f4e357]:
+      - paragraph [ref=f4e358]: SMART CLASSROOM TECHNOLOGY
+      - heading "Attendance, simplified." [level=1] [ref=f4e359]: Attendance,simplified.
+      - paragraph [ref=f4e360]: AI-assisted classroom attendance and verification designed for modern educational environments.
+      - link "Sign In" [ref=f4e361] [cursor=pointer]:
+        - /url: /login

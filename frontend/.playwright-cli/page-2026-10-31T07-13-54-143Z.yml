@@ -1,0 +1,152 @@
+- generic [ref=f4e3]:
+  - banner [ref=f4e4]:
+    - generic [ref=f4e5]:
+      - button "Toggle navigation" [expanded] [ref=f4e6] [cursor=pointer]
+      - link "ClassSight" [ref=f4e8] [cursor=pointer]:
+        - /url: /dashboard
+    - generic [ref=f4e17]:
+      - generic [ref=f4e18]: Sat, Oct 31, 2026
+      - button "Night mode" [ref=f4e22] [cursor=pointer]
+      - button "Notifications (1)" [ref=f4e30] [cursor=pointer]
+      - button "Professor Jhonsy — account menu" [ref=f4e36] [cursor=pointer]:
+        - generic [aria-hidden] [ref=f4e37]: PJ
+        - generic [ref=f4e38]:
+          - generic [ref=f4e39]: Prof. Jhonsy
+          - generic [ref=f4e40]: Dept. of CS & Eng
+  - generic [ref=f4e43]:
+    - complementary "Main navigation" [ref=f4e44]:
+      - navigation [ref=f4e45]:
+        - link "Dashboard" [ref=f4e46] [cursor=pointer]:
+          - /url: /dashboard
+        - link "Classes" [ref=f4e53] [cursor=pointer]:
+          - /url: /classes
+        - link "Attendance" [ref=f4e57] [cursor=pointer]:
+          - /url: /attendance
+        - link "Students" [ref=f4e62] [cursor=pointer]:
+          - /url: /students
+        - link "Reports" [ref=f4e67] [cursor=pointer]:
+          - /url: /reports
+        - link "Settings" [ref=f4e71] [cursor=pointer]:
+          - /url: /settings
+      - generic [ref=f4e76]:
+        - generic [ref=f4e77]:
+          - generic [ref=f4e78]: Spring Term 2026
+          - generic [ref=f4e79]: CSE Dept. • Semester 6
+          - generic [ref=f4e80]: Academic Week 8
+        - button "Log Out Faculty" [ref=f4e81] [cursor=pointer]
+    - main [ref=f4e86]:
+      - generic [ref=f4e87]:
+        - generic [ref=f4e88]:
+          - generic [ref=f4e93]:
+            - heading "Class Schedule" [level=1] [ref=f4e94]
+            - paragraph [ref=f4e95]: Your weekly timetable across all sections
+          - generic [ref=f4e96]:
+            - button "Previous week" [ref=f4e97] [cursor=pointer]
+            - generic [ref=f4e100]: 25 Oct – 31 Oct
+            - button "Next week" [ref=f4e101] [cursor=pointer]
+            - button "Today" [ref=f4e104] [cursor=pointer]
+        - navigation "Classes views" [ref=f4e105]:
+          - link "All Classes" [ref=f4e106] [cursor=pointer]:
+            - /url: /classes
+          - link "Class Schedule" [ref=f4e111] [cursor=pointer]:
+            - /url: /classes/schedule
+        - generic [ref=f4e115]:
+          - region "Weekly timetable" [ref=f4e116]:
+            - generic [ref=f4e117]:
+              - generic [ref=f4e118]:
+                - generic [ref=f4e120]:
+                  - generic [ref=f4e121]: "25"
+                  - text: Sun
+                - generic [ref=f4e122]:
+                  - generic [ref=f4e123]: "26"
+                  - text: Mon
+                - generic [ref=f4e124]:
+                  - generic [ref=f4e125]: "27"
+                  - text: Tue
+                - generic [ref=f4e126]:
+                  - generic [ref=f4e127]: "28"
+                  - text: Wed
+                - generic [ref=f4e128]:
+                  - generic [ref=f4e129]: "29"
+                  - text: Thu
+                - generic [ref=f4e130]:
+                  - generic [ref=f4e131]: "30"
+                  - text: Fri
+                - generic [ref=f4e132]:
+                  - generic [ref=f4e133]: "31"
+                  - text: Sat
+              - generic [ref=f4e134]:
+                - generic [ref=f4e135]:
+                  - generic [ref=f4e136]: 08:00
+                  - generic [ref=f4e137]: 08:50
+                  - generic [ref=f4e138]: 09:40
+                  - generic [ref=f4e139]: 10:30
+                  - generic [ref=f4e140]: 11:20
+                  - generic [ref=f4e141]: 12:10
+                  - generic [ref=f4e142]: 13:00
+                  - generic [ref=f4e143]: 13:50
+                  - generic [ref=f4e144]: 14:40
+                  - generic [ref=f4e145]: 15:30
+                  - generic [ref=f4e146]: 16:20
+                  - generic [ref=f4e147]: 17:10
+                - generic [ref=f4e149]:
+                  - generic "Database Management System II, 2Q3B, L207" [ref=f4e150]:
+                    - generic [ref=f4e151]: Database Management System II
+                    - generic [ref=f4e152]: 2Q3B · L207
+                  - generic "Software Engineering, 3C2C, L105" [ref=f4e153]:
+                    - generic [ref=f4e154]: Software Engineering
+                    - generic [ref=f4e155]: 3C2C · L105
+                  - generic "Software Engineering, 3C81B, L105" [ref=f4e156]:
+                    - generic [ref=f4e157]: Software Engineering
+                    - generic [ref=f4e158]: 3C81B · L105
+                - generic "Operating Systems, 1MCA 2, L401" [ref=f4e160]:
+                  - generic [ref=f4e161]: Operating Systems
+                  - generic [ref=f4e162]: 1MCA 2 · L401
+                - generic "Software Engineering, 3P1A, L501" [ref=f4e164]:
+                  - generic [ref=f4e165]: Software Engineering
+                  - generic [ref=f4e166]: 3P1A · L501
+                - generic [ref=f4e167]:
+                  - generic "Database Management System II, 2Q3C, L207" [ref=f4e168]:
+                    - generic [ref=f4e169]: Database Management System II
+                    - generic [ref=f4e170]: 2Q3C · L207
+                  - generic "Operating Systems, 1MCA 5, L101" [ref=f4e171]:
+                    - generic [ref=f4e172]: Operating Systems
+                    - generic [ref=f4e173]: 1MCA 5 · L101
+                - generic "Operating Systems, 1MCA 3, L401" [ref=f4e175]:
+                  - generic [ref=f4e176]: Operating Systems
+                  - generic [ref=f4e177]: 1MCA 3 · L401
+          - complementary "Classes" [ref=f4e179]:
+            - heading "Classes" [level=4] [ref=f4e180]
+            - generic [ref=f4e181]:
+              - button "Database Management System II 2Q3B · UCS303P · Mon 11:20" [ref=f4e182] [cursor=pointer]:
+                - generic [ref=f4e184]:
+                  - generic [ref=f4e185]: Database Management System II
+                  - generic [ref=f4e186]: 2Q3B · UCS303P · Mon 11:20
+              - button "Database Management System II 2Q3C · UCS303P · Thu 09:40" [ref=f4e187] [cursor=pointer]:
+                - generic [ref=f4e189]:
+                  - generic [ref=f4e190]: Database Management System II
+                  - generic [ref=f4e191]: 2Q3C · UCS303P · Thu 09:40
+              - button "Software Engineering 3C2C · UCS503P · Mon 09:40" [ref=f4e192] [cursor=pointer]:
+                - generic [ref=f4e194]:
+                  - generic [ref=f4e195]: Software Engineering
+                  - generic [ref=f4e196]: 3C2C · UCS503P · Mon 09:40
+              - button "Software Engineering 3C81B · UCS503P · Mon 13:50" [ref=f4e197] [cursor=pointer]:
+                - generic [ref=f4e199]:
+                  - generic [ref=f4e200]: Software Engineering
+                  - generic [ref=f4e201]: 3C81B · UCS503P · Mon 13:50
+              - button "Software Engineering 3P1A · UCS503P · Wed 09:40" [ref=f4e202] [cursor=pointer]:
+                - generic [ref=f4e204]:
+                  - generic [ref=f4e205]: Software Engineering
+                  - generic [ref=f4e206]: 3P1A · UCS503P · Wed 09:40
+              - button "Operating Systems 1MCA 2 · MCA103P · Tue 11:20" [ref=f4e207] [cursor=pointer]:
+                - generic [ref=f4e209]:
+                  - generic [ref=f4e210]: Operating Systems
+                  - generic [ref=f4e211]: 1MCA 2 · MCA103P · Tue 11:20
+              - button "Operating Systems 1MCA 5 · MCA103P · Thu 13:50" [ref=f4e212] [cursor=pointer]:
+                - generic [ref=f4e214]:
+                  - generic [ref=f4e215]: Operating Systems
+                  - generic [ref=f4e216]: 1MCA 5 · MCA103P · Thu 13:50
+              - button "Operating Systems 1MCA 3 · MCA103P · Fri 11:20" [ref=f4e217] [cursor=pointer]:
+                - generic [ref=f4e219]:
+                  - generic [ref=f4e220]: Operating Systems
+                  - generic [ref=f4e221]: 1MCA 3 · MCA103P · Fri 11:20

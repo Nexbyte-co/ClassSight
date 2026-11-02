@@ -1,0 +1,24 @@
+- generic [ref=f5e627]:
+  - button "Toggle dark mode" [ref=f5e628] [cursor=pointer]
+  - generic [ref=f5e631]:
+    - generic [ref=f5e632]:
+      - link "ClassSight" [ref=f5e633] [cursor=pointer]:
+        - /url: /
+      - heading "Welcome back" [level=1] [ref=f5e634]
+      - paragraph [ref=f5e635]: Sign in to access your ClassSight account.
+    - generic [ref=f5e636]:
+      - generic [ref=f5e637]:
+        - generic [ref=f5e638]: College Email
+        - textbox "College Email" [ref=f5e643]:
+          - /placeholder: Enter your college email
+        - alert [ref=f5e644]
+      - button "Sign In" [ref=f5e645] [cursor=pointer]
+    - generic [ref=f5e646]:
+      - strong [ref=f5e647]: Demo sign-in.
+      - text: No password is needed and nothing is checked by a server — this only switches between the two demo experiences.
+      - generic [ref=f5e648]:
+        - button "Use teacher demo" [ref=f5e649] [cursor=pointer]
+        - button "Use student demo" [ref=f5e650] [cursor=pointer]
+    - generic [ref=f5e651]:
+      - generic [ref=f5e652]: ClassSight
+      - generic [ref=f5e653]: College Attendance System

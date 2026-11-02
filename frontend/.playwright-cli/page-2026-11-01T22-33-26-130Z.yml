@@ -1,0 +1,98 @@
+- generic [ref=f6e3]:
+  - banner [ref=f6e5]:
+    - generic [ref=f6e6]:
+      - button "Toggle navigation" [expanded] [ref=f6e7] [cursor=pointer]
+      - link "ClassSight" [ref=f6e9] [cursor=pointer]:
+        - /url: /student
+      - generic [ref=f6e18]: Student · Demo
+    - generic [ref=f6e19]:
+      - generic [ref=f6e20]: Mon, Nov 2, 2026
+      - button "Night mode" [ref=f6e24] [cursor=pointer]
+      - button "Notifications (2)" [ref=f6e28] [cursor=pointer]
+      - button "Account menu for Parv Rawat" [ref=f6e34] [cursor=pointer]:
+        - generic [aria-hidden] [ref=f6e35]: P
+        - generic [ref=f6e36]:
+          - generic [ref=f6e37]: Parv
+          - generic [ref=f6e38]: Student
+  - generic [ref=f6e41]:
+    - complementary "Student navigation" [ref=f6e43]:
+      - navigation [ref=f6e44]:
+        - link "Dashboard" [ref=f6e45] [cursor=pointer]:
+          - /url: /student
+        - link "Timetable" [ref=f6e52] [cursor=pointer]:
+          - /url: /student/timetable
+        - link "My Courses" [ref=f6e56] [cursor=pointer]:
+          - /url: /student/courses
+        - link "Attendance" [ref=f6e60] [cursor=pointer]:
+          - /url: /student/attendance
+        - link "Settings" [ref=f6e65] [cursor=pointer]:
+          - /url: /student/settings
+      - generic [ref=f6e70]:
+        - generic [ref=f6e71]:
+          - generic [ref=f6e72]: Odd Semester
+          - generic [ref=f6e73]: 2026–27
+          - generic [ref=f6e74]: Student portal · Demo
+        - button "Log Out" [ref=f6e75] [cursor=pointer]
+    - main [ref=f6e80]:
+      - generic [ref=f6e81]:
+        - generic [ref=f6e83]:
+          - heading "Settings" [level=1] [ref=f6e84]
+          - paragraph [ref=f6e85]: Your profile and how ClassSight looks and notifies you.
+        - generic [ref=f6e86]:
+          - region [ref=f6e87]:
+            - generic [ref=f6e88]:
+              - heading "Profile" [level=2] [ref=f6e89]
+              - generic [ref=f6e93]: Managed by your college
+            - generic [ref=f6e94]:
+              - generic [ref=f6e95]:
+                - term [ref=f6e96]: Name
+                - definition [ref=f6e97]: Parv Rawat
+              - generic [ref=f6e98]:
+                - term [ref=f6e99]: Role
+                - definition [ref=f6e100]: Student
+              - generic [ref=f6e101]:
+                - term [ref=f6e102]: Email
+                - definition [ref=f6e103]: prawat_be24@thapar.edu
+              - generic [ref=f6e104]:
+                - term [ref=f6e105]: Batch
+                - definition [ref=f6e106]:
+                  - text: 2Q3B, 3C2C, 1MCA 2
+                  - generic [ref=f6e107]: 3 courses
+          - region [ref=f6e108]:
+            - heading "Account security" [level=2] [ref=f6e110]
+            - list [ref=f6e114]:
+              - listitem [ref=f6e115]:
+                - generic [ref=f6e116]: Sign-in method
+                - generic [ref=f6e117]: Demo role sign-in. There is no password in this version of ClassSight.
+              - listitem [ref=f6e118]:
+                - generic [ref=f6e119]: This device
+                - generic [ref=f6e120]: You stay signed in on this browser until you log out.
+              - listitem [ref=f6e121]:
+                - generic [ref=f6e122]: Your data
+                - generic [ref=f6e123]: You can only see your own attendance records.
+          - region [ref=f6e124]:
+            - generic [ref=f6e125]:
+              - heading "Notifications" [level=2] [ref=f6e126]
+              - generic [ref=f6e130]: Shown under the bell
+            - generic [ref=f6e131]:
+              - generic [ref=f6e132]:
+                - generic [ref=f6e133]: Low attendance
+                - generic [ref=f6e134]: Tell me when a course drops below the 75% requirement.
+              - switch "Low attendance" [checked] [ref=f6e135] [cursor=pointer]
+            - generic [ref=f6e136]:
+              - generic [ref=f6e137]:
+                - generic [ref=f6e138]: Classes awaiting review
+                - generic [ref=f6e139]: Tell me when a class is unverified and waiting for my teacher.
+              - switch "Classes awaiting review" [checked] [ref=f6e140] [cursor=pointer]
+          - region [ref=f6e141]:
+            - heading "Appearance" [level=2] [ref=f6e143]
+            - radiogroup "Theme" [ref=f6e150]:
+              - radio "Light" [checked] [ref=f6e151] [cursor=pointer]
+              - radio "Dark" [ref=f6e158] [cursor=pointer]
+          - region [ref=f6e161]:
+            - heading "Log out" [level=2] [ref=f6e163]
+            - generic [ref=f6e167]:
+              - generic [ref=f6e168]:
+                - generic [ref=f6e169]: Sign out of ClassSight
+                - generic [ref=f6e170]: You will return to the home page.
+              - button "Log out" [ref=f6e171] [cursor=pointer]

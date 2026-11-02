@@ -1,0 +1,38 @@
+- generic [ref=f3e3]:
+  - banner [ref=f3e5]:
+    - generic [ref=f3e6]:
+      - button "Toggle navigation" [expanded] [ref=f3e7] [cursor=pointer]
+      - link "ClassSight" [ref=f3e9] [cursor=pointer]:
+        - /url: /student
+      - generic [ref=f3e18]: Student · Demo
+    - generic [ref=f3e19]:
+      - generic [ref=f3e20]: Mon, Nov 2, 2026
+      - button "Night mode" [ref=f3e24] [cursor=pointer]
+      - button "Account menu for Parv Rawat" [ref=f3e28] [cursor=pointer]:
+        - generic [aria-hidden] [ref=f3e29]: P
+        - generic [ref=f3e30]:
+          - generic [ref=f3e31]: Parv
+          - generic [ref=f3e32]: Student
+  - generic [ref=f3e35]:
+    - complementary "Student navigation" [ref=f3e37]:
+      - navigation [ref=f3e38]:
+        - link "Dashboard" [ref=f3e39] [cursor=pointer]:
+          - /url: /student
+        - link "Timetable" [ref=f3e46] [cursor=pointer]:
+          - /url: /student/timetable
+        - link "Attendance Reports" [active] [ref=f3e50] [cursor=pointer]:
+          - /url: /student/attendance-reports
+        - link "Settings" [ref=f3e55] [cursor=pointer]:
+          - /url: /student/settings
+      - generic [ref=f3e60]:
+        - generic [ref=f3e61]:
+          - generic [ref=f3e62]: Odd Semester
+          - generic [ref=f3e63]: 2026–27
+          - generic [ref=f3e64]: Student portal · Demo
+        - button "Log Out" [ref=f3e65] [cursor=pointer]
+    - main [ref=f3e70]:
+      - generic [ref=f3e286]:
+        - generic [ref=f3e288]:
+          - heading "Attendance Reports" [level=1] [ref=f3e289]
+          - paragraph [ref=f3e290]: Detailed attendance reports for your subjects.
+        - generic [ref=f3e291]: This page is not available yet in the frontend demo.

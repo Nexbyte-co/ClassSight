@@ -1,0 +1,352 @@
+- generic [ref=f11e3]:
+  - banner [ref=f11e5]:
+    - generic [ref=f11e6]:
+      - button "Toggle navigation" [expanded] [ref=f11e7] [cursor=pointer]
+      - link "ClassSight" [ref=f11e9] [cursor=pointer]:
+        - /url: /student
+      - generic [ref=f11e18]: Student · Demo
+    - generic [ref=f11e19]:
+      - generic [ref=f11e20]: Mon, Nov 2, 2026
+      - button "Night mode" [ref=f11e24] [cursor=pointer]
+      - button "Notifications (2)" [ref=f11e28] [cursor=pointer]
+      - button "Account menu for Parv Rawat" [ref=f11e34] [cursor=pointer]:
+        - generic [aria-hidden] [ref=f11e35]: P
+        - generic [ref=f11e36]:
+          - generic [ref=f11e37]: Parv
+          - generic [ref=f11e38]: Student
+  - generic [ref=f11e41]:
+    - complementary "Student navigation" [ref=f11e43]:
+      - navigation [ref=f11e44]:
+        - link "Dashboard" [ref=f11e45] [cursor=pointer]:
+          - /url: /student
+        - link "Timetable" [ref=f11e52] [cursor=pointer]:
+          - /url: /student/timetable
+        - link "My Courses" [ref=f11e56] [cursor=pointer]:
+          - /url: /student/courses
+        - link "Attendance" [ref=f11e60] [cursor=pointer]:
+          - /url: /student/attendance
+        - link "Settings" [ref=f11e65] [cursor=pointer]:
+          - /url: /student/settings
+      - generic [ref=f11e70]:
+        - generic [ref=f11e71]:
+          - generic [ref=f11e72]: Odd Semester
+          - generic [ref=f11e73]: 2026–27
+          - generic [ref=f11e74]: Student portal · Demo
+        - button "Log Out" [ref=f11e75] [cursor=pointer]
+    - main [ref=f11e80]:
+      - generic [ref=f11e81]:
+        - generic [ref=f11e83]:
+          - heading "Attendance" [level=1] [ref=f11e84]
+          - paragraph [ref=f11e85]: Can miss 1 more class and stay at 75%. (sample data)
+        - generic [ref=f11e86]:
+          - generic [ref=f11e87]:
+            - generic [ref=f11e88]:
+              - generic [ref=f11e89]:
+                - generic [ref=f11e90]: Overall
+                - generic [ref=f11e91]: 81%
+                - generic [ref=f11e92]: Meets 75%
+              - generic [ref=f11e93]:
+                - generic [ref=f11e94]: Attended
+                - generic [ref=f11e95]: "17"
+                - generic [ref=f11e96]: of 21 held
+              - generic [ref=f11e97]:
+                - generic [ref=f11e98]: Missed
+                - generic [ref=f11e99]: "4"
+                - generic [ref=f11e100]: counted as absent
+              - generic [ref=f11e101]:
+                - generic [ref=f11e102]: Pending review
+                - generic [ref=f11e103]: "0"
+                - generic [ref=f11e104]: not counted as absent
+            - region [ref=f11e105]:
+              - generic [ref=f11e106]:
+                - heading "Course-wise attendance" [level=2] [ref=f11e107]
+                - generic [ref=f11e108]: 75% required
+              - list [ref=f11e109]:
+                - listitem [ref=f11e110]:
+                  - generic [ref=f11e111]:
+                    - generic [ref=f11e112]: Database Management System II
+                    - generic [ref=f11e113]: Warning
+                  - generic [ref=f11e114]: 71%
+                  - generic [ref=f11e119]: 5 attended · 2 missed
+                  - generic [ref=f11e120]: Attend the next 1 class in a row to reach 75%.
+                - listitem [ref=f11e121]:
+                  - generic [ref=f11e122]:
+                    - generic [ref=f11e123]: Software Engineering
+                    - generic [ref=f11e124]: Healthy
+                  - generic [ref=f11e125]: 100%
+                  - generic [ref=f11e130]: 7 attended · 0 missed
+                  - generic [ref=f11e131]: Can miss 2 more classes and stay at 75%.
+                - listitem [ref=f11e132]:
+                  - generic [ref=f11e133]:
+                    - generic [ref=f11e134]: Operating Systems
+                    - generic [ref=f11e135]: Warning
+                  - generic [ref=f11e136]: 71%
+                  - generic [ref=f11e141]: 5 attended · 2 missed
+                  - generic [ref=f11e142]: Attend the next 1 class in a row to reach 75%.
+          - generic [ref=f11e143]:
+            - region "Attendance calendar" [ref=f11e144]:
+              - generic [ref=f11e145]:
+                - heading "October 2026" [level=2] [ref=f11e420]
+                - generic [ref=f11e147]:
+                  - button "Previous month" [active] [ref=f11e148] [cursor=pointer]
+                  - button "Next month" [ref=f11e151] [cursor=pointer]
+              - grid "Month" [ref=f11e154]:
+                - columnheader "Sun" [ref=f11e155]
+                - columnheader "Mon" [ref=f11e156]
+                - columnheader "Tue" [ref=f11e157]
+                - columnheader "Wed" [ref=f11e158]
+                - columnheader "Thu" [ref=f11e159]
+                - columnheader "Fri" [ref=f11e160]
+                - columnheader "Sat" [ref=f11e161]
+                - gridcell "27 September, no classes" [disabled] [ref=f11e421]:
+                  - generic [ref=f11e422]: "27"
+                - gridcell "28 September, Software Engineering Present, Database Management System II Present" [ref=f11e423] [cursor=pointer]:
+                  - generic [ref=f11e424]: "28"
+                - gridcell "29 September, Operating Systems Present" [ref=f11e428] [cursor=pointer]:
+                  - generic [ref=f11e429]: "29"
+                - gridcell "30 September, no classes" [disabled] [ref=f11e432]:
+                  - generic [ref=f11e433]: "30"
+                - gridcell "1 October, no classes" [disabled] [ref=f11e434]:
+                  - generic [ref=f11e435]: "1"
+                - gridcell "2 October, no classes" [disabled] [ref=f11e436]:
+                  - generic [ref=f11e437]: "2"
+                - gridcell "3 October, no classes" [disabled] [ref=f11e438]:
+                  - generic [ref=f11e439]: "3"
+                - gridcell "4 October, no classes" [disabled] [ref=f11e440]:
+                  - generic [ref=f11e441]: "4"
+                - gridcell "5 October, Software Engineering Present, Database Management System II Present" [ref=f11e442] [cursor=pointer]:
+                  - generic [ref=f11e443]: "5"
+                - gridcell "6 October, Operating Systems Present" [ref=f11e447] [cursor=pointer]:
+                  - generic [ref=f11e448]: "6"
+                - gridcell "7 October, no classes" [disabled] [ref=f11e451]:
+                  - generic [ref=f11e452]: "7"
+                - gridcell "8 October, no classes" [disabled] [ref=f11e453]:
+                  - generic [ref=f11e454]: "8"
+                - gridcell "9 October, no classes" [disabled] [ref=f11e455]:
+                  - generic [ref=f11e456]: "9"
+                - gridcell "10 October, no classes" [disabled] [ref=f11e457]:
+                  - generic [ref=f11e458]: "10"
+                - gridcell "11 October, no classes" [disabled] [ref=f11e459]:
+                  - generic [ref=f11e460]: "11"
+                - gridcell "12 October, Software Engineering Present, Database Management System II Absent" [ref=f11e461] [cursor=pointer]:
+                  - generic [ref=f11e462]: "12"
+                - gridcell "13 October, Operating Systems Present" [ref=f11e466] [cursor=pointer]:
+                  - generic [ref=f11e467]: "13"
+                - gridcell "14 October, no classes" [disabled] [ref=f11e470]:
+                  - generic [ref=f11e471]: "14"
+                - gridcell "15 October, no classes" [disabled] [ref=f11e472]:
+                  - generic [ref=f11e473]: "15"
+                - gridcell "16 October, no classes" [disabled] [ref=f11e474]:
+                  - generic [ref=f11e475]: "16"
+                - gridcell "17 October, no classes" [disabled] [ref=f11e476]:
+                  - generic [ref=f11e477]: "17"
+                - gridcell "18 October, no classes" [disabled] [ref=f11e478]:
+                  - generic [ref=f11e479]: "18"
+                - gridcell "19 October, Software Engineering Present, Database Management System II Present" [ref=f11e480] [cursor=pointer]:
+                  - generic [ref=f11e481]: "19"
+                - gridcell "20 October, Operating Systems Present" [ref=f11e485] [cursor=pointer]:
+                  - generic [ref=f11e486]: "20"
+                - gridcell "21 October, no classes" [disabled] [ref=f11e489]:
+                  - generic [ref=f11e490]: "21"
+                - gridcell "22 October, no classes" [disabled] [ref=f11e491]:
+                  - generic [ref=f11e492]: "22"
+                - gridcell "23 October, no classes" [disabled] [ref=f11e493]:
+                  - generic [ref=f11e494]: "23"
+                - gridcell "24 October, no classes" [disabled] [ref=f11e495]:
+                  - generic [ref=f11e496]: "24"
+                - gridcell "25 October, no classes" [disabled] [ref=f11e497]:
+                  - generic [ref=f11e498]: "25"
+                - gridcell "26 October, Software Engineering Present, Database Management System II Present" [ref=f11e499] [cursor=pointer]:
+                  - generic [ref=f11e500]: "26"
+                - gridcell "27 October, Operating Systems Present" [ref=f11e504] [cursor=pointer]:
+                  - generic [ref=f11e505]: "27"
+                - gridcell "28 October, no classes" [disabled] [ref=f11e508]:
+                  - generic [ref=f11e509]: "28"
+                - gridcell "29 October, no classes" [disabled] [ref=f11e510]:
+                  - generic [ref=f11e511]: "29"
+                - gridcell "30 October, no classes" [disabled] [ref=f11e512]:
+                  - generic [ref=f11e513]: "30"
+                - gridcell "31 October, no classes" [disabled] [ref=f11e514]:
+                  - generic [ref=f11e515]: "31"
+              - paragraph [ref=f11e237]:
+                - generic [ref=f11e238]: Present
+                - generic [ref=f11e240]: Absent
+                - generic [ref=f11e242]: Unverified
+                - generic [ref=f11e244]: Upcoming
+            - region [ref=f11e246]:
+              - generic [ref=f11e247]:
+                - heading "History" [level=2] [ref=f11e248]
+                - combobox "Filter history by course" [ref=f11e250] [cursor=pointer]:
+                  - option "All courses" [selected]
+                  - option "Database Management System II"
+                  - option "Software Engineering"
+                  - option "Operating Systems"
+              - list [ref=f11e251]:
+                - listitem [ref=f11e252]:
+                  - generic [ref=f11e253]:
+                    - generic [ref=f11e254]: "27"
+                    - generic [ref=f11e255]: Oct
+                  - generic [ref=f11e256]:
+                    - generic [ref=f11e257]: Operating Systems
+                    - generic [ref=f11e258]: 11:20 · L401 · method not recorded (sample)
+                  - generic [ref=f11e259]: Present
+                - listitem [ref=f11e260]:
+                  - generic [ref=f11e261]:
+                    - generic [ref=f11e262]: "26"
+                    - generic [ref=f11e263]: Oct
+                  - generic [ref=f11e264]:
+                    - generic [ref=f11e265]: Database Management System II
+                    - generic [ref=f11e266]: 11:20 · L207 · method not recorded (sample)
+                  - generic [ref=f11e267]: Present
+                - listitem [ref=f11e268]:
+                  - generic [ref=f11e269]:
+                    - generic [ref=f11e270]: "26"
+                    - generic [ref=f11e271]: Oct
+                  - generic [ref=f11e272]:
+                    - generic [ref=f11e273]: Software Engineering
+                    - generic [ref=f11e274]: 09:40 · L105 · method not recorded (sample)
+                  - generic [ref=f11e275]: Present
+                - listitem [ref=f11e276]:
+                  - generic [ref=f11e277]:
+                    - generic [ref=f11e278]: "20"
+                    - generic [ref=f11e279]: Oct
+                  - generic [ref=f11e280]:
+                    - generic [ref=f11e281]: Operating Systems
+                    - generic [ref=f11e282]: 11:20 · L401 · method not recorded (sample)
+                  - generic [ref=f11e283]: Present
+                - listitem [ref=f11e284]:
+                  - generic [ref=f11e285]:
+                    - generic [ref=f11e286]: "19"
+                    - generic [ref=f11e287]: Oct
+                  - generic [ref=f11e288]:
+                    - generic [ref=f11e289]: Database Management System II
+                    - generic [ref=f11e290]: 11:20 · L207 · method not recorded (sample)
+                  - generic [ref=f11e291]: Present
+                - listitem [ref=f11e292]:
+                  - generic [ref=f11e293]:
+                    - generic [ref=f11e294]: "19"
+                    - generic [ref=f11e295]: Oct
+                  - generic [ref=f11e296]:
+                    - generic [ref=f11e297]: Software Engineering
+                    - generic [ref=f11e298]: 09:40 · L105 · method not recorded (sample)
+                  - generic [ref=f11e299]: Present
+                - listitem [ref=f11e300]:
+                  - generic [ref=f11e301]:
+                    - generic [ref=f11e302]: "13"
+                    - generic [ref=f11e303]: Oct
+                  - generic [ref=f11e304]:
+                    - generic [ref=f11e305]: Operating Systems
+                    - generic [ref=f11e306]: 11:20 · L401 · method not recorded (sample)
+                  - generic [ref=f11e307]: Present
+                - listitem [ref=f11e308]:
+                  - generic [ref=f11e309]:
+                    - generic [ref=f11e310]: "12"
+                    - generic [ref=f11e311]: Oct
+                  - generic [ref=f11e312]:
+                    - generic [ref=f11e313]: Database Management System II
+                    - generic [ref=f11e314]: 11:20 · L207 · method not recorded (sample)
+                  - generic [ref=f11e315]: Absent
+                - listitem [ref=f11e316]:
+                  - generic [ref=f11e317]:
+                    - generic [ref=f11e318]: "12"
+                    - generic [ref=f11e319]: Oct
+                  - generic [ref=f11e320]:
+                    - generic [ref=f11e321]: Software Engineering
+                    - generic [ref=f11e322]: 09:40 · L105 · method not recorded (sample)
+                  - generic [ref=f11e323]: Present
+                - listitem [ref=f11e324]:
+                  - generic [ref=f11e325]:
+                    - generic [ref=f11e326]: "6"
+                    - generic [ref=f11e327]: Oct
+                  - generic [ref=f11e328]:
+                    - generic [ref=f11e329]: Operating Systems
+                    - generic [ref=f11e330]: 11:20 · L401 · method not recorded (sample)
+                  - generic [ref=f11e331]: Present
+                - listitem [ref=f11e332]:
+                  - generic [ref=f11e333]:
+                    - generic [ref=f11e334]: "5"
+                    - generic [ref=f11e335]: Oct
+                  - generic [ref=f11e336]:
+                    - generic [ref=f11e337]: Database Management System II
+                    - generic [ref=f11e338]: 11:20 · L207 · method not recorded (sample)
+                  - generic [ref=f11e339]: Present
+                - listitem [ref=f11e340]:
+                  - generic [ref=f11e341]:
+                    - generic [ref=f11e342]: "5"
+                    - generic [ref=f11e343]: Oct
+                  - generic [ref=f11e344]:
+                    - generic [ref=f11e345]: Software Engineering
+                    - generic [ref=f11e346]: 09:40 · L105 · method not recorded (sample)
+                  - generic [ref=f11e347]: Present
+                - listitem [ref=f11e348]:
+                  - generic [ref=f11e349]:
+                    - generic [ref=f11e350]: "29"
+                    - generic [ref=f11e351]: Sept
+                  - generic [ref=f11e352]:
+                    - generic [ref=f11e353]: Operating Systems
+                    - generic [ref=f11e354]: 11:20 · L401 · method not recorded (sample)
+                  - generic [ref=f11e355]: Present
+                - listitem [ref=f11e356]:
+                  - generic [ref=f11e357]:
+                    - generic [ref=f11e358]: "28"
+                    - generic [ref=f11e359]: Sept
+                  - generic [ref=f11e360]:
+                    - generic [ref=f11e361]: Database Management System II
+                    - generic [ref=f11e362]: 11:20 · L207 · method not recorded (sample)
+                  - generic [ref=f11e363]: Present
+                - listitem [ref=f11e364]:
+                  - generic [ref=f11e365]:
+                    - generic [ref=f11e366]: "28"
+                    - generic [ref=f11e367]: Sept
+                  - generic [ref=f11e368]:
+                    - generic [ref=f11e369]: Software Engineering
+                    - generic [ref=f11e370]: 09:40 · L105 · method not recorded (sample)
+                  - generic [ref=f11e371]: Present
+                - listitem [ref=f11e372]:
+                  - generic [ref=f11e373]:
+                    - generic [ref=f11e374]: "22"
+                    - generic [ref=f11e375]: Sept
+                  - generic [ref=f11e376]:
+                    - generic [ref=f11e377]: Operating Systems
+                    - generic [ref=f11e378]: 11:20 · L401 · method not recorded (sample)
+                  - generic [ref=f11e379]: Absent
+                - listitem [ref=f11e380]:
+                  - generic [ref=f11e381]:
+                    - generic [ref=f11e382]: "21"
+                    - generic [ref=f11e383]: Sept
+                  - generic [ref=f11e384]:
+                    - generic [ref=f11e385]: Database Management System II
+                    - generic [ref=f11e386]: 11:20 · L207 · method not recorded (sample)
+                  - generic [ref=f11e387]: Absent
+                - listitem [ref=f11e388]:
+                  - generic [ref=f11e389]:
+                    - generic [ref=f11e390]: "21"
+                    - generic [ref=f11e391]: Sept
+                  - generic [ref=f11e392]:
+                    - generic [ref=f11e393]: Software Engineering
+                    - generic [ref=f11e394]: 09:40 · L105 · method not recorded (sample)
+                  - generic [ref=f11e395]: Present
+                - listitem [ref=f11e396]:
+                  - generic [ref=f11e397]:
+                    - generic [ref=f11e398]: "15"
+                    - generic [ref=f11e399]: Sept
+                  - generic [ref=f11e400]:
+                    - generic [ref=f11e401]: Operating Systems
+                    - generic [ref=f11e402]: 11:20 · L401 · method not recorded (sample)
+                  - generic [ref=f11e403]: Absent
+                - listitem [ref=f11e404]:
+                  - generic [ref=f11e405]:
+                    - generic [ref=f11e406]: "14"
+                    - generic [ref=f11e407]: Sept
+                  - generic [ref=f11e408]:
+                    - generic [ref=f11e409]: Database Management System II
+                    - generic [ref=f11e410]: 11:20 · L207 · method not recorded (sample)
+                  - generic [ref=f11e411]: Present
+                - listitem [ref=f11e412]:
+                  - generic [ref=f11e413]:
+                    - generic [ref=f11e414]: "14"
+                    - generic [ref=f11e415]: Sept
+                  - generic [ref=f11e416]:
+                    - generic [ref=f11e417]: Software Engineering
+                    - generic [ref=f11e418]: 09:40 · L105 · method not recorded (sample)
+                  - generic [ref=f11e419]: Present

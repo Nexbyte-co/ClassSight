@@ -1,0 +1,100 @@
+- generic [ref=f1e3]:
+  - banner [ref=f1e5]:
+    - generic [ref=f1e6]:
+      - button "Toggle navigation" [expanded] [ref=f1e7] [cursor=pointer]
+      - link "ClassSight" [ref=f1e9] [cursor=pointer]:
+        - /url: /student
+    - generic [ref=f1e18]:
+      - button "Night mode" [ref=f1e19] [cursor=pointer]
+      - button "Notifications (2)" [ref=f1e23] [cursor=pointer]
+      - button "Account menu for Parv Rawat" [ref=f1e29] [cursor=pointer]:
+        - generic [aria-hidden] [ref=f1e30]: P
+  - main [ref=f1e32]:
+    - generic [ref=f1e33]:
+      - generic [ref=f1e34]:
+        - generic [ref=f1e35]:
+          - heading "Timetable" [level=1] [ref=f1e36]
+          - paragraph [ref=f1e37]: Your weekly classes from the college timetable.
+        - generic [ref=f1e38]:
+          - group "Week" [ref=f1e39]:
+            - button "Previous week" [ref=f1e40] [cursor=pointer]
+            - generic [ref=f1e43]: 1 Nov – 7 Nov 2026
+            - button "Next week" [ref=f1e44] [cursor=pointer]
+          - button "This week" [disabled] [ref=f1e47]
+      - generic [ref=f1e50]:
+        - region "Weekly timetable" [ref=f1e51]:
+          - generic [ref=f1e52]:
+            - group "Filter by course" [ref=f1e53]:
+              - button "All courses" [pressed] [ref=f1e54] [cursor=pointer]
+              - button "Database Management System II" [ref=f1e55] [cursor=pointer]
+              - button "Software Engineering" [ref=f1e57] [cursor=pointer]
+              - button "Operating Systems" [ref=f1e59] [cursor=pointer]
+            - tablist "Day" [ref=f1e61]:
+              - tab "Week" [selected] [ref=f1e62] [cursor=pointer]
+              - tab [ref=f1e63] [cursor=pointer]:
+                - text: Mon
+                - emphasis [ref=f1e64]: "2"
+              - tab [ref=f1e65] [cursor=pointer]:
+                - text: Tue
+                - emphasis [ref=f1e66]: "1"
+              - tab [ref=f1e67] [cursor=pointer]:
+                - text: Wed
+                - emphasis [ref=f1e68]: "0"
+              - tab [ref=f1e69] [cursor=pointer]:
+                - text: Thu
+                - emphasis [ref=f1e70]: "0"
+              - tab [ref=f1e71] [cursor=pointer]:
+                - text: Fri
+                - emphasis [ref=f1e72]: "0"
+              - tab [ref=f1e73] [cursor=pointer]:
+                - text: Sat
+                - emphasis [ref=f1e74]: "0"
+          - generic [ref=f1e75]:
+            - region "Mon 2 November" [ref=f1e76]:
+              - generic [ref=f1e77]:
+                - generic [ref=f1e78]: Mon
+                - generic [ref=f1e79]: "2"
+                - emphasis [ref=f1e80]: Today
+              - button "09:40–11:20 Software Engineering L105 · 3C2C Upcoming" [ref=f1e81] [cursor=pointer]:
+                - generic [ref=f1e82]: 09:40–11:20
+                - generic [ref=f1e83]: Software Engineering
+                - generic [ref=f1e84]: L105 · 3C2C
+                - generic [ref=f1e88]: Upcoming
+              - button "11:20–13:00 Database Management System II L207 · 2Q3B Upcoming" [ref=f1e89] [cursor=pointer]:
+                - generic [ref=f1e90]: 11:20–13:00
+                - generic [ref=f1e91]: Database Management System II
+                - generic [ref=f1e92]: L207 · 2Q3B
+                - generic [ref=f1e96]: Upcoming
+            - region "Tue 3 November" [ref=f1e97]:
+              - generic [ref=f1e98]:
+                - generic [ref=f1e99]: Tue
+                - generic [ref=f1e100]: "3"
+              - button "11:20–13:00 Operating Systems L401 · 1MCA 2 Upcoming" [ref=f1e101] [cursor=pointer]:
+                - generic [ref=f1e102]: 11:20–13:00
+                - generic [ref=f1e103]: Operating Systems
+                - generic [ref=f1e104]: L401 · 1MCA 2
+                - generic [ref=f1e108]: Upcoming
+            - region "Wed 4 November" [ref=f1e109]:
+              - generic [ref=f1e110]:
+                - generic [ref=f1e111]: Wed
+                - generic [ref=f1e112]: "4"
+              - paragraph [ref=f1e113]: No classes
+            - region "Thu 5 November" [ref=f1e114]:
+              - generic [ref=f1e115]:
+                - generic [ref=f1e116]: Thu
+                - generic [ref=f1e117]: "5"
+              - paragraph [ref=f1e118]: No classes
+            - region "Fri 6 November" [ref=f1e119]:
+              - generic [ref=f1e120]:
+                - generic [ref=f1e121]: Fri
+                - generic [ref=f1e122]: "6"
+              - paragraph [ref=f1e123]: No classes
+            - region "Sat 7 November" [ref=f1e124]:
+              - generic [ref=f1e125]:
+                - generic [ref=f1e126]: Sat
+                - generic [ref=f1e127]: "7"
+              - paragraph [ref=f1e128]: No classes
+        - complementary "Class details" [ref=f1e129]:
+          - generic [ref=f1e130]:
+            - heading "Select a class" [level=2] [ref=f1e137]
+            - paragraph [ref=f1e138]: Choose a class to see its room, instructor, batch, attendance status and your course attendance.

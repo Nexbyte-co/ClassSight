@@ -1,0 +1,230 @@
+- generic [ref=f15e3]:
+  - banner [ref=f15e4]:
+    - generic [ref=f15e5]:
+      - button "Toggle navigation" [expanded] [ref=f15e6] [cursor=pointer]
+      - link "ClassSight" [ref=f15e8] [cursor=pointer]:
+        - /url: /dashboard
+    - generic [ref=f15e17]:
+      - generic [ref=f15e18]: Mon, Nov 2, 2026
+      - button "Night mode" [ref=f15e22] [cursor=pointer]
+      - button "Notifications (1)" [ref=f15e30] [cursor=pointer]
+      - button "Professor Jhonsy — account menu" [ref=f15e36] [cursor=pointer]:
+        - generic [aria-hidden] [ref=f15e37]: PJ
+        - generic [ref=f15e38]:
+          - generic [ref=f15e39]: Prof. Jhonsy
+          - generic [ref=f15e40]: Dept. of CS & Eng
+  - generic [ref=f15e43]:
+    - complementary "Main navigation" [ref=f15e44]:
+      - navigation [ref=f15e45]:
+        - link "Dashboard" [ref=f15e46] [cursor=pointer]:
+          - /url: /dashboard
+        - link "Classes" [ref=f15e53] [cursor=pointer]:
+          - /url: /classes
+        - link "Attendance Live" [ref=f15e57] [cursor=pointer]:
+          - /url: /attendance
+          - generic [ref=f15e61]: Attendance
+          - generic [ref=f15e62]: Live
+        - link "Students" [ref=f15e63] [cursor=pointer]:
+          - /url: /students
+        - link "Reports" [ref=f15e68] [cursor=pointer]:
+          - /url: /reports
+        - link "Settings" [ref=f15e72] [cursor=pointer]:
+          - /url: /settings
+      - generic [ref=f15e77]:
+        - generic [ref=f15e78]:
+          - generic [ref=f15e79]: Spring Term 2026
+          - generic [ref=f15e80]: CSE Dept. • Semester 6
+          - generic [ref=f15e81]: Academic Week 8
+        - button "Log Out Faculty" [ref=f15e82] [cursor=pointer]
+    - main [ref=f15e87]:
+      - generic [ref=f15e88]:
+        - generic [ref=f15e89]:
+          - button "Back to Dashboard" [ref=f15e90] [cursor=pointer]
+          - generic [ref=f15e94]:
+            - heading "Software Engineering" [level=1] [ref=f15e95]
+            - generic [ref=f15e96]:
+              - generic [ref=f15e97]: Lab
+              - generic [ref=f15e98]: 3C2C
+              - generic [ref=f15e99]: UCS503P
+              - generic [ref=f15e100]: 09:40 – 11:20
+              - generic [ref=f15e104]: L105
+              - status [ref=f15e108]: In review
+        - generic [ref=f15e109]:
+          - generic [ref=f15e110]:
+            - region "This session" [ref=f15e111]:
+              - generic [ref=f15e112]:
+                - generic [ref=f15e118]:
+                  - heading "This session" [level=4] [ref=f15e119]
+                  - generic [ref=f15e120]: Live now · started 09:40
+                - generic [ref=f15e121]:
+                  - generic [ref=f15e122]: 30 enrolled
+                  - button "Reset demo" [ref=f15e123] [cursor=pointer]
+              - generic [ref=f15e127]:
+                - img "23 of 30 present, 7 to review, 0 absent" [ref=f15e129]:
+                  - img [aria-hidden] [ref=f15e130]:
+                    - generic [ref=f15e134]:
+                      - generic [ref=f15e135]: "-1/30"
+                      - generic [ref=f15e136]: PRESENT
+                    - generic [ref=f15e137]:
+                      - generic [ref=f15e138]: 77%
+                      - generic [ref=f15e139]: PRESENT
+                    - generic [ref=f15e140]:
+                      - generic [ref=f15e141]: 23%
+                      - generic [ref=f15e142]: TO REVIEW
+                    - generic [ref=f15e143]:
+                      - generic [ref=f15e144]: 0%
+                      - generic [ref=f15e145]: ABSENT
+                - generic [ref=f15e146]:
+                  - generic [ref=f15e147]:
+                    - generic [ref=f15e148]: Present
+                    - generic [ref=f15e150]: "23"
+                  - generic [ref=f15e151]:
+                    - generic [ref=f15e152]: Review
+                    - generic [ref=f15e154]: "7"
+                  - generic [ref=f15e155]:
+                    - generic [ref=f15e156]: Absent
+                    - generic [ref=f15e158]: "0"
+              - generic [ref=f15e159]:
+                - generic [ref=f15e160]:
+                  - generic [ref=f15e161]: Verified by
+                  - generic "Face photo 23" [ref=f15e162]: "23"
+                  - generic "NFC card 0" [ref=f15e167]: "0"
+                  - generic "Manual 0" [ref=f15e174]: "0"
+                - button "Save record" [ref=f15e181] [cursor=pointer]
+            - region "Needs review" [ref=f15e187]:
+              - generic [ref=f15e188]:
+                - generic [ref=f15e192]:
+                  - heading "Needs review" [level=4] [ref=f15e193]
+                  - paragraph [ref=f15e194]: The photo couldn’t match them
+                - generic [ref=f15e195]: "7"
+              - progressbar "Students resolved" [ref=f15e196]:
+                - generic [ref=f15e197]: 0 of 7 resolved
+              - generic [ref=f15e198]:
+                - button "Review Kavya Goyal" [pressed] [ref=f15e199] [cursor=pointer]:
+                  - generic [aria-hidden] [ref=f15e200]: KG
+                  - generic [ref=f15e201]:
+                    - generic [ref=f15e202]: Kavya Goyal
+                    - generic [ref=f15e203]: 102203204 · Not found in the photo
+                - button "Review Dev Jain" [ref=f15e204] [cursor=pointer]:
+                  - generic [aria-hidden] [ref=f15e205]: DJ
+                  - generic [ref=f15e206]:
+                    - generic [ref=f15e207]: Dev Jain
+                    - generic [ref=f15e208]: 102203207 · Face behind a monitor
+                - button "Review Veer Bansal" [ref=f15e209] [cursor=pointer]:
+                  - generic [aria-hidden] [ref=f15e210]: VB
+                  - generic [ref=f15e211]:
+                    - generic [ref=f15e212]: Veer Bansal
+                    - generic [ref=f15e213]: 102203217 · Face behind a monitor
+                - button "Review Sneha Singh" [ref=f15e214] [cursor=pointer]:
+                  - generic [aria-hidden] [ref=f15e215]: SS
+                  - generic [ref=f15e216]:
+                    - generic [ref=f15e217]: Sneha Singh
+                    - generic [ref=f15e218]: 102203220 · Not found in the photo
+                - button "Review Kunal Sharma" [ref=f15e219] [cursor=pointer]:
+                  - generic [aria-hidden] [ref=f15e220]: KS
+                  - generic [ref=f15e221]:
+                    - generic [ref=f15e222]: Kunal Sharma
+                    - generic [ref=f15e223]: 102203223 · Face overlaps another student
+                - button "Review Pooja Kapoor" [ref=f15e224] [cursor=pointer]:
+                  - generic [aria-hidden] [ref=f15e225]: PK
+                  - generic [ref=f15e226]:
+                    - generic [ref=f15e227]: Pooja Kapoor
+                    - generic [ref=f15e228]: 102203224 · Turned away from the camera
+                - button "Review Arjun Verma" [ref=f15e229] [cursor=pointer]:
+                  - generic [aria-hidden] [ref=f15e230]: AV
+                  - generic [ref=f15e231]:
+                    - generic [ref=f15e232]: Arjun Verma
+                    - generic [ref=f15e233]: 102203227 · Turned away from the camera
+          - generic [ref=f15e234]:
+            - region "Resolve Kavya Goyal" [ref=f15e235]:
+              - button "Previous student" [disabled] [ref=f15e236]
+              - generic [ref=f15e239]:
+                - generic [ref=f15e240]:
+                  - generic [aria-hidden] [ref=f15e241]: KG
+                  - generic [ref=f15e242]:
+                    - heading "Kavya Goyal" [level=4] [ref=f15e243]
+                    - generic [ref=f15e244]: 102203204 · 3C2C
+                  - generic "Overall attendance" [ref=f15e245]: 100% · Good
+                  - generic "Student 1 of 7" [ref=f15e246]: 1/7
+                - generic [ref=f15e247]: Not found in the photo
+                - generic [ref=f15e251]:
+                  - button [ref=f15e252] [cursor=pointer]
+                  - button [ref=f15e259] [cursor=pointer]
+                  - button [ref=f15e264] [cursor=pointer]
+                  - button [ref=f15e271] [cursor=pointer]
+                - generic [ref=f15e275]:
+                  - generic [ref=f15e276]:
+                    - generic [ref=f15e277]: Recent labs
+                    - generic [ref=f15e278]: 28 Sept – 19 Oct
+                  - generic [ref=f15e279]:
+                    - button "Earlier labs" [ref=f15e280] [cursor=pointer]
+                    - generic [ref=f15e283]:
+                      - generic "28 Sept · 09:40 · Present" [ref=f15e284]:
+                        - generic [ref=f15e285]: Present
+                        - generic [ref=f15e289]: 28 Sept
+                        - generic [ref=f15e290]: 09:40
+                      - generic "5 Oct · 09:40 · Present" [ref=f15e291]:
+                        - generic [ref=f15e292]: Present
+                        - generic [ref=f15e296]: 5 Oct
+                        - generic [ref=f15e297]: 09:40
+                      - generic "12 Oct · 09:40 · Present" [ref=f15e298]:
+                        - generic [ref=f15e299]: Present
+                        - generic [ref=f15e303]: 12 Oct
+                        - generic [ref=f15e304]: 09:40
+                      - generic "19 Oct · 09:40 · Present" [ref=f15e305]:
+                        - generic [ref=f15e306]: Present
+                        - generic [ref=f15e310]: 19 Oct
+                        - generic [ref=f15e311]: 09:40
+                        - generic "Today's session" [ref=f15e312]: Now
+                    - button "Later labs" [disabled] [ref=f15e313]
+                  - generic [ref=f15e316]:
+                    - generic [ref=f15e317]: Present
+                    - generic [ref=f15e320]: Absent
+                    - generic [ref=f15e324]: Highlighted = today
+                - generic [ref=f15e325]:
+                  - generic [ref=f15e326]: Last attended 19 Oct
+                  - generic [ref=f15e327]: 7 left to review
+              - button "Next student" [ref=f15e328] [cursor=pointer]
+            - region "Absent" [ref=f15e331]:
+              - generic [ref=f15e332]:
+                - generic [ref=f15e336]:
+                  - heading "Absent" [level=4] [ref=f15e337]
+                  - paragraph [ref=f15e338]: Confirmed not in class
+                - generic [ref=f15e339]: "0"
+              - generic [ref=f15e341]:
+                - generic [ref=f15e342]: No absentees
+                - text: Students you mark absent show here.
+          - generic [ref=f15e343]:
+            - region "Face check" [ref=f15e344]:
+              - generic [ref=f15e351]:
+                - heading "Face check" [level=4] [ref=f15e352]
+                - generic [ref=f15e353]: Is this really Kavya?
+              - generic [ref=f15e354]:
+                - generic [ref=f15e355]: Enrolled photo
+                - generic [ref=f15e360]:
+                  - emphasis [ref=f15e365]: No face detected
+                  - generic [ref=f15e366]: From today’s photo
+              - generic [ref=f15e367]: The photo didn’t pick up this student. Use NFC or Retake photo.
+              - generic [ref=f15e371]:
+                - button "It’s them" [disabled] [ref=f15e372]
+                - button "Not them" [disabled] [ref=f15e375]
+            - region "Up next" [ref=f15e379]:
+              - generic [ref=f15e380]:
+                - generic [ref=f15e385]:
+                  - heading "Up next" [level=4] [ref=f15e386]
+                  - generic [ref=f15e387]: After this lab
+                - generic [ref=f15e388]: Lab
+              - generic [ref=f15e389]:
+                - generic [ref=f15e390]: Database Management System II
+                - generic [ref=f15e391]:
+                  - generic [ref=f15e392]: 2Q3B
+                  - generic [ref=f15e393]: UCS303P
+                - generic [ref=f15e394]:
+                  - generic [ref=f15e395]: 11:20 – 13:00
+                  - generic [ref=f15e399]: Room L207
+                  - generic [ref=f15e403]: 30 students
+              - generic [ref=f15e407]:
+                - generic [ref=f15e408]: Starts in
+                - generic [ref=f15e409]: 1h 40m
+              - button "Start attendance early" [ref=f15e410] [cursor=pointer]
+    - status

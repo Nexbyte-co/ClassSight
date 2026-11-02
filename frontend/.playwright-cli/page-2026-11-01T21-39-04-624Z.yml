@@ -1,0 +1,16 @@
+- generic [ref=f4e3]:
+  - banner [ref=f4e5]:
+    - generic [ref=f4e6]:
+      - button "Toggle navigation" [expanded] [ref=f4e7] [cursor=pointer]
+      - link "ClassSight" [ref=f4e9] [cursor=pointer]:
+        - /url: /student
+    - generic [ref=f4e19]:
+      - button "Night mode" [ref=f4e24] [cursor=pointer]
+      - button "Account menu for Parv Rawat" [ref=f4e28] [cursor=pointer]:
+        - generic [aria-hidden] [ref=f4e29]: P
+  - main [ref=f4e70]:
+    - generic [ref=f4e335]:
+      - generic [ref=f4e337]:
+        - heading "Timetable" [level=1] [ref=f4e338]
+        - paragraph [ref=f4e339]: Your weekly class schedule.
+      - generic [ref=f4e340]: This page is not available yet in the frontend demo.
