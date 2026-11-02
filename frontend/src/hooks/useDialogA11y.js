@@ -24,7 +24,10 @@ export function useDialogA11y(isOpen, onClose) {
     const token = {};
     openDialogs.push(token);
     const focusables = () =>
-      [...(dialog?.querySelectorAll(FOCUSABLE) || [])].filter((el) => el.offsetParent !== null || el === document.activeElement);
+      [...(dialog?.querySelectorAll(FOCUSABLE) || [])].filter((el) => {
+        const style = window.getComputedStyle(el);
+        return el.getClientRects().length > 0 && style.visibility !== "hidden" && style.display !== "none";
+      });
 
     // Focus the first form field if there is one, otherwise the first control
     const first = dialog?.querySelector("input:not([type=hidden]), select, textarea") || focusables()[0];

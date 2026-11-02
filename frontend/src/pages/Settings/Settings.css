@@ -1,0 +1,719 @@
+/* src/pages/Settings/Settings.css
+   Teacher Settings: tabbed sections of setting cards. Colours come from the --cs-* tokens
+   in teacher.css (light + dark); spacing/radius follow DESIGN.md (8px controls, 12px cards). */
+
+.teacher-ui .ts-main {
+  max-width: none;
+  min-width: 0; /* let the tab bar scroll inside the page instead of widening it */
+  margin: 0;
+}
+
+.teacher-ui .ts-tabs {
+  margin: 4px 0 24px;
+}
+
+.teacher-ui .ts-tabs .cs-tab {
+  border: 0;
+  background: none;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.teacher-ui .ts-tabs .cs-tab:focus-visible,
+.teacher-ui .ts-panel:focus-visible {
+  outline: 2px solid var(--cs-focus);
+  outline-offset: 2px;
+}
+
+.teacher-ui .ts-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Cards, notes and the save bar enter with the shared rise (teacher.css §25), staggered per tab */
+.teacher-ui .ts-panel > * {
+  animation: cs-rise 0.42s cubic-bezier(0.2, 0.7, 0.2, 1) backwards;
+  animation-delay: calc(var(--i, 0) * 60ms);
+}
+
+.teacher-ui .ts-panel > :nth-child(2) { --i: 1; }
+.teacher-ui .ts-panel > :nth-child(3) { --i: 2; }
+.teacher-ui .ts-panel > :nth-child(4) { --i: 3; }
+.teacher-ui .ts-panel > :nth-child(n + 5) { --i: 4; }
+
+.teacher-ui .ts-savebar {
+  animation: cs-rise 0.28s cubic-bezier(0.2, 0.7, 0.2, 1) backwards;
+}
+
+.teacher-ui .ts-card {
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.teacher-ui .ts-card:hover:not(.is-server) {
+  border-color: var(--cs-crimson-border);
+  box-shadow: var(--cs-shadow-md);
+}
+
+.teacher-ui .ts-band {
+  animation: cs-fade 0.25s ease backwards;
+}
+
+.teacher-ui .ts-faq-item p {
+  animation: cs-fade 0.2s ease backwards;
+}
+
+/* ---- Cards ---- */
+.teacher-ui .ts-card {
+  background: var(--cs-card-bg);
+  border: 1px solid var(--cs-border);
+  border-radius: var(--cs-radius-card);
+  box-shadow: var(--cs-shadow-sm);
+}
+
+.teacher-ui .ts-card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 20px 24px 4px;
+}
+
+.teacher-ui .ts-card-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 650;
+  letter-spacing: -0.1px;
+  color: var(--cs-text-primary);
+}
+
+.teacher-ui .ts-card-desc {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: var(--cs-text-muted);
+}
+
+.teacher-ui .ts-card-body {
+  padding: 8px 24px 20px;
+}
+
+.teacher-ui .ts-card-foot {
+  display: flex;
+  justify-content: flex-end;
+  padding: 12px 24px;
+  border-top: 1px solid var(--cs-border-subtle);
+}
+
+.teacher-ui .ts-card-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 16px;
+}
+
+.teacher-ui .ts-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  flex-shrink: 0;
+  height: 24px;
+  padding: 0 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.teacher-ui .ts-badge-local {
+  background: var(--cs-success-bg);
+  color: var(--cs-success);
+}
+
+.teacher-ui .ts-badge-server {
+  background: var(--cs-card-hover);
+  color: var(--cs-text-muted);
+  border: 1px solid var(--cs-border);
+}
+
+/* ---- Rows ---- */
+.teacher-ui .ts-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 16px 0;
+}
+
+.teacher-ui .ts-row + .ts-row,
+.teacher-ui .ts-profile + .ts-row {
+  border-top: 1px solid var(--cs-border-subtle);
+}
+
+.teacher-ui .ts-row-text {
+  min-width: 0;
+  flex: 1;
+}
+
+.teacher-ui .ts-row-label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--cs-text-primary);
+}
+
+.teacher-ui .ts-row-desc {
+  margin: 3px 0 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--cs-text-muted);
+}
+
+.teacher-ui .ts-row-control {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.teacher-ui .ts-row.is-disabled .ts-row-label {
+  color: var(--cs-text-secondary);
+}
+
+/* ---- Inputs ---- */
+.teacher-ui .ts-input {
+  height: 40px;
+  min-width: 220px;
+  padding: 0 12px;
+  border: 1px solid var(--cs-border);
+  border-radius: var(--cs-radius-control);
+  background: var(--cs-card-bg);
+  color: var(--cs-text-primary);
+  font: inherit;
+  font-size: 14px;
+}
+
+.teacher-ui .ts-input:focus-visible {
+  outline: none;
+  border-color: var(--cs-crimson);
+  box-shadow: 0 0 0 3px var(--cs-crimson-light);
+}
+
+.teacher-ui .ts-input[aria-invalid="true"] {
+  border-color: var(--cs-danger);
+}
+
+.teacher-ui .ts-input:disabled {
+  background: var(--cs-card-hover);
+  color: var(--cs-text-faint);
+  cursor: not-allowed;
+}
+
+.teacher-ui .ts-select {
+  cursor: pointer;
+}
+
+.teacher-ui .ts-input-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.teacher-ui .ts-input-num {
+  min-width: 0;
+  width: 96px;
+  text-align: right;
+}
+
+.teacher-ui .ts-input-suffix {
+  font-size: 13px;
+  color: var(--cs-text-muted);
+}
+
+.teacher-ui .ts-error {
+  margin: 4px 0 0;
+  min-height: 0;
+  font-size: 12px;
+  color: var(--cs-danger);
+  text-align: right;
+}
+
+.teacher-ui .ts-error:empty {
+  display: none;
+}
+
+/* ---- Switch ---- */
+.teacher-ui .ts-switch {
+  position: relative;
+  width: 40px;
+  height: 24px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: var(--cs-border);
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.teacher-ui .ts-switch.on {
+  background: var(--cs-crimson);
+}
+
+.teacher-ui .ts-switch-knob {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--cs-card-bg);
+  box-shadow: var(--cs-shadow-sm);
+  transition: transform 0.15s ease;
+}
+
+.teacher-ui .ts-switch.on .ts-switch-knob {
+  transform: translateX(16px);
+}
+
+.teacher-ui .ts-switch:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.teacher-ui .ts-switch:focus-visible {
+  outline: 2px solid var(--cs-focus);
+  outline-offset: 2px;
+}
+
+/* ---- Segmented control ---- */
+.teacher-ui .ts-seg {
+  display: inline-flex;
+  padding: 3px;
+  gap: 2px;
+  border: 1px solid var(--cs-border);
+  border-radius: var(--cs-radius-control);
+  background: var(--cs-card-hover);
+}
+
+.teacher-ui .ts-seg-opt {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--cs-text-muted);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.teacher-ui .ts-seg-opt:hover:not(:disabled) {
+  color: var(--cs-text-primary);
+}
+
+.teacher-ui .ts-seg-opt.on {
+  background: var(--cs-card-bg);
+  color: var(--cs-crimson-text);
+  box-shadow: var(--cs-shadow-sm);
+}
+
+.teacher-ui .ts-seg-opt:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.teacher-ui .ts-seg-opt:focus-visible {
+  outline: 2px solid var(--cs-focus);
+  outline-offset: 1px;
+}
+
+/* ---- Notes, links, hints ---- */
+.teacher-ui .ts-note {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 12px 16px;
+  border: 1px solid var(--cs-border);
+  border-radius: var(--cs-radius-card);
+  background: var(--cs-card-hover);
+  color: var(--cs-text-secondary);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.teacher-ui .ts-note svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.teacher-ui .ts-note p {
+  margin: 0;
+}
+
+.teacher-ui .ts-link {
+  border: 0;
+  background: none;
+  padding: 4px 0;
+  color: var(--cs-crimson-text);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.teacher-ui .ts-link:hover:not(:disabled) {
+  text-decoration: underline;
+}
+
+.teacher-ui .ts-link:disabled {
+  color: var(--cs-text-faint);
+  cursor: default;
+}
+
+.teacher-ui .ts-hint,
+.teacher-ui .ts-empty {
+  margin: 12px 0 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--cs-text-muted);
+}
+
+.teacher-ui .ts-empty {
+  padding: 16px;
+  border: 1px dashed var(--cs-border);
+  border-radius: var(--cs-radius-control);
+  text-align: center;
+}
+
+.teacher-ui .ts-card .btn-modal-cancel svg,
+.teacher-ui .ts-card .btn-modal-submit svg {
+  margin-right: 6px;
+}
+
+.teacher-ui .ts-card :is(.btn-modal-cancel, .btn-modal-submit):disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.teacher-ui .ts-preview-link {
+  margin-top: 14px;
+  text-decoration: none;
+}
+
+/* ---- Account ---- */
+.teacher-ui .ts-profile {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 8px 0 16px;
+}
+
+.teacher-ui .ts-avatar {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--cs-crimson-light);
+  border: 1px solid var(--cs-crimson-border);
+  color: var(--cs-crimson-text);
+  font-size: 18px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.teacher-ui .ts-profile-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+  font-size: 14px;
+}
+
+.teacher-ui .ts-profile-text strong {
+  color: var(--cs-text-primary);
+}
+
+.teacher-ui .ts-profile-text span {
+  color: var(--cs-text-muted);
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+
+.teacher-ui .ts-details {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px 24px;
+  margin: 8px 0 0;
+}
+
+.teacher-ui .ts-details dt {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--cs-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.teacher-ui .ts-details dd {
+  margin: 4px 0 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--cs-text-primary);
+  overflow-wrap: anywhere;
+}
+
+/* ---- Notifications matrix ---- */
+.teacher-ui .ts-matrix-head,
+.teacher-ui .ts-matrix-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 72px 72px;
+  align-items: center;
+  gap: 12px;
+}
+
+.teacher-ui .ts-matrix-head {
+  padding: 8px 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--cs-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.teacher-ui .ts-matrix-head span:not(:first-child),
+.teacher-ui .ts-matrix-row > div:not(:first-child) {
+  text-align: center;
+}
+
+.teacher-ui .ts-matrix-row {
+  padding: 14px 0;
+  border-top: 1px solid var(--cs-border-subtle);
+}
+
+/* ---- Threshold bands ---- */
+.teacher-ui .ts-bands {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding-top: 4px;
+}
+
+.teacher-ui .ts-band {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.teacher-ui .ts-band i {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.teacher-ui .ts-band.ok {
+  background: var(--cs-success-bg);
+  color: var(--cs-success);
+}
+
+.teacher-ui .ts-band.risk {
+  background: var(--cs-warning-bg);
+  color: var(--cs-warning);
+}
+
+.teacher-ui .ts-band.crit {
+  background: var(--cs-danger-bg);
+  color: var(--cs-danger);
+}
+
+/* ---- Security ---- */
+.teacher-ui .ts-pw-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  padding-top: 8px;
+}
+
+.teacher-ui .ts-pw-grid .ts-input {
+  width: 100%;
+  min-width: 0;
+  margin-top: 6px;
+}
+
+/* ---- Help ---- */
+.teacher-ui .ts-guide {
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: ts-step;
+  display: grid;
+  gap: 14px;
+}
+
+.teacher-ui .ts-guide li {
+  counter-increment: ts-step;
+  display: grid;
+  grid-template-columns: 28px 1fr;
+  column-gap: 12px;
+  font-size: 13px;
+  color: var(--cs-text-muted);
+}
+
+.teacher-ui .ts-guide li::before {
+  content: counter(ts-step);
+  grid-row: span 2;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--cs-crimson-light);
+  color: var(--cs-crimson-text);
+  font-weight: 700;
+}
+
+.teacher-ui .ts-guide strong {
+  font-size: 14px;
+  color: var(--cs-text-primary);
+}
+
+.teacher-ui .ts-faq-item + .ts-faq-item {
+  border-top: 1px solid var(--cs-border-subtle);
+}
+
+.teacher-ui .ts-faq-item button {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 14px 0;
+  border: 0;
+  background: none;
+  color: var(--cs-text-primary);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+}
+
+.teacher-ui .ts-faq-item button svg {
+  flex-shrink: 0;
+  color: var(--cs-text-muted);
+  transition: transform 0.15s ease;
+}
+
+.teacher-ui .ts-faq-item.open button svg {
+  transform: rotate(180deg);
+}
+
+.teacher-ui .ts-faq-item p {
+  margin: 0 0 14px;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--cs-text-secondary);
+}
+
+/* ---- Save bar ---- */
+.teacher-ui .ts-savebar,
+.teacher-ui .ts-savebar-spacer {
+  margin-top: 24px;
+}
+
+.teacher-ui .ts-savebar {
+  position: sticky;
+  bottom: 16px;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 12px 16px 12px 20px;
+  border: 1px solid var(--cs-crimson-border);
+  border-radius: var(--cs-radius-card);
+  background: var(--cs-card-bg);
+  box-shadow: var(--cs-shadow-lg);
+}
+
+.teacher-ui .ts-savebar.is-saved {
+  border-color: var(--cs-border);
+}
+
+.teacher-ui .ts-savebar-text {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--cs-text-primary);
+}
+
+.teacher-ui .ts-savebar.is-saved .ts-savebar-text {
+  color: var(--cs-success);
+}
+
+.teacher-ui .ts-savebar-actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* ---- Phones ---- */
+@media (max-width: 640px) {
+  .teacher-ui .ts-card-head {
+    padding: 16px 16px 4px;
+    flex-direction: column;
+  }
+
+  .teacher-ui .ts-card-body {
+    padding: 8px 16px 16px;
+  }
+
+  .teacher-ui .ts-card-foot {
+    padding: 10px 16px;
+  }
+
+  .teacher-ui .ts-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .teacher-ui .ts-row-control {
+    align-items: flex-start;
+  }
+
+  .teacher-ui .ts-input {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .teacher-ui .ts-input-num {
+    width: 96px;
+  }
+
+  .teacher-ui .ts-error {
+    text-align: left;
+  }
+
+  .teacher-ui .ts-seg {
+    flex-wrap: wrap;
+  }
+
+  .teacher-ui .ts-profile {
+    flex-wrap: wrap;
+  }
+
+  .teacher-ui .ts-savebar-actions {
+    width: 100%;
+  }
+
+  .teacher-ui .ts-savebar-actions button {
+    flex: 1;
+  }
+}

@@ -1,40 +1,39 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
-import Classrooms from "./pages/Classrooms";
+import Classrooms from "./pages/Classes/Classrooms";
 import Classes from "./pages/Classes";
-import ClassSchedule from "./pages/ClassSchedule";
-import Attendance from "./pages/Attendance";
+import ClassSchedule from "./pages/Classes/ClassSchedule";
+import Attendance from "./pages/AttendanceSession/Attendance";
 import Students from "./pages/Students";
 import Reports from "./pages/Reports";
-import AllReports from "./pages/AllReports";
-import ReportDetails from "./pages/ReportDetails";
+import AllReports from "./pages/Reports/AllReports";
+import ReportDetails from "./pages/Reports/ReportDetails";
 import Settings from "./pages/Settings";
 
-import { ThemeProvider } from "./context/ThemeContext";
-import { AttendanceProvider } from "./context/AttendanceContext";
-import { ScheduleProvider } from "./context/ScheduleContext";
-import { SettingsProvider } from "./context/SettingsContext";
+import { ThemeProvider } from "./context/theme/ThemeContext";
+import { AttendanceProvider } from "./context/attendance/AttendanceContext";
+import { ScheduleProvider } from "./context/schedule/ScheduleContext";
+import { SettingsProvider } from "./context/settings/SettingsContext";
 import {
   DemoSessionProvider,
   LegacyStudentRedirect,
   StudentArea,
   TeacherArea,
-} from "./context/DemoSessionContext";
-import {
-  StudentPortalLayout,
-  StudentTimetable,
-  StudentAttendanceReports,
-  StudentSettings,
-} from "./pages/StudentPortal";
-import StudentDashboard from "./pages/StudentDashboard";
+} from "./context/demo-session/DemoSessionContext";
+import { StudentPortalLayout } from "./pages/Students/StudentPortal";
+import StudentTimetable from "./pages/Students/StudentTimetable";
+import StudentCourses from "./pages/Students/StudentCourses";
+import StudentAttendance from "./pages/Students/StudentAttendance";
+import StudentSettings from "./pages/Students/StudentSettings";
+import StudentDashboard from "./pages/Students/StudentDashboard";
 // Teacher interface design system (scoped to .teacher-ui; imported last so it layers over page styles)
 import "./styles/teacher.css";
-import StudentOverview from "./pages/StudentOverview";
-import UnverifiedStudents from "./pages/UnverifiedStudents";
-import VerifiedStudents from "./pages/VerifiedStudents";
+import StudentOverview from "./pages/Students/StudentOverview";
+import UnverifiedStudents from "./pages/AttendanceSession/UnverifiedStudents";
+import VerifiedStudents from "./pages/AttendanceSession/VerifiedStudents";
 
 function App() {
   return (
@@ -74,7 +73,10 @@ function App() {
               <Route path="/student" element={<StudentPortalLayout />}>
                 <Route index element={<StudentDashboard />} />
                 <Route path="timetable" element={<StudentTimetable />} />
-                <Route path="attendance-reports" element={<StudentAttendanceReports />} />
+                <Route path="courses" element={<StudentCourses />} />
+                <Route path="attendance" element={<StudentAttendance />} />
+                {/* Old URL from before the portal had a dedicated Attendance page */}
+                <Route path="attendance-reports" element={<Navigate to="/student/attendance" replace />} />
                 <Route path="settings" element={<StudentSettings />} />
               </Route>
             </Route>
