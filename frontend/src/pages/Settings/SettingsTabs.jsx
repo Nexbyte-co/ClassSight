@@ -1,6 +1,7 @@
 // src/pages/Settings/SettingsTabs.jsx
 // One component per Settings tab. `form` holds the drafted browser settings (see index.jsx).
 import { useState, useEffect } from "react";
+import { termLabel } from "../../utils/termLabel";
 import { Link } from "react-router-dom";
 import { Sun, Moon, Monitor, Camera, ChevronDown, Eye } from "lucide-react";
 import pkg from "../../../package.json";
@@ -23,7 +24,7 @@ const DEMO_ACCOUNT = {
   email: "Jhonsy.Bansal@thapar.edu",
   role: "TEACHER",
   department: "Computer Science & Engineering",
-  term: "Spring Term 2026 · Semester 6",
+  term: `${termLabel()} · Semester 6`,
 };
 
 // Signed in through the API: show the real name/email/role; otherwise the demo account

@@ -1,181 +1,252 @@
 // src/pages/Students/StudentTimetable.jsx
-// Interactive weekly timetable: week navigation, day tabs, course filter and a detail panel per class.
-// Past and current weeks use the student's records; future weeks show the weekly slots as upcoming.
-import { useState } from "react";
-import { Link } from "react-router-dom";
-import { CalendarDays, ChevronLeft, ChevronRight, MapPin, MousePointerClick } from "lucide-react";
-import "./StudentPages.css";
+// The student's weekly timetable, laid out exactly like the teacher's Class Schedule page (same grid, week
+// navigation, course filter and detail popover) but filled with the student's own classes (Sunday–Saturday).
+// It reuses the teacher's `.sc-*` styles by sitting inside `.db-page.teacher-ui`; the day keeps a fixed height, so the card scrolls up/down and sideways when cramped.
+import { useEffect, useMemo, useState } from "react";
+import { Calendar, ChevronLeft, ChevronRight } from "lucide-react";
+import "../Classes/ClassSchedule.css";
+import "./StudentDashboard.css";
+import { useTheme } from "../../context/theme/ThemeContext";
 import { useStudentModel } from "../../context/students/useStudentModel";
-import { STUDENT_HISTORY_WEEKS, getWeekEntries, getWeekStart } from "../../context/students/studentCourses";
-import { LevelPill, StatusPill } from "./studentUi";
-import { formatClock, useCourseColor } from "./studentUiHelpers";
+import { getLocalDateKey } from "../../context/schedule/scheduleStatus";
+import { DAYS, toClock } from "../../data/schedule/timetable";
+import { STATUS_LABEL } from "./studentUiHelpers";
 
-const FUTURE_WEEKS = 4;
-const addDays = (date, n) => new Date(date.getFullYear(), date.getMonth(), date.getDate() + n);
-const fmt = (date, opts) => date.toLocaleDateString("en-GB", opts);
+// Accent per course (colours live in ClassSchedule.css as .ac-* classes)
+const ACCENTS = ["mr", "blue", "violet", "teal", "amber", "green", "pink"];
+const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+const SHOWN_DAYS = [0, 1, 2, 3, 4, 5, 6]; // Sun–Sat
 
-function ClassButton({ entry, selected, color, onSelect }) {
-  return (
-    <button
-      type="button"
-      className={`tt-class ${selected ? "sel" : ""}`}
-      style={{ "--c": color }}
-      aria-pressed={selected}
-      onClick={() => onSelect(entry.key)}
-    >
-      <span className="tt-time">
-        {formatClock(entry.startMinutes)}–{formatClock(entry.endMinutes)}
-      </span>
-      <b>{entry.subject}</b>
-      <span className="tt-meta"><MapPin size={12} strokeWidth={2} />{entry.room} · {entry.group}</span>
-      {entry.live ? <StatusPill status="upcoming">In progress</StatusPill> : <StatusPill status={entry.status} />}
-    </button>
-  );
+const START_MIN = 8 * 60; // grid starts at 08:00
+const PERIOD_MIN = 50;
+const PERIODS = 11;
+const TOTAL_MIN = PERIODS * PERIOD_MIN;
+const TIME_MARKS = Array.from({ length: PERIODS + 1 }, (_, i) => START_MIN + i * PERIOD_MIN);
+const pct = (min) => `${(min / TOTAL_MIN) * 100}%`;
+
+function startOfWeek(now, offset) {
+  const d = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  d.setDate(d.getDate() - d.getDay() + offset * 7);
+  return d;
 }
 
-function Detail({ entry, m, color }) {
-  const row = m.rows.find((r) => r.code === entry.code);
-  return (
-    <>
-      <div className="sp-side-hd" style={{ "--c": color }}>
-        <span className="sp-sub"><i className="sp-dot" />{entry.code} · {entry.group}</span>
-        <h2>{entry.subject}</h2>
-        <p>{fmt(new Date(...entry.dateKey.split("-").map((n, i) => (i === 1 ? n - 1 : +n))), { weekday: "long", day: "numeric", month: "long" })}</p>
-      </div>
-      <div className="sp-side-bd">
-        <div className="sp-line">
-          {entry.live ? <StatusPill status="upcoming">In progress</StatusPill> : <StatusPill status={entry.status} />}
-          {entry.review && <span className="sp-sub">{entry.review}</span>}
-          {entry.method && <span className="sp-sub">Marked via {entry.method}</span>}
-        </div>
-        <dl className="sp-facts">
-          <div><dt>Time</dt><dd>{formatClock(entry.startMinutes)}–{formatClock(entry.endMinutes)}<small>{entry.endMinutes - entry.startMinutes} min {entry.course?.type?.toLowerCase()}</small></dd></div>
-          <div><dt>Room</dt><dd>{entry.room}</dd></div>
-          <div><dt>Instructor</dt><dd>{entry.instructor}</dd></div>
-          <div><dt>Batch</dt><dd>{entry.group}<small>{entry.course?.year}</small></dd></div>
-        </dl>
-        {row && (
-          <div className="sp-mini">
-            <span className="sp-k">This course</span>
-            <span className="sp-line">
-              <b>{row.pct === null ? "—" : `${row.pct}%`} <small>{row.present} of {row.decided} attended</small></b>
-              <LevelPill row={row} />
-            </span>
-          </div>
-        )}
-        <Link to="/student/courses" state={{ code: entry.code }} className="sp-btn">Open course details</Link>
-      </div>
-    </>
-  );
-}
-
-export default function StudentTimetable() {
+function StudentTimetable() {
   const m = useStudentModel();
-  const colorFor = useCourseColor(m.courses);
-  const [offset, setOffset] = useState(0);
-  const [course, setCourse] = useState("all");
-  const [day, setDay] = useState("week");
-  const [selectedKey, setSelectedKey] = useState(null);
+  const { isDarkMode } = useTheme();
+  const [weekOffset, setWeekOffset] = useState(0);
+  const [selectedCourse, setSelectedCourse] = useState(null);
+  const [detail, setDetail] = useState(null); // { slot, date, x, y }
+  const now = m.now;
 
-  const weekStart = addDays(getWeekStart(m.now), offset * 7);
-  const days = getWeekEntries(m, weekStart);
-  // Sunday only appears when it has classes
-  const shown = days
-    .map((d, i) => ({ ...d, index: i, entries: d.entries.filter((e) => course === "all" || e.code === course) }))
-    .filter((d) => d.index !== 0 || d.entries.length > 0);
-  const visible = day === "week" ? shown : shown.filter((d) => d.index === day);
-  const all = shown.flatMap((d) => d.entries);
-  const selected = all.find((e) => e.key === selectedKey) ?? null;
-  const total = all.length;
-  const lastDay = addDays(weekStart, 6);
+  useEffect(() => {
+    if (!detail) return undefined;
+    const close = () => setDetail(null);
+    const onKey = (e) => e.key === "Escape" && close();
+    const onDown = (e) => {
+      if (!e.target.closest?.(".sc-pop, .sc-blk")) close();
+    };
+    document.addEventListener("keydown", onKey);
+    document.addEventListener("mousedown", onDown);
+    window.addEventListener("resize", close);
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.removeEventListener("mousedown", onDown);
+      window.removeEventListener("resize", close);
+    };
+  }, [detail]);
 
-  const go = (n) => {
-    setOffset((o) => o + n);
-    setSelectedKey(null);
+  // Every weekly slot of the student's courses, in the same shape the teacher's page uses
+  const slots = useMemo(
+    () =>
+      m.courses.flatMap((course, courseIndex) =>
+        course.slots.map((s) => ({
+          id: s.id,
+          name: course.name,
+          code: s.label,
+          courseCode: course.code,
+          courseIndex,
+          group: course.group,
+          sheet: course.year,
+          venue: s.room,
+          day: s.day,
+          startMin: s.startMinutes,
+          dur: s.duration,
+          type: s.type,
+          start: toClock(s.startMinutes),
+          end: toClock(s.startMinutes + s.duration),
+        }))
+      ),
+    [m.courses]
+  );
+
+  const courses = useMemo(
+    () => m.courses.map((c, index) => ({ ...c, index, count: slots.filter((s) => s.courseIndex === index).length })),
+    [m.courses, slots]
+  );
+
+  const days = useMemo(() => {
+    const ws = startOfWeek(now, weekOffset);
+    return SHOWN_DAYS.map((i) => {
+      const date = new Date(ws);
+      date.setDate(ws.getDate() + i);
+      return { name: DAYS[i], date };
+    });
+  }, [now, weekOffset]);
+
+  const todayKey = getLocalDateKey(now);
+  const isToday = (d) => getLocalDateKey(d) === todayKey;
+  const nowMin = now.getHours() * 60 + now.getMinutes();
+  const first = days[0].date;
+  const last = days[days.length - 1].date;
+  const weekLabel = `${first.getDate()} ${MONTHS[first.getMonth()]} – ${last.getDate()} ${MONTHS[last.getMonth()]}`;
+
+  const openDetail = (slot, date, el) => {
+    const r = el.getBoundingClientRect();
+    const W = 260;
+    const x = Math.min(Math.max(8, r.right + 8 + W > window.innerWidth ? r.left - W - 8 : r.right + 8), window.innerWidth - W - 8);
+    const y = Math.min(Math.max(8, r.top), window.innerHeight - 260);
+    setDetail((d) => (d?.slot.id === slot.id && d.date.getTime() === date.getTime() ? null : { slot, date, x, y }));
   };
 
+  // The student's attendance record for the class on that day, when there is one
+  const recordOf = (slot, date) =>
+    m.occurrences.find((o) => o.dateKey === getLocalDateKey(date) && o.code === slot.courseCode && o.startMinutes === slot.startMin) ?? null;
+  const detailRecord = detail ? recordOf(detail.slot, detail.date) : null;
+
   return (
-    <div className="sp-page sp-tt">
-      <header className="sp-hd">
-        <div>
-          <h1>Timetable</h1>
-          <p>Your weekly classes from the college timetable.</p>
-        </div>
-        <div className="sp-tools">
-          <div className="sp-weeknav" role="group" aria-label="Week">
-            <button type="button" className="sp-chip icon" onClick={() => go(-1)} disabled={offset <= -(STUDENT_HISTORY_WEEKS - 1)} aria-label="Previous week">
-              <ChevronLeft size={16} strokeWidth={2.2} />
-            </button>
-            <span className="sp-weeklabel" aria-live="polite">
-              {fmt(weekStart, { day: "numeric", month: "short" })} – {fmt(lastDay, { day: "numeric", month: "short", year: "numeric" })}
-            </span>
-            <button type="button" className="sp-chip icon" onClick={() => go(1)} disabled={offset >= FUTURE_WEEKS} aria-label="Next week">
-              <ChevronRight size={16} strokeWidth={2.2} />
-            </button>
-          </div>
-          <button type="button" className="sp-chip" onClick={() => { setOffset(0); setSelectedKey(null); }} disabled={offset === 0}>
-            <CalendarDays size={14} strokeWidth={2} />This week
-          </button>
-        </div>
-      </header>
-
-      <div className="tt-layout">
-        <section className="sp-card tt-board" aria-label="Weekly timetable">
-          <div className="tt-bar">
-            <div className="sp-tools" role="group" aria-label="Filter by course">
-              <button type="button" className={`sp-chip ${course === "all" ? "on" : ""}`} aria-pressed={course === "all"} onClick={() => setCourse("all")}>All courses</button>
-              {m.courses.map((c) => (
-                <button key={c.code} type="button" className={`sp-chip ${course === c.code ? "on" : ""}`} aria-pressed={course === c.code} onClick={() => setCourse(c.code)} style={{ "--c": colorFor(c.code) }}>
-                  <i className="sp-dot" />{c.name}
-                </button>
-              ))}
+    <div className={`db-page teacher-ui sp-chrome sp-dashwrap sp-ttwrap ${isDarkMode ? "dark-mode" : ""}`}>
+      <main className="db-main">
+        <div className="sc-page">
+          <div className="sc-hd">
+            <div className="sc-hl">
+              <div className="sc-hico"><Calendar size={26} strokeWidth={1.8} /></div>
+              <div>
+                <h1 className="sc-title">Class Schedule</h1>
+                <p className="sc-sub">Your weekly timetable across all courses</p>
+              </div>
             </div>
-            <div className="tt-days" role="tablist" aria-label="Day">
-              {[{ key: "week", label: "Week" }, ...shown.map((d) => ({ key: d.index, label: d.label, sub: d.entries.length }))].map((t) => (
-                <button key={t.key} type="button" role="tab" aria-selected={day === t.key} className={`tt-day ${day === t.key ? "on" : ""}`} onClick={() => setDay(t.key)}>
-                  {t.label}
-                  {t.sub !== undefined && <em>{t.sub}</em>}
-                </button>
-              ))}
+            <div className="sc-wk">
+              <button type="button" className="sc-ib" aria-label="Previous week" onClick={() => { setDetail(null); setWeekOffset((w) => w - 1); }}>
+                <ChevronLeft size={16} strokeWidth={2} />
+              </button>
+              <span className="sc-wl" aria-live="polite">{weekLabel}</span>
+              <button type="button" className="sc-ib" aria-label="Next week" onClick={() => { setDetail(null); setWeekOffset((w) => w + 1); }}>
+                <ChevronRight size={16} strokeWidth={2} />
+              </button>
+              <button type="button" className="sc-today" onClick={() => { setDetail(null); setWeekOffset(0); }}>Today</button>
             </div>
           </div>
 
-          {total === 0 ? (
-            <p className="sp-empty">No classes {course === "all" ? "this week" : "for this course this week"}.</p>
-          ) : (
-            <div className={`tt-cols sp-scroll ${day === "week" ? "week" : "one"}`} style={{ "--n": visible.length }}>
-              {visible.map((d) => (
-                <section key={d.dateKey} className={`tt-col ${d.isToday ? "today" : ""}`} aria-label={`${d.label} ${fmt(d.date, { day: "numeric", month: "long" })}`}>
-                  <header>
-                    <span>{d.label}</span>
-                    <b>{d.date.getDate()}</b>
-                    {d.isToday && <em>Today</em>}
-                  </header>
-                  {d.entries.length === 0 ? (
-                    <p className="tt-none">No classes</p>
-                  ) : (
-                    d.entries.map((e) => (
-                      <ClassButton key={e.key} entry={e} selected={selectedKey === e.key} color={colorFor(e.code)} onSelect={(k) => setSelectedKey((cur) => (cur === k ? null : k))} />
-                    ))
-                  )}
-                </section>
-              ))}
+          <div className="sc-grid">
+            <div className="sc-tt" role="region" aria-label="Weekly timetable">
+              <div className="sc-tti">
+                <div className="sc-tth">
+                  <div />
+                  {days.map(({ name, date }) => (
+                    <div key={name} className={isToday(date) ? "td" : ""}>
+                      <span className="dn">{name}</span>
+                      <b>{date.getDate()}</b>
+                    </div>
+                  ))}
+                </div>
+                <div className="sc-ttb" key={weekOffset}>
+                  <div className="sc-tlab">
+                    {TIME_MARKS.map((t) => (
+                      <span key={t} style={{ top: pct(t - START_MIN) }}>{toClock(t)}</span>
+                    ))}
+                  </div>
+                  {days.map(({ name, date }) => (
+                    <div key={name} className={`sc-tcol ${isToday(date) ? "td" : ""}`}>
+                      {isToday(date) && nowMin >= START_MIN && nowMin <= START_MIN + TOTAL_MIN && (
+                        <div className="sc-now" style={{ top: pct(nowMin - START_MIN) }} aria-hidden="true" />
+                      )}
+                      {slots.filter((o) => o.day === name).map((o) => {
+                        const state = selectedCourse == null ? "" : selectedCourse === o.courseIndex ? "hi" : "dim";
+                        const open = detail?.slot.id === o.id && detail.date.getTime() === date.getTime();
+                        return (
+                          <div
+                            key={o.id}
+                            className={`sc-blk ac-${ACCENTS[o.courseIndex % ACCENTS.length]} ${o.dur <= PERIOD_MIN ? "short" : ""} ${state} ${open ? "open" : ""}`}
+                            tabIndex={0}
+                            role="button"
+                            aria-haspopup="dialog"
+                            aria-label={`${o.name} ${o.type}, ${o.group}, ${o.venue}`}
+                            onClick={(e) => openDetail(o, date, e.currentTarget)}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter" || e.key === " ") {
+                                e.preventDefault();
+                                openDetail(o, date, e.currentTarget);
+                              }
+                            }}
+                            style={{ top: pct(o.startMin - START_MIN), height: pct(o.dur) }}
+                          >
+                            <div className="n">{o.name}</div>
+                            <div className="t">{o.code} · {o.venue}</div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
-          )}
-        </section>
 
-        <aside className="sp-side tt-side" aria-label="Class details">
-          {selected ? (
-            <Detail entry={selected} m={m} color={colorFor(selected.code)} />
-          ) : (
-            <div className="sp-side-empty">
-              <MousePointerClick size={22} strokeWidth={1.8} />
-              <h2>Select a class</h2>
-              <p>Choose a class to see its room, instructor, batch, attendance status and your course attendance.</p>
+            <aside className="sc-spn" aria-label="Classes">
+              <h4>Classes</h4>
+              <div className="sc-cl">
+                {courses.map((c) => {
+                  const on = selectedCourse === c.index;
+                  const toggle = () => setSelectedCourse(on ? null : c.index);
+                  return (
+                    <div
+                      key={c.code}
+                      className={`sc-cr ac-${ACCENTS[c.index % ACCENTS.length]} ${on ? "on" : ""}`}
+                      tabIndex={0}
+                      role="button"
+                      aria-pressed={on}
+                      onClick={toggle}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          toggle();
+                        }
+                      }}
+                    >
+                      <span className="cdt" />
+                      <div>
+                        <b>{c.name}</b>
+                        <small>{c.code} · {c.count} {c.count === 1 ? "session" : "sessions"} / week</small>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </aside>
+          </div>
+        </div>
+        {detail && (
+          <div className={`sc-pop ac-${ACCENTS[detail.slot.courseIndex % ACCENTS.length]}`} role="dialog" aria-label={`${detail.slot.name} details`} style={{ left: detail.x, top: detail.y }}>
+            <div className="ph">
+              <b>{detail.slot.name}</b>
+              <button type="button" aria-label="Close details" onClick={() => setDetail(null)}>×</button>
             </div>
-          )}
-        </aside>
-      </div>
+            <dl>
+              <dt>Batch</dt><dd>{detail.slot.group}</dd>
+              <dt>Room</dt><dd>{detail.slot.venue}</dd>
+              <dt>Time</dt><dd>{detail.slot.day} · {detail.slot.start}–{detail.slot.end}</dd>
+              <dt>Type</dt><dd>{detail.slot.type} · {detail.slot.code}</dd>
+              <dt>Year</dt><dd>{detail.slot.sheet}</dd>
+              {detailRecord && (
+                <>
+                  <dt>Attendance</dt><dd>{STATUS_LABEL[detailRecord.status]}</dd>
+                </>
+              )}
+            </dl>
+          </div>
+        )}
+      </main>
     </div>
   );
 }
+
+export default StudentTimetable;

@@ -1,0 +1,90 @@
+- generic [ref=f6e3]:
+  - banner [ref=f6e5]:
+    - generic [ref=f6e6]:
+      - button "Toggle navigation" [expanded] [ref=f6e7] [cursor=pointer]
+      - link "ClassSight" [ref=f6e9] [cursor=pointer]:
+        - /url: /student
+      - generic [ref=f6e18]: Student · Demo
+    - generic [ref=f6e19]:
+      - generic [ref=f6e20]: Wed, Nov 4, 2026
+      - button "Night mode" [ref=f6e24] [cursor=pointer]
+      - button "Notifications (4)" [ref=f6e28] [cursor=pointer]
+      - button "Account menu for Parv Rawat" [ref=f6e34] [cursor=pointer]:
+        - generic [aria-hidden] [ref=f6e35]: P
+        - generic [ref=f6e36]:
+          - generic [ref=f6e37]: Parv
+          - generic [ref=f6e38]: "1024030265"
+  - generic [ref=f6e41]:
+    - complementary "Student navigation" [ref=f6e43]:
+      - navigation [ref=f6e44]:
+        - link "Dashboard" [ref=f6e45] [cursor=pointer]:
+          - /url: /student
+        - link "Timetable" [ref=f6e52] [cursor=pointer]:
+          - /url: /student/timetable
+        - link "My Courses" [ref=f6e56] [cursor=pointer]:
+          - /url: /student/courses
+        - link "Reports" [ref=f6e60] [cursor=pointer]:
+          - /url: /student/reports
+        - link "Settings" [ref=f6e65] [cursor=pointer]:
+          - /url: /student/settings
+      - generic [ref=f6e70]:
+        - generic [ref=f6e71]:
+          - generic [ref=f6e72]: Odd Semester
+          - generic [ref=f6e73]: 2026–27
+          - generic [ref=f6e74]: Student portal · Demo
+        - button "Log Out" [ref=f6e75] [cursor=pointer]
+    - main [ref=f6e80]:
+      - main [ref=f6e82]:
+        - generic [ref=f6e83]:
+          - heading "Settings" [level=1] [ref=f6e84]
+          - paragraph [ref=f6e89]:
+            - text: Choose how ClassSight looks and notifies you. Your records are managed by your college; settings marked
+            - strong [ref=f6e90]: Needs server
+            - text: become available once your account is connected to the ClassSight server.
+        - tablist "Settings sections" [ref=f6e91]:
+          - tab "Profile" [ref=f6e92] [cursor=pointer]
+          - tab "Notifications" [ref=f6e96] [cursor=pointer]
+          - tab "Attendance rules" [ref=f6e100] [cursor=pointer]
+          - tab "Face data" [ref=f6e105] [cursor=pointer]
+          - tab "Appearance" [ref=f6e112] [cursor=pointer]
+          - tab "Security" [selected] [ref=f6e119] [cursor=pointer]
+          - tab "Help & Support" [ref=f6e124] [cursor=pointer]
+        - tabpanel "Security" [ref=f6e132]:
+          - generic [ref=f6e133]:
+            - generic [ref=f6e135]:
+              - heading "This device" [level=3] [ref=f6e136]
+              - paragraph [ref=f6e137]: You stay signed in on this browser until you log out
+            - generic [ref=f6e138]:
+              - generic [ref=f6e139]:
+                - generic [ref=f6e140]:
+                  - generic [ref=f6e141]: Signed in as
+                  - paragraph [ref=f6e142]: prawat_be24@thapar.edu
+                - button "Signed in as" [ref=f6e144] [cursor=pointer]: Log out
+              - paragraph [ref=f6e148]: "This is the demo sign-in: there is no password yet. You can only ever see your own attendance."
+          - generic [ref=f6e149]:
+            - generic [ref=f6e150]:
+              - generic [ref=f6e151]:
+                - heading "Change password" [level=3] [ref=f6e152]
+                - paragraph [ref=f6e153]: Use at least 8 characters
+              - generic [ref=f6e154]: Needs server
+            - generic [ref=f6e158]:
+              - generic [ref=f6e159]:
+                - generic [ref=f6e160]:
+                  - generic [ref=f6e161]: Current password
+                  - textbox "Current password" [disabled] [ref=f6e162]
+                - generic [ref=f6e163]:
+                  - generic [ref=f6e164]: New password
+                  - textbox "New password" [disabled] [ref=f6e165]
+                - generic [ref=f6e166]:
+                  - generic [ref=f6e167]: Confirm new password
+                  - textbox "Confirm new password" [disabled] [ref=f6e168]
+              - button "Update password" [disabled] [ref=f6e170]
+          - generic [ref=f6e171]:
+            - generic [ref=f6e172]:
+              - generic [ref=f6e173]:
+                - heading "Active sessions" [level=3] [ref=f6e174]
+                - paragraph [ref=f6e175]: Devices signed in to your account
+              - generic [ref=f6e176]: Needs server
+            - generic [ref=f6e180]:
+              - paragraph [ref=f6e181]: Your other devices will appear here once the server is connected.
+              - button "Sign out of other devices" [disabled] [ref=f6e183]

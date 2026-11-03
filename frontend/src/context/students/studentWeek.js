@@ -64,6 +64,7 @@ export function buildDemoOccurrences(timetable, subjects, now = new Date(), week
   const nowMinutes = minutesOfDay(now);
   const firstSunday = addDays(getWeekStart(now), -7 * (weeks - 1));
   const occurrences = [];
+  const held = new Map(); // per course: classes held so far, so absences can be spread evenly
 
   for (let i = 0; i < weeks * 7; i++) {
     const date = addDays(firstSunday, i);
@@ -76,12 +77,17 @@ export function buildDemoOccurrences(timetable, subjects, now = new Date(), week
         const isFuture = dateKey > todayKey || (dateKey === todayKey && startMinutes > nowMinutes);
         let status = STATUS.upcoming;
         if (!isFuture) {
-          const h = hashString(`${dateKey}|${t.code}`);
+          const h = hashString(`${dateKey}|${t.code}|${startMinutes}`);
           if (dateKey >= yesterdayKey && h % 4 === 0) status = STATUS.unverified;
-          else status = h % 10 < 8 ? STATUS.present : STATUS.absent;
+          else if (subject.absentRate !== undefined) {
+            // Fixed share of absences spread evenly over the term, so each course keeps its own level
+            const n = held.get(t.code) ?? 0;
+            held.set(t.code, n + 1);
+            status = Math.floor((n + 1) * subject.absentRate) > Math.floor(n * subject.absentRate) ? STATUS.absent : STATUS.present;
+          } else status = h % 10 < 8 ? STATUS.present : STATUS.absent;
         }
         occurrences.push({
-          key: `demo-${dateKey}-${t.code}`,
+          key: `demo-${dateKey}-${t.code}-${startMinutes}`,
           dateKey,
           startMinutes,
           code: subject.code,

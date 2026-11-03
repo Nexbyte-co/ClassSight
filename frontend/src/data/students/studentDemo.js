@@ -8,6 +8,9 @@ export const DEMO_SUBJECTS = [
   { code: "UCE304", name: "Operating Systems", color: "#1b5e20", darkColor: "#6fcf7a" },
   { code: "UCE305", name: "Database Management", color: "#1565c0", darkColor: "#6aa9f0" },
   { code: "UMA301", name: "Discrete Mathematics", color: "#6a1b9a", darkColor: "#c084e8" },
+  { code: "DEMO-5", name: "", color: "#b45309", darkColor: "#e8b05f" },
+  { code: "DEMO-6", name: "", color: "#0f766e", darkColor: "#5fd0c5" },
+  { code: "DEMO-7", name: "", color: "#be185d", darkColor: "#f08ab8" },
 ];
 
 // Weekly timetable: day 0 = Sunday … 6 = Saturday (no weekend classes)

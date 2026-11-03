@@ -1,0 +1,101 @@
+- generic [ref=f3e3]:
+  - banner [ref=f3e5]:
+    - generic [ref=f3e6]:
+      - button "Toggle navigation" [expanded] [ref=f3e7] [cursor=pointer]
+      - link "ClassSight" [ref=f3e9] [cursor=pointer]:
+        - /url: /student
+      - generic [ref=f3e18]: Student · Demo
+    - generic [ref=f3e19]:
+      - generic [ref=f3e20]: Wed, Nov 4, 2026
+      - button "Night mode" [ref=f3e24] [cursor=pointer]
+      - button "Notifications (4)" [ref=f3e28] [cursor=pointer]
+      - button "Account menu for Parv Rawat" [ref=f3e34] [cursor=pointer]:
+        - generic [aria-hidden] [ref=f3e35]: P
+        - generic [ref=f3e36]:
+          - generic [ref=f3e37]: Parv
+          - generic [ref=f3e38]: "1024030265"
+  - generic [ref=f3e41]:
+    - complementary "Student navigation" [ref=f3e43]:
+      - navigation [ref=f3e44]:
+        - link "Dashboard" [ref=f3e45] [cursor=pointer]:
+          - /url: /student
+        - link "Timetable" [ref=f3e52] [cursor=pointer]:
+          - /url: /student/timetable
+        - link "My Courses" [ref=f3e56] [cursor=pointer]:
+          - /url: /student/courses
+        - link "Reports" [ref=f3e60] [cursor=pointer]:
+          - /url: /student/reports
+        - link "Settings" [ref=f3e65] [cursor=pointer]:
+          - /url: /student/settings
+      - generic [ref=f3e70]:
+        - generic [ref=f3e71]:
+          - generic [ref=f3e72]: Odd Semester
+          - generic [ref=f3e73]: 2026–27
+          - generic [ref=f3e74]: Student portal · Demo
+        - button "Log Out" [ref=f3e75] [cursor=pointer]
+    - main [ref=f3e80]:
+      - main [ref=f3e82]:
+        - generic [ref=f3e83]:
+          - heading "Settings" [level=1] [ref=f3e84]
+          - paragraph [ref=f3e89]:
+            - text: Choose how ClassSight looks and notifies you. Your records are managed by your college; settings marked
+            - strong [ref=f3e90]: Needs server
+            - text: become available once your account is connected to the ClassSight server.
+        - tablist "Settings sections" [ref=f3e91]:
+          - tab "Profile" [ref=f3e92] [cursor=pointer]
+          - tab "Notifications" [ref=f3e96] [cursor=pointer]
+          - tab "Attendance rules" [selected] [ref=f3e100] [cursor=pointer]
+          - tab "Face data" [ref=f3e106] [cursor=pointer]
+          - tab "Appearance" [ref=f3e113] [cursor=pointer]
+          - tab "Security" [ref=f3e120] [cursor=pointer]
+          - tab "Help & Support" [ref=f3e124] [cursor=pointer]
+        - tabpanel "Attendance rules" [ref=f3e132]:
+          - generic [ref=f3e133]:
+            - generic [ref=f3e135]:
+              - heading "Attendance requirement" [level=3] [ref=f3e136]
+              - paragraph [ref=f3e137]: Set by your college and teachers. You can't change it.
+            - generic [ref=f3e138]:
+              - generic [ref=f3e139]:
+                - generic [ref=f3e140]:
+                  - term [ref=f3e141]: Minimum attendance
+                  - definition [ref=f3e142]: 75% in every course
+                - generic [ref=f3e143]:
+                  - term [ref=f3e144]: Your overall attendance
+                  - definition [ref=f3e145]: 78%
+                - generic [ref=f3e146]:
+                  - term [ref=f3e147]: Courses below requirement
+                  - definition [ref=f3e148]: 4 courses
+              - generic "How your courses are grouped" [ref=f3e149]:
+                - generic [ref=f3e150]: Healthy · 75% and above
+                - generic [ref=f3e152]: Warning · 65–74%
+                - generic [ref=f3e154]: Critical · below 65%
+              - link "Open my reports" [ref=f3e156] [cursor=pointer]:
+                - /url: /student/reports
+          - generic [ref=f3e161]:
+            - generic [ref=f3e163]:
+              - heading "How your percentage is counted" [level=3] [ref=f3e164]
+              - paragraph [ref=f3e165]: The same rules are used on every page
+            - generic [ref=f3e167]:
+              - generic [ref=f3e168]:
+                - term [ref=f3e169]: Lecture
+                - definition [ref=f3e170]: 1 class
+              - generic [ref=f3e171]:
+                - term [ref=f3e172]: Tutorial
+                - definition [ref=f3e173]: 1 class
+              - generic [ref=f3e174]:
+                - term [ref=f3e175]: Lab
+                - definition [ref=f3e176]: 2 classs (a lab is two periods)
+              - generic [ref=f3e177]:
+                - term [ref=f3e178]: Awaiting review
+                - definition [ref=f3e179]: Not counted until your teacher confirms it
+          - generic [ref=f3e180]:
+            - generic [ref=f3e181]:
+              - generic [ref=f3e182]:
+                - heading "Corrections" [level=3] [ref=f3e183]
+                - paragraph [ref=f3e184]: Ask for a record to be checked
+              - generic [ref=f3e185]: Needs server
+            - generic [ref=f3e190]:
+              - generic [ref=f3e191]:
+                - generic [ref=f3e192]: Report a wrong record
+                - paragraph [ref=f3e193]: Marked absent for a class you attended? Send it to your teacher to review.
+              - button "Report a wrong record" [disabled] [ref=f3e195]: Request review

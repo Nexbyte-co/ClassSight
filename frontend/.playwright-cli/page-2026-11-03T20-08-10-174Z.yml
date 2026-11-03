@@ -1,0 +1,204 @@
+- generic [ref=f13e184]:
+  - link "Skip to content" [ref=f13e185] [cursor=pointer]:
+    - /url: "#lp-main"
+  - banner [ref=f13e186]:
+    - link "ClassSight home" [ref=f13e187] [cursor=pointer]:
+      - /url: /
+      - generic [ref=f13e195]: ClassSight
+    - navigation "Sections" [ref=f13e196]:
+      - link "Features" [ref=f13e197] [cursor=pointer]:
+        - /url: "#features"
+      - link "How it works" [ref=f13e198] [cursor=pointer]:
+        - /url: "#how"
+      - link "Product" [ref=f13e199] [cursor=pointer]:
+        - /url: "#product"
+      - link "About" [ref=f13e200] [cursor=pointer]:
+        - /url: "#about"
+    - generic [ref=f13e201]:
+      - button "Switch to dark mode" [ref=f13e202] [cursor=pointer]
+      - link "Sign In" [ref=f13e205] [cursor=pointer]:
+        - /url: /login
+  - main [ref=f13e206]:
+    - region "Attendance, simplified." [ref=f13e207]:
+      - generic:
+        - paragraph: Smart classroom technology
+        - heading "Attendance, simplified." [level=1]: Attendance,simplified.
+        - paragraph: AI-assisted classroom attendance and verification designed for modern educational environments.
+        - generic:
+          - link "Sign In" [ref=f13e208] [cursor=pointer]:
+            - /url: /login
+          - link "Explore ClassSight" [ref=f13e211] [cursor=pointer]:
+            - /url: "#features"
+      - generic [ref=f13e214]:
+        - generic [ref=f13e215]:
+          - img "Illustration of maroon campus buildings" [ref=f13e216]
+          - generic:
+            - generic:
+              - generic:
+                - generic: Today’s session · L105
+                - generic:
+                  - generic: "26"
+                  - generic: of 30 present
+          - generic:
+            - generic:
+              - generic:
+                - generic:
+                  - generic: Student verified
+                  - generic: Face match · roll 1023
+          - generic:
+            - generic:
+              - generic:
+                - generic:
+                  - generic: Classroom activity
+                  - generic: Processing
+                - generic:
+                  - generic:
+                    - generic: "26"
+                    - text: Present
+                  - generic:
+                    - generic: "2"
+                    - text: Needs review
+                  - generic:
+                    - generic: "2"
+                    - text: Absent
+        - paragraph [ref=f13e379]: Illustrative preview with sample data
+    - region [ref=f13e383]:
+      - generic [ref=f13e384]:
+        - paragraph [ref=f13e385]: What it does
+        - heading "Three things, done carefully." [level=2] [ref=f13e386]
+        - paragraph [ref=f13e387]: ClassSight focuses on the attendance work teachers repeat every class, and keeps them in control of the result.
+      - generic [ref=f13e388]:
+        - article [ref=f13e389]:
+          - generic [ref=f13e390]:
+            - heading "Smart Attendance" [level=3] [ref=f13e395]
+            - paragraph [ref=f13e396]: Take one photo of the class. Faces are detected and matched against the class list, so the register fills itself in.
+          - generic [ref=f13e443]: Sample classroom
+        - article [ref=f13e444]:
+          - generic [ref=f13e445]:
+            - heading "Student Verification" [level=3] [ref=f13e456]
+            - paragraph [ref=f13e457]: Each student is enrolled with up to five photos. A face is only marked when the match is clear; anything uncertain goes to the teacher to review.
+          - generic [aria-hidden] [ref=f13e458]:
+            - generic [ref=f13e496]: One face profile per student
+            - generic [ref=f13e505]:
+              - generic [ref=f13e508]: Clear match
+              - generic [ref=f13e509]: Marked present
+            - generic [ref=f13e510]:
+              - generic [ref=f13e511]: "?"
+              - generic [ref=f13e512]: Not sure
+              - generic [ref=f13e513]: Sent to review
+        - article [ref=f13e514]:
+          - generic [ref=f13e515]:
+            - heading "Attendance Analytics" [level=3] [ref=f13e519]
+            - paragraph [ref=f13e520]: See attendance by class and by day against your target, and spot the groups that are slipping before it becomes a problem.
+          - generic [aria-hidden] [ref=f13e521]:
+            - generic [ref=f13e522]:
+              - emphasis [ref=f13e524]: Mon
+              - emphasis [ref=f13e526]: Tue
+              - emphasis [ref=f13e528]: Wed
+              - emphasis [ref=f13e530]: Thu
+              - emphasis [ref=f13e532]: Fri
+              - generic [ref=f13e533]: 85% target
+            - generic [ref=f13e535]: Sample week
+    - region [ref=f13e539]:
+      - generic [ref=f13e540]:
+        - paragraph [ref=f13e541]: How it works
+        - heading "From photo to record in three steps." [level=2] [ref=f13e542]
+      - list [ref=f13e543]:
+        - listitem [ref=f13e545]:
+          - emphasis [ref=f13e551]: "1"
+          - heading "Faculty starts attendance" [level=3] [ref=f13e552]
+          - paragraph [ref=f13e553]: Open a session for the class and add a photo of the room.
+        - listitem [ref=f13e554]:
+          - emphasis [ref=f13e562]: "2"
+          - heading "Students are verified" [level=3] [ref=f13e563]
+          - paragraph [ref=f13e564]: Faces in the photo are matched to enrolled students. Unclear faces wait for the teacher instead of being guessed.
+        - listitem [ref=f13e565]:
+          - emphasis [ref=f13e571]: "3"
+          - heading "Records are updated" [level=3] [ref=f13e572]
+          - paragraph [ref=f13e573]: The teacher resolves anything left, confirms, and the class record is saved.
+    - region [ref=f13e577]:
+      - generic [ref=f13e578]:
+        - paragraph [ref=f13e579]: Product
+        - heading "See how it feels to use." [level=2] [ref=f13e580]
+      - generic [ref=f13e582]:
+        - tablist "Product demos" [ref=f13e583]:
+          - tab "Live session Students move from “Needs review” to “Present” as the teacher resolves them." [selected] [ref=f13e584] [cursor=pointer]:
+            - generic [ref=f13e591]:
+              - generic [ref=f13e592]: Live session
+              - generic [ref=f13e593]: Students move from “Needs review” to “Present” as the teacher resolves them.
+          - tab "Verification A clear match is marked present; an uncertain one is handed to the teacher." [ref=f13e594] [cursor=pointer]:
+            - generic [ref=f13e602]:
+              - generic [ref=f13e603]: Verification
+              - generic [ref=f13e604]: A clear match is marked present; an uncertain one is handed to the teacher.
+          - tab "Reports Attendance per group against the target, with groups below it flagged." [ref=f13e605] [cursor=pointer]:
+            - generic [ref=f13e609]:
+              - generic [ref=f13e610]: Reports
+              - generic [ref=f13e611]: Attendance per group against the target, with groups below it flagged.
+        - generic [ref=f13e612]:
+          - generic [ref=f13e613]:
+            - generic [ref=f13e618]: Illustrative demo · sample data, not live
+            - button "Pause product demo" [ref=f13e619] [cursor=pointer]
+          - tabpanel "Live session Students move from “Needs review” to “Present” as the teacher resolves them." [ref=f13e623]:
+            - generic [ref=f13e624]:
+              - generic [ref=f13e625]:
+                - heading "Present 4" [level=4] [ref=f13e626]:
+                  - text: Present
+                  - generic [ref=f13e627]: "4"
+                - generic [ref=f13e628]: Aarav
+                - generic [ref=f13e629]: Diya
+                - generic [ref=f13e630]: Kabir
+                - generic [ref=f13e631]: Meera
+              - generic [ref=f13e632]:
+                - heading "Needs review 3" [level=4] [ref=f13e633]:
+                  - text: Needs review
+                  - generic [ref=f13e634]: "3"
+                - generic [ref=f13e635]: Ishaan
+                - generic [ref=f13e636]: Tara
+                - generic [ref=f13e637]: Vihaan
+              - generic [ref=f13e638]:
+                - heading "Absent 1" [level=4] [ref=f13e639]:
+                  - text: Absent
+                  - generic [ref=f13e640]: "1"
+                - generic [ref=f13e641]: Rohan
+    - region [ref=f13e645]:
+      - generic [ref=f13e646]:
+        - paragraph [ref=f13e647]: About ClassSight
+        - heading "Less time on the register, more time teaching." [level=2] [ref=f13e648]
+        - generic [ref=f13e649]:
+          - paragraph [ref=f13e650]: Calling names and passing sheets eats into every class. ClassSight turns one classroom photo into a draft register, so teachers spend their time on the few students who need a second look rather than on everyone.
+          - paragraph [ref=f13e651]: "The aim is attendance that is quick to take and easy to trust: careful about uncertain matches, clear about what was decided, and always confirmed by the person responsible for the class."
+    - region [ref=f13e652]:
+      - generic [ref=f13e653]:
+        - paragraph [ref=f13e654]: Built to be trusted
+        - heading "Careful by design." [level=2] [ref=f13e655]
+      - list [ref=f13e656]:
+        - listitem [ref=f13e657]:
+          - heading "A wrong match is treated as worse than a miss" [level=3] [ref=f13e662]
+          - paragraph [ref=f13e663]: A face is only matched when it clearly beats every other student. Anything close is left for the teacher.
+        - listitem [ref=f13e664]:
+          - heading "Up to five photos per student" [level=3] [ref=f13e671]
+          - paragraph [ref=f13e672]: Enrollment photos are combined into one face profile, and re-enrolling replaces the old one.
+        - listitem [ref=f13e673]:
+          - heading "Teachers stay in control" [level=3] [ref=f13e679]
+          - paragraph [ref=f13e680]: Nothing is saved until the teacher has resolved the unclear faces and confirmed the record.
+        - listitem [ref=f13e681]:
+          - heading "Access stays with the class" [level=3] [ref=f13e686]
+          - paragraph [ref=f13e687]: Teachers only see their own classrooms, and classroom photos are kept in private storage.
+    - region [ref=f13e688]:
+      - generic [ref=f13e689]:
+        - heading "Ready to simplify attendance?" [level=2] [ref=f13e690]
+        - paragraph [ref=f13e691]: Sign in to open your classes and start a session.
+        - link "Sign In" [ref=f13e692] [cursor=pointer]:
+          - /url: /login
+  - contentinfo [ref=f13e695]:
+    - generic [ref=f13e696]: ClassSight
+    - navigation "Footer" [ref=f13e705]:
+      - link "Features" [ref=f13e706] [cursor=pointer]:
+        - /url: "#features"
+      - link "How it works" [ref=f13e707] [cursor=pointer]:
+        - /url: "#how"
+      - link "Product" [ref=f13e708] [cursor=pointer]:
+        - /url: "#product"
+      - link "Sign In" [ref=f13e709] [cursor=pointer]:
+        - /url: /login
+    - paragraph [ref=f13e710]: © 2026 ClassSight

@@ -1,0 +1,97 @@
+- generic [ref=f7e3]:
+  - banner [ref=f7e5]:
+    - generic [ref=f7e6]:
+      - button "Toggle navigation" [expanded] [ref=f7e7] [cursor=pointer]
+      - link "ClassSight" [ref=f7e9] [cursor=pointer]:
+        - /url: /student
+      - generic [ref=f7e18]: Student · Demo
+    - generic [ref=f7e19]:
+      - generic [ref=f7e20]: Wed, Nov 4, 2026
+      - button "Night mode" [ref=f7e24] [cursor=pointer]
+      - button "Notifications (4)" [ref=f7e28] [cursor=pointer]
+      - button "Account menu for Parv Rawat" [ref=f7e34] [cursor=pointer]:
+        - generic [aria-hidden] [ref=f7e35]: P
+        - generic [ref=f7e36]:
+          - generic [ref=f7e37]: Parv
+          - generic [ref=f7e38]: "1024030265"
+  - generic [ref=f7e41]:
+    - complementary "Student navigation" [ref=f7e43]:
+      - navigation [ref=f7e44]:
+        - link "Dashboard" [ref=f7e45] [cursor=pointer]:
+          - /url: /student
+        - link "Timetable" [ref=f7e52] [cursor=pointer]:
+          - /url: /student/timetable
+        - link "My Courses" [ref=f7e56] [cursor=pointer]:
+          - /url: /student/courses
+        - link "Reports" [ref=f7e60] [cursor=pointer]:
+          - /url: /student/reports
+        - link "Settings" [ref=f7e65] [cursor=pointer]:
+          - /url: /student/settings
+      - generic [ref=f7e70]:
+        - generic [ref=f7e71]:
+          - generic [ref=f7e72]: Odd Semester
+          - generic [ref=f7e73]: 2026–27
+          - generic [ref=f7e74]: Student portal · Demo
+        - button "Log Out" [ref=f7e75] [cursor=pointer]
+    - main [ref=f7e80]:
+      - main [ref=f7e82]:
+        - generic [ref=f7e83]:
+          - heading "Settings" [level=1] [ref=f7e84]
+          - paragraph [ref=f7e89]:
+            - text: Choose how ClassSight looks and notifies you. Your records are managed by your college; settings marked
+            - strong [ref=f7e90]: Needs server
+            - text: become available once your account is connected to the ClassSight server.
+        - tablist "Settings sections" [ref=f7e91]:
+          - tab "Profile" [ref=f7e92] [cursor=pointer]
+          - tab "Notifications" [ref=f7e96] [cursor=pointer]
+          - tab "Attendance rules" [ref=f7e100] [cursor=pointer]
+          - tab "Face data" [ref=f7e105] [cursor=pointer]
+          - tab "Appearance" [ref=f7e112] [cursor=pointer]
+          - tab "Security" [ref=f7e119] [cursor=pointer]
+          - tab "Help & Support" [selected] [ref=f7e123] [cursor=pointer]
+        - tabpanel "Help & Support" [ref=f7e132]:
+          - generic [ref=f7e133]:
+            - generic [ref=f7e135]:
+              - heading "How attendance works" [level=3] [ref=f7e136]
+              - paragraph [ref=f7e137]: From the class photo to your report
+            - list [ref=f7e139]:
+              - listitem [ref=f7e140]:
+                - strong [ref=f7e141]: Your teacher starts the class
+                - generic [ref=f7e142]: Attendance is opened for the lecture, lab or tutorial on the timetable.
+              - listitem [ref=f7e143]:
+                - strong [ref=f7e144]: A class photo is taken
+                - generic [ref=f7e145]: ClassSight finds your face in it and marks you present.
+              - listitem [ref=f7e146]:
+                - strong [ref=f7e147]: Anything unclear is reviewed
+                - generic [ref=f7e148]: If you weren't recognised, your teacher checks you by ID card or by hand.
+              - listitem [ref=f7e149]:
+                - strong [ref=f7e150]: You check your record
+                - generic [ref=f7e151]: Dashboard, My Courses and Reports show where you stand in every course.
+          - generic [ref=f7e152]:
+            - generic [ref=f7e154]:
+              - heading "FAQs" [level=3] [ref=f7e155]
+              - paragraph [ref=f7e156]: Answers to common questions
+            - generic [ref=f7e158]:
+              - button "Why does a class say “awaiting review”?" [ref=f7e160] [cursor=pointer]
+              - button "How is my percentage worked out?" [ref=f7e164] [cursor=pointer]
+              - button "I was in class but marked absent. What do I do?" [ref=f7e168] [cursor=pointer]
+              - button "Can I change my name, roll number or courses?" [ref=f7e172] [cursor=pointer]
+              - button "Where are my settings saved?" [ref=f7e176] [cursor=pointer]
+          - generic [ref=f7e179]:
+            - generic [ref=f7e180]:
+              - generic [ref=f7e181]:
+                - heading "Get help" [level=3] [ref=f7e182]
+                - paragraph [ref=f7e183]: Report a problem with the app
+              - generic [ref=f7e184]: Needs server
+            - generic [ref=f7e189]:
+              - generic [ref=f7e190]:
+                - generic [ref=f7e191]: Report an issue
+                - paragraph [ref=f7e192]: Send a description and screenshot to the ClassSight team.
+              - button "Report an issue" [disabled] [ref=f7e194]: Report issue
+          - generic [ref=f7e195]:
+            - generic [ref=f7e197]:
+              - heading "About" [level=3] [ref=f7e198]
+              - paragraph [ref=f7e199]: This copy of ClassSight
+            - generic [ref=f7e202]:
+              - term [ref=f7e203]: Application version
+              - definition [ref=f7e204]: 0.0.0 (development)

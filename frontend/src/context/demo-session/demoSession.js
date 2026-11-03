@@ -9,7 +9,7 @@ export const DEMO_SESSION_KEY = "classsight_demo_session_v1";
 // The only two accounts the demo recognises
 export const DEMO_ACCOUNTS = [
   { email: "jhonsy.bansal@thapar.edu", role: "teacher", home: "/dashboard", name: "Professor Jhonsy" },
-  { email: "prawat_be24@thapar.edu", role: "student", home: "/student", name: "Parv Rawat" },
+  { email: "prawat_be24@thapar.edu", role: "student", home: "/student", name: "Parv Rawat", roll: "1024030265" },
 ];
 
 export const UNKNOWN_ACCOUNT_ERROR = "Invalid email or account not recognized.";
@@ -39,7 +39,7 @@ export function loadDemoSession(storage) {
 }
 
 export function toSession(account) {
-  return { role: account.role, email: account.email, name: account.name };
+  return { role: account.role, email: account.email, name: account.name, roll: account.roll };
 }
 
 export function saveDemoSession(storage, account) {

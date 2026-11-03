@@ -35,17 +35,24 @@
 .db-page.teacher-ui .ac-blue { --ac: #2b5bd7; }
 .db-page.teacher-ui .ac-violet { --ac: #6d4bd1; }
 .db-page.teacher-ui .ac-teal { --ac: #0f8a82; }
+.db-page.teacher-ui .ac-amber { --ac: #b45309; }
+.db-page.teacher-ui .ac-green { --ac: #2e7d32; }
+.db-page.teacher-ui .ac-pink { --ac: #be185d; }
 .teacher-ui.dark-mode .ac-blue { --ac: #7ea3f5; }
 .teacher-ui.dark-mode .ac-violet { --ac: #b39cf3; }
 .teacher-ui.dark-mode .ac-teal { --ac: #4cc4ba; }
+.teacher-ui.dark-mode .ac-amber { --ac: #e8b05f; }
+.teacher-ui.dark-mode .ac-green { --ac: #7bc67e; }
+.teacher-ui.dark-mode .ac-pink { --ac: #f08ab8; }
 
+/* The timetable never scrolls up and down: the whole day is scaled to fit the box. Only a very narrow window scrolls sideways. */
 .db-page.teacher-ui .sc-tt {
   border: 1px solid var(--db-card-line); border-radius: 14px; background: var(--db-card); box-shadow: var(--db-shadow);
-  overflow: auto; min-height: 0; scrollbar-width: thin; scrollbar-color: var(--db-scroll) transparent;
+  overflow-x: auto; overflow-y: hidden; min-height: 0; scrollbar-width: thin; scrollbar-color: var(--db-scroll) transparent;
 }
-.db-page.teacher-ui .sc-tt::-webkit-scrollbar { width: 8px; height: 8px; }
+.db-page.teacher-ui .sc-tt::-webkit-scrollbar { height: 8px; }
 .db-page.teacher-ui .sc-tt::-webkit-scrollbar-thumb { background: var(--db-scroll); border-radius: 8px; border: 2px solid var(--db-card); }
-.db-page.teacher-ui .sc-tti { min-width: 820px; }
+.db-page.teacher-ui .sc-tti { min-width: 720px; height: 100%; display: flex; flex-direction: column; }
 .db-page.teacher-ui .sc-tth,
 .db-page.teacher-ui .sc-ttb { display: grid; grid-template-columns: 64px repeat(7, minmax(0, 1fr)); }
 .db-page.teacher-ui .sc-tth { position: sticky; top: 0; z-index: 3; background: var(--db-card); border-bottom: 1px solid var(--db-row-line); }
@@ -63,18 +70,17 @@
 .db-page.teacher-ui .sc-tth .td .dn { color: var(--db-mr-text); }
 .db-page.teacher-ui .sc-tth .td b { background: var(--db-mr); color: #fff; }
 
-.db-page.teacher-ui .sc-ttb { padding: 12px 0; position: relative; animation: sc-fade 0.25s ease; }
-.db-page.teacher-ui .sc-tlab { position: relative; }
+.db-page.teacher-ui .sc-ttb { flex: 1; min-height: 0; padding: 12px 0; position: relative; animation: sc-fade 0.25s ease; }
+.db-page.teacher-ui .sc-tlab { position: relative; min-height: 0; }
 .db-page.teacher-ui .sc-tlab span {
   position: absolute; right: 10px; transform: translateY(-50%); font-size: 11px; font-weight: 500;
   color: var(--db-muted); font-variant-numeric: tabular-nums;
 }
 .db-page.teacher-ui .sc-tcol {
-  position: relative; border-left: 1px solid var(--db-row-line);
-  background-image: repeating-linear-gradient(
-    to bottom, transparent 0, transparent 79px,
-    color-mix(in srgb, var(--db-row-line) 60%, transparent) 79px, color-mix(in srgb, var(--db-row-line) 60%, transparent) 80px
-  );
+  position: relative; border-left: 1px solid var(--db-row-line); min-height: 0;
+  /* one faint line per 50 min period (11 periods) */
+  background-image: linear-gradient(to bottom, transparent calc(100% - 1px), color-mix(in srgb, var(--db-row-line) 60%, transparent) 0);
+  background-size: 100% calc(100% / 11);
 }
 .db-page.teacher-ui .sc-tcol.td { background-color: color-mix(in srgb, var(--db-mr) 4%, transparent); }
 
@@ -89,6 +95,9 @@
   box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05); display: flex; flex-direction: column; gap: 4px;
   transition: opacity 0.2s, box-shadow 0.2s, transform 0.2s;
 }
+/* Single-period (50 min) blocks are short: tighter padding, one-line name */
+.db-page.teacher-ui .sc-blk.short { padding: 4px 8px; gap: 1px; justify-content: center; }
+.db-page.teacher-ui .sc-blk.short .n { -webkit-line-clamp: 1; }
 .db-page.teacher-ui .sc-blk:hover, .db-page.teacher-ui .sc-blk.open {
   box-shadow: 0 6px 16px rgba(15, 23, 42, 0.12); transform: translateY(-1px); z-index: 2;
 }
@@ -137,9 +146,18 @@
 
 @keyframes sc-fade { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
 
+/* Window height is locked: the page fills it (no page scroll) and the timetable takes the space under the tabs */
+@media (min-width: 1101px) and (min-height: 700px) {
+  .db-page.teacher-ui.sc-root { height: 100vh; min-height: 0; overflow: hidden; }
+  .db-page.teacher-ui.sc-root .db-body { min-height: 0; overflow: hidden; }
+  .db-page.teacher-ui.sc-root .db-body > .db-main { min-height: 0; overflow: hidden; grid-template-rows: minmax(0, 1fr); }
+  .db-page.teacher-ui .sc-page { min-height: 0; grid-template-rows: auto auto minmax(0, 1fr); }
+  .db-page.teacher-ui .sc-grid { height: auto; min-height: 0; }
+}
+
 @media (max-width: 1100px) {
   .db-page.teacher-ui .sc-grid { grid-template-columns: 1fr; height: auto; }
-  .db-page.teacher-ui .sc-tt { max-height: 70vh; }
+  .db-page.teacher-ui .sc-tt { height: 640px; }
   .db-page.teacher-ui .sc-spn { max-height: 380px; }
 }
 @media (prefers-reduced-motion: reduce) {

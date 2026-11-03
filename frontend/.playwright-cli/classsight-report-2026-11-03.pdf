@@ -1,0 +1,273 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [6 0 R 8 0 R 10 0 R 12 0 R] /Count 4 >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Courier >>
+endobj
+4 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Courier-Bold >>
+endobj
+5 0 obj
+<< /Length 5640 >>
+stream
+BT /F2 10 Tf 40 800 Td (ClassSight attendance report) Tj ET
+BT /F1 9 Tf 40 787.5 Td (Semester: 2627ODDSEM   Range: Whole semester   Course: All courses) Tj ET
+BT /F1 9 Tf 40 775 Td (Required attendance: 75%  \(a lab counts as 2 lectures\)) Tj ET
+BT /F1 9 Tf 40 762.5 Td () Tj ET
+BT /F2 10 Tf 40 750 Td (Summary) Tj ET
+BT /F1 9 Tf 40 737.5 Td (Overall attendance ........ 78%) Tj ET
+BT /F1 9 Tf 40 725 Td (Classes missed ............ 41) Tj ET
+BT /F1 9 Tf 40 712.5 Td (Eligible courses .......... 3 of 7) Tj ET
+BT /F1 9 Tf 40 700 Td (Needed to fix courses ..... 47 lecture-equivalents) Tj ET
+BT /F1 9 Tf 40 687.5 Td () Tj ET
+BT /F2 10 Tf 40 675 Td (Course summary) Tj ET
+BT /F1 9 Tf 40 662.5 Td (Course                                  Att %  Attended  Missed  Status) Tj ET
+BT /F1 9 Tf 40 650 Td (Image Processing                        97%    34        1       Eligible) Tj ET
+BT /F1 9 Tf 40 637.5 Td (Ethics and Risk Mitigation in AI        59%    13        9       Below) Tj ET
+BT /F1 9 Tf 40 625 Td (Software Engineering                    92%    35        3       Eligible) Tj ET
+BT /F1 9 Tf 40 612.5 Td (Machine Learning                        83%    30        6       Eligible) Tj ET
+BT /F1 9 Tf 40 600 Td (Enterprise Web Application              61%    23        15      Below) Tj ET
+BT /F1 9 Tf 40 587.5 Td (Source Code Management                  68%    19        9       Below) Tj ET
+BT /F1 9 Tf 40 575 Td (Computer Architecture and Organization  71%    15        6       Below) Tj ET
+BT /F1 9 Tf 40 562.5 Td () Tj ET
+BT /F2 10 Tf 40 550 Td (Attendance history) Tj ET
+BT /F1 9 Tf 40 537.5 Td (Date        Time   Course                              Type     Status) Tj ET
+BT /F1 9 Tf 40 525 Td (2026-11-03  15:30  Enterprise Web Application          Lab      Absent) Tj ET
+BT /F1 9 Tf 40 512.5 Td (2026-11-03  14:40  Software Engineering                Lecture  Absent) Tj ET
+BT /F1 9 Tf 40 500 Td (2026-11-03  13:50  Enterprise Web Application          Lecture  Present) Tj ET
+BT /F1 9 Tf 40 487.5 Td (2026-11-03  13:00  Machine Learning                    Lecture  Present) Tj ET
+BT /F1 9 Tf 40 475 Td (2026-11-02  09:40  Software Engineering                Lab      Present) Tj ET
+BT /F1 9 Tf 40 462.5 Td (2026-11-02  08:50  Ethics and Risk Mitigation in AI    Lecture  Present) Tj ET
+BT /F1 9 Tf 40 450 Td (2026-11-02  08:00  Image Processing                    Lecture  Unverified) Tj ET
+BT /F1 9 Tf 40 437.5 Td (2026-10-30  10:30  Machine Learning                    Lecture  Present) Tj ET
+BT /F1 9 Tf 40 425 Td (2026-10-30  09:40  Computer Architecture and OrganizatiLecture  Present) Tj ET
+BT /F1 9 Tf 40 412.5 Td (2026-10-30  08:50  Image Processing                    Lecture  Present) Tj ET
+BT /F1 9 Tf 40 400 Td (2026-10-30  08:00  Software Engineering                Lecture  Present) Tj ET
+BT /F1 9 Tf 40 387.5 Td (2026-10-29  16:20  Ethics and Risk Mitigation in AI    Lecture  Present) Tj ET
+BT /F1 9 Tf 40 375 Td (2026-10-29  15:30  Image Processing                    Lecture  Present) Tj ET
+BT /F1 9 Tf 40 362.5 Td (2026-10-29  13:50  Machine Learning                    Lab      Absent) Tj ET
+BT /F1 9 Tf 40 350 Td (2026-10-29  12:10  Source Code Management              Lecture  Present) Tj ET
+BT /F1 9 Tf 40 337.5 Td (2026-10-29  11:20  Source Code Management              Lecture  Absent) Tj ET
+BT /F1 9 Tf 40 325 Td (2026-10-29  10:30  Enterprise Web Application          Lecture  Absent) Tj ET
+BT /F1 9 Tf 40 312.5 Td (2026-10-29  09:40  Computer Architecture and OrganizatiLecture  Present) Tj ET
+BT /F1 9 Tf 40 300 Td (2026-10-28  15:30  Image Processing                    Lab      Present) Tj ET
+BT /F1 9 Tf 40 287.5 Td (2026-10-28  14:40  Computer Architecture and OrganizatiLecture  Absent) Tj ET
+BT /F1 9 Tf 40 275 Td (2026-10-28  13:50  Machine Learning                    Lecture  Present) Tj ET
+BT /F1 9 Tf 40 262.5 Td (2026-10-28  13:00  Enterprise Web Application          Lecture  Present) Tj ET
+BT /F1 9 Tf 40 250 Td (2026-10-28  10:30  Ethics and Risk Mitigation in AI    Lecture  Absent) Tj ET
+BT /F1 9 Tf 40 237.5 Td (2026-10-28  09:40  Software Engineering                Lecture  Present) Tj ET
+BT /F1 9 Tf 40 225 Td (2026-10-28  08:00  Source Code Management              Lab      Present) Tj ET
+BT /F1 9 Tf 40 212.5 Td (2026-10-27  15:30  Enterprise Web Application          Lab      Present) Tj ET
+BT /F1 9 Tf 40 200 Td (2026-10-27  14:40  Software Engineering                Lecture  Present) Tj ET
+BT /F1 9 Tf 40 187.5 Td (2026-10-27  13:50  Enterprise Web Application          Lecture  Absent) Tj ET
+BT /F1 9 Tf 40 175 Td (2026-10-27  13:00  Machine Learning                    Lecture  Present) Tj ET
+BT /F1 9 Tf 40 162.5 Td (2026-10-26  09:40  Software Engineering                Lab      Present) Tj ET
+BT /F1 9 Tf 40 150 Td (2026-10-26  08:50  Ethics and Risk Mitigation in AI    Lecture  Present) Tj ET
+BT /F1 9 Tf 40 137.5 Td (2026-10-26  08:00  Image Processing                    Lecture  Present) Tj ET
+BT /F1 9 Tf 40 125 Td (2026-10-23  10:30  Machine Learning                    Lecture  Present) Tj ET
+BT /F1 9 Tf 40 112.5 Td (2026-10-23  09:40  Computer Architecture and OrganizatiLecture  Present) Tj ET
+BT /F1 9 Tf 40 100 Td (2026-10-23  08:50  Image Processing                    Lecture  Present) Tj ET
+BT /F1 9 Tf 40 87.5 Td (2026-10-23  08:00  Software Engineering                Lecture  Present) Tj ET
+BT /F1 9 Tf 40 75 Td (2026-10-22  16:20  Ethics and Risk Mitigation in AI    Lecture  Absent) Tj ET
+BT /F1 9 Tf 40 62.5 Td (2026-10-22  15:30  Image Processing                    Lecture  Present) Tj ET
+BT /F1 8 Tf 40 24 Td (ClassSight - page 1 of 4) Tj ET
+endstream
+endobj
+6 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Contents 5 0 R /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> >>
+endobj
+7 0 obj
+<< /Length 6214 >>
+stream
+BT /F1 9 Tf 40 800 Td (2026-10-22  13:50  Machine Learning                    Lab      Present) Tj ET
+BT /F1 9 Tf 40 787.5 Td (2026-10-22  12:10  Source Code Management              Lecture  Present) Tj ET
+BT /F1 9 Tf 40 775 Td (2026-10-22  11:20  Source Code Management              Lecture  Absent) Tj ET
+BT /F1 9 Tf 40 762.5 Td (2026-10-22  10:30  Enterprise Web Application          Lecture  Present) Tj ET
+BT /F1 9 Tf 40 750 Td (2026-10-22  09:40  Computer Architecture and OrganizatiLecture  Present) Tj ET
+BT /F1 9 Tf 40 737.5 Td (2026-10-21  15:30  Image Processing                    Lab      Present) Tj ET
+BT /F1 9 Tf 40 725 Td (2026-10-21  14:40  Computer Architecture and OrganizatiLecture  Absent) Tj ET
+BT /F1 9 Tf 40 712.5 Td (2026-10-21  13:50  Machine Learning                    Lecture  Present) Tj ET
+BT /F1 9 Tf 40 700 Td (2026-10-21  13:00  Enterprise Web Application          Lecture  Absent) Tj ET
+BT /F1 9 Tf 40 687.5 Td (2026-10-21  10:30  Ethics and Risk Mitigation in AI    Lecture  Present) Tj ET
+BT /F1 9 Tf 40 675 Td (2026-10-21  09:40  Software Engineering                Lecture  Present) Tj ET
+BT /F1 9 Tf 40 662.5 Td (2026-10-21  08:00  Source Code Management              Lab      Present) Tj ET
+BT /F1 9 Tf 40 650 Td (2026-10-20  15:30  Enterprise Web Application          Lab      Present) Tj ET
+BT /F1 9 Tf 40 637.5 Td (2026-10-20  14:40  Software Engineering                Lecture  Present) Tj ET
+BT /F1 9 Tf 40 625 Td (2026-10-20  13:50  Enterprise Web Application          Lecture  Present) Tj ET
+BT /F1 9 Tf 40 612.5 Td (2026-10-20  13:00  Machine Learning                    Lecture  Present) Tj ET
+BT /F1 9 Tf 40 600 Td (2026-10-19  09:40  Software Engineering                Lab      Present) Tj ET
+BT /F1 9 Tf 40 587.5 Td (2026-10-19  08:50  Ethics and Risk Mitigation in AI    Lecture  Absent) Tj ET
+BT /F1 9 Tf 40 575 Td (2026-10-19  08:00  Image Processing                    Lecture  Present) Tj ET
+BT /F1 9 Tf 40 562.5 Td (2026-10-16  10:30  Machine Learning                    Lecture  Absent) Tj ET
+BT /F1 9 Tf 40 550 Td (2026-10-16  09:40  Computer Architecture and OrganizatiLecture  Present) Tj ET
+BT /F1 9 Tf 40 537.5 Td (2026-10-16  08:50  Image Processing                    Lecture  Absent) Tj ET
+BT /F1 9 Tf 40 525 Td (2026-10-16  08:00  Software Engineering                Lecture  Absent) Tj ET
+BT /F1 9 Tf 40 512.5 Td (2026-10-15  16:20  Ethics and Risk Mitigation in AI    Lecture  Present) Tj ET
+BT /F1 9 Tf 40 500 Td (2026-10-15  15:30  Image Processing                    Lecture  Present) Tj ET
+BT /F1 9 Tf 40 487.5 Td (2026-10-15  13:50  Machine Learning                    Lab      Present) Tj ET
+BT /F1 9 Tf 40 475 Td (2026-10-15  12:10  Source Code Management              Lecture  Present) Tj ET
+BT /F1 9 Tf 40 462.5 Td (2026-10-15  11:20  Source Code Management              Lecture  Absent) Tj ET
+BT /F1 9 Tf 40 450 Td (2026-10-15  10:30  Enterprise Web Application          Lecture  Absent) Tj ET
+BT /F1 9 Tf 40 437.5 Td (2026-10-15  09:40  Computer Architecture and OrganizatiLecture  Present) Tj ET
+BT /F1 9 Tf 40 425 Td (2026-10-14  15:30  Image Processing                    Lab      Present) Tj ET
+BT /F1 9 Tf 40 412.5 Td (2026-10-14  14:40  Computer Architecture and OrganizatiLecture  Absent) Tj ET
+BT /F1 9 Tf 40 400 Td (2026-10-14  13:50  Machine Learning                    Lecture  Present) Tj ET
+BT /F1 9 Tf 40 387.5 Td (2026-10-14  13:00  Enterprise Web Application          Lecture  Present) Tj ET
+BT /F1 9 Tf 40 375 Td (2026-10-14  10:30  Ethics and Risk Mitigation in AI    Lecture  Absent) Tj ET
+BT /F1 9 Tf 40 362.5 Td (2026-10-14  09:40  Software Engineering                Lecture  Present) Tj ET
+BT /F1 9 Tf 40 350 Td (2026-10-14  08:00  Source Code Management              Lab      Present) Tj ET
+BT /F1 9 Tf 40 337.5 Td (2026-10-13  15:30  Enterprise Web Application          Lab      Absent) Tj ET
+BT /F1 9 Tf 40 325 Td (2026-10-13  14:40  Software Engineering                Lecture  Present) Tj ET
+BT /F1 9 Tf 40 312.5 Td (2026-10-13  13:50  Enterprise Web Application          Lecture  Present) Tj ET
+BT /F1 9 Tf 40 300 Td (2026-10-13  13:00  Machine Learning                    Lecture  Present) Tj ET
+BT /F1 9 Tf 40 287.5 Td (2026-10-12  09:40  Software Engineering                Lab      Present) Tj ET
+BT /F1 9 Tf 40 275 Td (2026-10-12  08:50  Ethics and Risk Mitigation in AI    Lecture  Present) Tj ET
+BT /F1 9 Tf 40 262.5 Td (2026-10-12  08:00  Image Processing                    Lecture  Present) Tj ET
+BT /F1 9 Tf 40 250 Td (2026-10-09  10:30  Machine Learning                    Lecture  Present) Tj ET
+BT /F1 9 Tf 40 237.5 Td (2026-10-09  09:40  Computer Architecture and OrganizatiLecture  Present) Tj ET
+BT /F1 9 Tf 40 225 Td (2026-10-09  08:50  Image Processing                    Lecture  Present) Tj ET
+BT /F1 9 Tf 40 212.5 Td (2026-10-09  08:00  Software Engineering                Lecture  Present) Tj ET
+BT /F1 9 Tf 40 200 Td (2026-10-08  16:20  Ethics and Risk Mitigation in AI    Lecture  Absent) Tj ET
+BT /F1 9 Tf 40 187.5 Td (2026-10-08  15:30  Image Processing                    Lecture  Present) Tj ET
+BT /F1 9 Tf 40 175 Td (2026-10-08  13:50  Machine Learning                    Lab      Present) Tj ET
+BT /F1 9 Tf 40 162.5 Td (2026-10-08  12:10  Source Code Management              Lecture  Present) Tj ET
+BT /F1 9 Tf 40 150 Td (2026-10-08  11:20  Source Code Management              Lecture  Present) Tj ET
+BT /F1 9 Tf 40 137.5 Td (2026-10-08  10:30  Enterprise Web Application          Lecture  Present) Tj ET
+BT /F1 9 Tf 40 125 Td (2026-10-08  09:40  Computer Architecture and OrganizatiLecture  Present) Tj ET
+BT /F1 9 Tf 40 112.5 Td (2026-10-07  15:30  Image Processing                    Lab      Present) Tj ET
+BT /F1 9 Tf 40 100 Td (2026-10-07  14:40  Computer Architecture and OrganizatiLecture  Absent) Tj ET
+BT /F1 9 Tf 40 87.5 Td (2026-10-07  13:50  Machine Learning                    Lecture  Absent) Tj ET
+BT /F1 9 Tf 40 75 Td (2026-10-07  13:00  Enterprise Web Application          Lecture  Absent) Tj ET
+BT /F1 9 Tf 40 62.5 Td (2026-10-07  10:30  Ethics and Risk Mitigation in AI    Lecture  Present) Tj ET
+BT /F1 8 Tf 40 24 Td (ClassSight - page 2 of 4) Tj ET
+endstream
+endobj
+8 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Contents 7 0 R /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> >>
+endobj
+9 0 obj
+<< /Length 6216 >>
+stream
+BT /F1 9 Tf 40 800 Td (2026-10-07  09:40  Software Engineering                Lecture  Present) Tj ET
+BT /F1 9 Tf 40 787.5 Td (2026-10-07  08:00  Source Code Management              Lab      Absent) Tj ET
+BT /F1 9 Tf 40 775 Td (2026-10-06  15:30  Enterprise Web Application          Lab      Present) Tj ET
+BT /F1 9 Tf 40 762.5 Td (2026-10-06  14:40  Software Engineering                Lecture  Present) Tj ET
+BT /F1 9 Tf 40 750 Td (2026-10-06  13:50  Enterprise Web Application          Lecture  Absent) Tj ET
+BT /F1 9 Tf 40 737.5 Td (2026-10-06  13:00  Machine Learning                    Lecture  Present) Tj ET
+BT /F1 9 Tf 40 725 Td (2026-10-05  09:40  Software Engineering                Lab      Present) Tj ET
+BT /F1 9 Tf 40 712.5 Td (2026-10-05  08:50  Ethics and Risk Mitigation in AI    Lecture  Present) Tj ET
+BT /F1 9 Tf 40 700 Td (2026-10-05  08:00  Image Processing                    Lecture  Present) Tj ET
+BT /F1 9 Tf 40 687.5 Td (2026-10-02  10:30  Machine Learning                    Lecture  Present) Tj ET
+BT /F1 9 Tf 40 675 Td (2026-10-02  09:40  Computer Architecture and OrganizatiLecture  Present) Tj ET
+BT /F1 9 Tf 40 662.5 Td (2026-10-02  08:50  Image Processing                    Lecture  Present) Tj ET
+BT /F1 9 Tf 40 650 Td (2026-10-02  08:00  Software Engineering                Lecture  Present) Tj ET
+BT /F1 9 Tf 40 637.5 Td (2026-10-01  16:20  Ethics and Risk Mitigation in AI    Lecture  Absent) Tj ET
+BT /F1 9 Tf 40 625 Td (2026-10-01  15:30  Image Processing                    Lecture  Present) Tj ET
+BT /F1 9 Tf 40 612.5 Td (2026-10-01  13:50  Machine Learning                    Lab      Present) Tj ET
+BT /F1 9 Tf 40 600 Td (2026-10-01  12:10  Source Code Management              Lecture  Present) Tj ET
+BT /F1 9 Tf 40 587.5 Td (2026-10-01  11:20  Source Code Management              Lecture  Present) Tj ET
+BT /F1 9 Tf 40 575 Td (2026-10-01  10:30  Enterprise Web Application          Lecture  Present) Tj ET
+BT /F1 9 Tf 40 562.5 Td (2026-10-01  09:40  Computer Architecture and OrganizatiLecture  Present) Tj ET
+BT /F1 9 Tf 40 550 Td (2026-09-30  15:30  Image Processing                    Lab      Present) Tj ET
+BT /F1 9 Tf 40 537.5 Td (2026-09-30  14:40  Computer Architecture and OrganizatiLecture  Absent) Tj ET
+BT /F1 9 Tf 40 525 Td (2026-09-30  13:50  Machine Learning                    Lecture  Present) Tj ET
+BT /F1 9 Tf 40 512.5 Td (2026-09-30  13:00  Enterprise Web Application          Lecture  Present) Tj ET
+BT /F1 9 Tf 40 500 Td (2026-09-30  10:30  Ethics and Risk Mitigation in AI    Lecture  Present) Tj ET
+BT /F1 9 Tf 40 487.5 Td (2026-09-30  09:40  Software Engineering                Lecture  Present) Tj ET
+BT /F1 9 Tf 40 475 Td (2026-09-30  08:00  Source Code Management              Lab      Absent) Tj ET
+BT /F1 9 Tf 40 462.5 Td (2026-09-29  15:30  Enterprise Web Application          Lab      Absent) Tj ET
+BT /F1 9 Tf 40 450 Td (2026-09-29  14:40  Software Engineering                Lecture  Absent) Tj ET
+BT /F1 9 Tf 40 437.5 Td (2026-09-29  13:50  Enterprise Web Application          Lecture  Present) Tj ET
+BT /F1 9 Tf 40 425 Td (2026-09-29  13:00  Machine Learning                    Lecture  Present) Tj ET
+BT /F1 9 Tf 40 412.5 Td (2026-09-28  09:40  Software Engineering                Lab      Present) Tj ET
+BT /F1 9 Tf 40 400 Td (2026-09-28  08:50  Ethics and Risk Mitigation in AI    Lecture  Absent) Tj ET
+BT /F1 9 Tf 40 387.5 Td (2026-09-28  08:00  Image Processing                    Lecture  Present) Tj ET
+BT /F1 9 Tf 40 375 Td (2026-09-25  10:30  Machine Learning                    Lecture  Present) Tj ET
+BT /F1 9 Tf 40 362.5 Td (2026-09-25  09:40  Computer Architecture and OrganizatiLecture  Present) Tj ET
+BT /F1 9 Tf 40 350 Td (2026-09-25  08:50  Image Processing                    Lecture  Present) Tj ET
+BT /F1 9 Tf 40 337.5 Td (2026-09-25  08:00  Software Engineering                Lecture  Present) Tj ET
+BT /F1 9 Tf 40 325 Td (2026-09-24  16:20  Ethics and Risk Mitigation in AI    Lecture  Present) Tj ET
+BT /F1 9 Tf 40 312.5 Td (2026-09-24  15:30  Image Processing                    Lecture  Present) Tj ET
+BT /F1 9 Tf 40 300 Td (2026-09-24  13:50  Machine Learning                    Lab      Absent) Tj ET
+BT /F1 9 Tf 40 287.5 Td (2026-09-24  12:10  Source Code Management              Lecture  Present) Tj ET
+BT /F1 9 Tf 40 275 Td (2026-09-24  11:20  Source Code Management              Lecture  Present) Tj ET
+BT /F1 9 Tf 40 262.5 Td (2026-09-24  10:30  Enterprise Web Application          Lecture  Absent) Tj ET
+BT /F1 9 Tf 40 250 Td (2026-09-24  09:40  Computer Architecture and OrganizatiLecture  Present) Tj ET
+BT /F1 9 Tf 40 237.5 Td (2026-09-23  15:30  Image Processing                    Lab      Present) Tj ET
+BT /F1 9 Tf 40 225 Td (2026-09-23  14:40  Computer Architecture and OrganizatiLecture  Absent) Tj ET
+BT /F1 9 Tf 40 212.5 Td (2026-09-23  13:50  Machine Learning                    Lecture  Present) Tj ET
+BT /F1 9 Tf 40 200 Td (2026-09-23  13:00  Enterprise Web Application          Lecture  Present) Tj ET
+BT /F1 9 Tf 40 187.5 Td (2026-09-23  10:30  Ethics and Risk Mitigation in AI    Lecture  Absent) Tj ET
+BT /F1 9 Tf 40 175 Td (2026-09-23  09:40  Software Engineering                Lecture  Present) Tj ET
+BT /F1 9 Tf 40 162.5 Td (2026-09-23  08:00  Source Code Management              Lab      Absent) Tj ET
+BT /F1 9 Tf 40 150 Td (2026-09-22  15:30  Enterprise Web Application          Lab      Present) Tj ET
+BT /F1 9 Tf 40 137.5 Td (2026-09-22  14:40  Software Engineering                Lecture  Present) Tj ET
+BT /F1 9 Tf 40 125 Td (2026-09-22  13:50  Enterprise Web Application          Lecture  Absent) Tj ET
+BT /F1 9 Tf 40 112.5 Td (2026-09-22  13:00  Machine Learning                    Lecture  Present) Tj ET
+BT /F1 9 Tf 40 100 Td (2026-09-21  09:40  Software Engineering                Lab      Present) Tj ET
+BT /F1 9 Tf 40 87.5 Td (2026-09-21  08:50  Ethics and Risk Mitigation in AI    Lecture  Present) Tj ET
+BT /F1 9 Tf 40 75 Td (2026-09-21  08:00  Image Processing                    Lecture  Present) Tj ET
+BT /F1 9 Tf 40 62.5 Td (2026-09-18  10:30  Machine Learning                    Lecture  Present) Tj ET
+BT /F1 8 Tf 40 24 Td (ClassSight - page 3 of 4) Tj ET
+endstream
+endobj
+10 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Contents 9 0 R /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> >>
+endobj
+11 0 obj
+<< /Length 2523 >>
+stream
+BT /F1 9 Tf 40 800 Td (2026-09-18  09:40  Computer Architecture and OrganizatiLecture  Present) Tj ET
+BT /F1 9 Tf 40 787.5 Td (2026-09-18  08:50  Image Processing                    Lecture  Present) Tj ET
+BT /F1 9 Tf 40 775 Td (2026-09-18  08:00  Software Engineering                Lecture  Present) Tj ET
+BT /F1 9 Tf 40 762.5 Td (2026-09-17  16:20  Ethics and Risk Mitigation in AI    Lecture  Absent) Tj ET
+BT /F1 9 Tf 40 750 Td (2026-09-17  15:30  Image Processing                    Lecture  Present) Tj ET
+BT /F1 9 Tf 40 737.5 Td (2026-09-17  13:50  Machine Learning                    Lab      Present) Tj ET
+BT /F1 9 Tf 40 725 Td (2026-09-17  12:10  Source Code Management              Lecture  Present) Tj ET
+BT /F1 9 Tf 40 712.5 Td (2026-09-17  11:20  Source Code Management              Lecture  Present) Tj ET
+BT /F1 9 Tf 40 700 Td (2026-09-17  10:30  Enterprise Web Application          Lecture  Present) Tj ET
+BT /F1 9 Tf 40 687.5 Td (2026-09-17  09:40  Computer Architecture and OrganizatiLecture  Present) Tj ET
+BT /F1 9 Tf 40 675 Td (2026-09-16  15:30  Image Processing                    Lab      Present) Tj ET
+BT /F1 9 Tf 40 662.5 Td (2026-09-16  14:40  Computer Architecture and OrganizatiLecture  Present) Tj ET
+BT /F1 9 Tf 40 650 Td (2026-09-16  13:50  Machine Learning                    Lecture  Present) Tj ET
+BT /F1 9 Tf 40 637.5 Td (2026-09-16  13:00  Enterprise Web Application          Lecture  Absent) Tj ET
+BT /F1 9 Tf 40 625 Td (2026-09-16  10:30  Ethics and Risk Mitigation in AI    Lecture  Present) Tj ET
+BT /F1 9 Tf 40 612.5 Td (2026-09-16  09:40  Software Engineering                Lecture  Present) Tj ET
+BT /F1 9 Tf 40 600 Td (2026-09-16  08:00  Source Code Management              Lab      Present) Tj ET
+BT /F1 9 Tf 40 587.5 Td (2026-09-15  15:30  Enterprise Web Application          Lab      Present) Tj ET
+BT /F1 9 Tf 40 575 Td (2026-09-15  14:40  Software Engineering                Lecture  Present) Tj ET
+BT /F1 9 Tf 40 562.5 Td (2026-09-15  13:50  Enterprise Web Application          Lecture  Present) Tj ET
+BT /F1 9 Tf 40 550 Td (2026-09-15  13:00  Machine Learning                    Lecture  Present) Tj ET
+BT /F1 9 Tf 40 537.5 Td (2026-09-14  09:40  Software Engineering                Lab      Present) Tj ET
+BT /F1 9 Tf 40 525 Td (2026-09-14  08:50  Ethics and Risk Mitigation in AI    Lecture  Present) Tj ET
+BT /F1 9 Tf 40 512.5 Td (2026-09-14  08:00  Image Processing                    Lecture  Present) Tj ET
+BT /F1 8 Tf 40 24 Td (ClassSight - page 4 of 4) Tj ET
+endstream
+endobj
+12 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Contents 11 0 R /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> >>
+endobj
+xref
+0 13
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000135 00000 n 
+0000000203 00000 n 
+0000000276 00000 n 
+0000005968 00000 n 
+0000006104 00000 n 
+0000012370 00000 n 
+0000012506 00000 n 
+0000018774 00000 n 
+0000018911 00000 n 
+0000021487 00000 n 
+trailer
+<< /Size 13 /Root 1 0 R >>
+startxref
+21625
+%%EOF

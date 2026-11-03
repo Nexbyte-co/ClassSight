@@ -1,18 +1,19 @@
 // src/pages/Students/StudentCourses.jsx
-// My Courses: a card per course; selecting one opens its details and attendance history in the side panel.
+// My Courses: a card per course; selecting one opens its attendance and, per lecture / lab / tutorial, the teacher and attendance.
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { CalendarClock, GraduationCap, MousePointerClick, UserRound } from "lucide-react";
+import { CalendarClock, GraduationCap, MousePointerClick } from "lucide-react";
 import "./StudentPages.css";
+import { termLabel } from "../../utils/termLabel";
 import { useStudentModel } from "../../context/students/useStudentModel";
 import { relativeDayLabel } from "../../context/students/studentCourses";
 import { classesCanMiss } from "../../context/students/studentOverview";
 import { STATUS } from "../../context/students/studentWeek";
-import { AttendanceBar, LevelPill, StatusPill } from "./studentUi";
+import { AttendanceBar, LevelPill } from "./studentUi";
 import { LEVEL_TONE, formatClock, useCourseColor } from "./studentUiHelpers";
 
-const prettyDate = (dateKey, opts = { weekday: "short", day: "numeric", month: "short" }) =>
-  new Date(...dateKey.split("-").map((n, i) => (i === 1 ? n - 1 : +n))).toLocaleDateString("en-GB", opts);
+// Session kinds in the order they are shown; a card appears only when the timetable has that kind for the course
+const KINDS = ["Lecture", "Lab", "Tutorial"];
 
 function CourseCard({ row, selected, color, m, onSelect }) {
   const tone = row.status ? LEVEL_TONE[row.status.level] : "none";
@@ -39,30 +40,51 @@ function CourseCard({ row, selected, color, m, onSelect }) {
         <span><b>{row.absent}</b> missed</span>
       </span>
       <span className="cr-foot">
-        <span><CalendarClock size={13} strokeWidth={2} />{row.next ? `${relativeDayLabel(row.next.date, m.now)} · ${formatClock(row.next.startMinutes)}` : "No upcoming class"}</span>
-        <span><UserRound size={13} strokeWidth={2} />{row.instructor} · {row.group}</span>
+        <span className="cr-next"><CalendarClock size={14} strokeWidth={2} />Next: {row.next ? `${relativeDayLabel(row.next.date, m.now)} · ${formatClock(row.next.startMinutes)}` : "No upcoming class"}</span>
       </span>
     </button>
   );
 }
 
 function Detail({ row, m, color }) {
-  const history = m.occurrences
-    .filter((o) => o.code === row.code && o.status !== STATUS.upcoming)
-    .sort((a, b) => b.dateKey.localeCompare(a.dateKey) || b.startMinutes - a.startMinutes);
   const canMiss = row.pct !== null && row.pct >= m.threshold ? classesCanMiss(row.present, row.decided, m.threshold) : 0;
+  // One card per kind of session the timetable has for this course: its teacher and attendance for that kind
+  const kinds = KINDS.map((kind) => {
+    const slots = row.slots.filter((s) => s.type === kind);
+    if (slots.length === 0) return null;
+    const held = m.occurrences.filter((o) => o.code === row.code && o.type === kind && o.status !== STATUS.upcoming);
+    const present = held.filter((o) => o.status === STATUS.present).length;
+    const decided = held.filter((o) => o.status !== STATUS.unverified).length;
+    const teachers = [...new Set(slots.map((s) => s.instructor).filter(Boolean))];
+    const pct = decided > 0 ? Math.round((present / decided) * 100) : null;
+    return { kind, teachers, present, decided, pct, pending: held.length - decided };
+  }).filter(Boolean);
   return (
     <>
       <div className="sp-side-hd" style={{ "--c": color }}>
         <span className="sp-sub"><i className="sp-dot" />{row.code} · {row.year}</span>
         <h2>{row.name}</h2>
-        <p>{row.instructor} · Batch {row.group}</p>
+        <p>Batch {row.group}</p>
       </div>
       <div className="sp-side-bd cr-body">
         <dl className="sp-facts">
-          <div><dt>Attendance</dt><dd>{row.pct === null ? "—" : `${row.pct}%`}<small>{row.present} of {row.decided} classes</small></dd></div>
+          <div><dt>Attendance</dt><dd>{row.pct === null ? "—" : `${row.pct}%`}<small>{row.present} of {row.decided} (a lab counts as 2)</small></dd></div>
           <div><dt>Missed</dt><dd>{row.absent}<small>{row.unverified ? `${row.unverified} awaiting review` : "none pending review"}</small></dd></div>
         </dl>
+        <div className="cr-kinds">
+          {kinds.map((k) => (
+            <section key={k.kind} className="cr-kind" aria-label={k.kind}>
+              <span className="sp-k">{k.kind}{k.kind === "Lab" ? " · counts as 2" : ""}</span>
+              <b className="cr-teacher">{k.teachers.join(", ")}</b>
+              <span className="cr-kn">
+                <b>{k.present}</b> of {k.decided} attended
+                {k.pct !== null && <em>{k.pct}%</em>}
+              </span>
+              <AttendanceBar pct={k.pct} threshold={m.threshold} tone={k.pct === null ? "none" : k.pct >= m.threshold ? "ok" : "warn"} />
+              {k.pending > 0 && <span className="sp-sub">{k.pending} awaiting review</span>}
+            </section>
+          ))}
+        </div>
         {row.pct !== null && (
           <p className={`cr-note ${row.pct >= m.threshold ? "ok" : "warn"}`}>
             {row.pct >= m.threshold
@@ -74,31 +96,7 @@ function Detail({ row, m, color }) {
                 : `Below the ${m.threshold}% requirement.`}
           </p>
         )}
-        <div className="cr-slots">
-          <span className="sp-k">Weekly schedule</span>
-          {row.slots.map((s) => (
-            <span key={s.id} className="sp-sub"><CalendarClock size={13} strokeWidth={2} />{s.day} {formatClock(s.startMinutes)}–{formatClock(s.startMinutes + s.duration)} · {s.room}</span>
-          ))}
-        </div>
-        <div className="cr-hist">
-          <span className="sp-k">Attendance history</span>
-          {history.length === 0 ? (
-            <p className="sp-empty">No classes held yet.</p>
-          ) : (
-            <ul className="sp-rows sp-scroll">
-              {history.map((o) => (
-                <li key={o.key} className="sp-row" style={{ "--c": color }}>
-                  <span className="sp-grow">
-                    <b>{prettyDate(o.dateKey)}</b>
-                    <span className="sp-sub">{formatClock(o.startMinutes)} · {o.room}{o.method ? ` · ${o.method}` : ""}</span>
-                  </span>
-                  <StatusPill status={o.status} />
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-        <Link to="/student/attendance" className="sp-btn">See full attendance</Link>
+        <Link to="/student/reports" className="sp-btn">See full report</Link>
       </div>
     </>
   );
@@ -123,10 +121,10 @@ export default function StudentCourses() {
             {atRisk > 0 ? ` · ${atRisk} below the ${m.threshold}% requirement` : ` · all on track`}
           </p>
         </div>
-        <span className="sp-sub"><GraduationCap size={15} strokeWidth={2} />Spring Term 2026</span>
+        <span className="sp-sub"><GraduationCap size={15} strokeWidth={2} />{termLabel()}</span>
       </header>
 
-      <div className="tt-layout">
+      <div className="tt-layout cr-layout">
         <div className="cr-grid sp-scroll">
           {m.rows.length === 0 ? (
             <p className="sp-empty">You are not enrolled in any courses yet.</p>
@@ -136,14 +134,14 @@ export default function StudentCourses() {
             ))
           )}
         </div>
-        <aside className="sp-side tt-side" aria-label="Course details">
+        <aside className="sp-side tt-side cr-side" aria-label="Course details">
           {row ? (
             <Detail row={row} m={m} color={colorFor(row.code)} />
           ) : (
             <div className="sp-side-empty">
               <MousePointerClick size={22} strokeWidth={1.8} />
               <h2>Select a course</h2>
-              <p>Choose a course to see its schedule, how close you are to the requirement and your attendance history.</p>
+              <p>Choose a course to see your attendance, how close you are to the requirement and each lecture, lab or tutorial with its teacher.</p>
             </div>
           )}
         </aside>

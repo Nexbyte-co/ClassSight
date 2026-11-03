@@ -1,0 +1,74 @@
+- generic [ref=f5e3]:
+  - banner [ref=f5e5]:
+    - generic [ref=f5e6]:
+      - button "Toggle navigation" [expanded] [ref=f5e7] [cursor=pointer]
+      - link "ClassSight" [ref=f5e9] [cursor=pointer]:
+        - /url: /student
+      - generic [ref=f5e18]: Student · Demo
+    - generic [ref=f5e19]:
+      - generic [ref=f5e20]: Wed, Nov 4, 2026
+      - button "Night mode" [ref=f5e24] [cursor=pointer]
+      - button "Notifications (4)" [ref=f5e28] [cursor=pointer]
+      - button "Account menu for Parv Rawat" [ref=f5e34] [cursor=pointer]:
+        - generic [aria-hidden] [ref=f5e35]: P
+        - generic [ref=f5e36]:
+          - generic [ref=f5e37]: Parv
+          - generic [ref=f5e38]: "1024030265"
+  - generic [ref=f5e41]:
+    - complementary "Student navigation" [ref=f5e43]:
+      - navigation [ref=f5e44]:
+        - link "Dashboard" [ref=f5e45] [cursor=pointer]:
+          - /url: /student
+        - link "Timetable" [ref=f5e52] [cursor=pointer]:
+          - /url: /student/timetable
+        - link "My Courses" [ref=f5e56] [cursor=pointer]:
+          - /url: /student/courses
+        - link "Reports" [ref=f5e60] [cursor=pointer]:
+          - /url: /student/reports
+        - link "Settings" [ref=f5e65] [cursor=pointer]:
+          - /url: /student/settings
+      - generic [ref=f5e70]:
+        - generic [ref=f5e71]:
+          - generic [ref=f5e72]: Odd Semester
+          - generic [ref=f5e73]: 2026–27
+          - generic [ref=f5e74]: Student portal · Demo
+        - button "Log Out" [ref=f5e75] [cursor=pointer]
+    - main [ref=f5e80]:
+      - main [ref=f5e82]:
+        - generic [ref=f5e83]:
+          - heading "Settings" [level=1] [ref=f5e84]
+          - paragraph [ref=f5e89]:
+            - text: Choose how ClassSight looks and notifies you. Your records are managed by your college; settings marked
+            - strong [ref=f5e90]: Needs server
+            - text: become available once your account is connected to the ClassSight server.
+        - tablist "Settings sections" [ref=f5e91]:
+          - tab "Profile" [ref=f5e92] [cursor=pointer]
+          - tab "Notifications" [ref=f5e96] [cursor=pointer]
+          - tab "Attendance rules" [ref=f5e100] [cursor=pointer]
+          - tab "Face data" [ref=f5e105] [cursor=pointer]
+          - tab "Appearance" [selected] [ref=f5e112] [cursor=pointer]
+          - tab "Security" [ref=f5e120] [cursor=pointer]
+          - tab "Help & Support" [ref=f5e124] [cursor=pointer]
+        - tabpanel "Appearance" [ref=f5e132]:
+          - generic [ref=f5e133]:
+            - generic [ref=f5e134]:
+              - generic [ref=f5e135]:
+                - heading "Theme & layout" [level=3] [ref=f5e136]
+                - paragraph [ref=f5e137]: Applied straight away on this device
+              - generic [ref=f5e138]: Saved in this browser
+            - generic [ref=f5e139]:
+              - generic [ref=f5e140]:
+                - generic [ref=f5e141]:
+                  - generic [ref=f5e142]: Theme
+                  - paragraph [ref=f5e143]: System follows your device's light or dark setting.
+                - radiogroup "Theme" [ref=f5e145]:
+                  - radio "System" [checked] [ref=f5e146] [cursor=pointer]
+                  - radio "Light" [ref=f5e149] [cursor=pointer]
+                  - radio "Dark" [ref=f5e156] [cursor=pointer]
+              - generic [ref=f5e159]:
+                - generic [ref=f5e160]:
+                  - generic [ref=f5e161]: Sidebar
+                  - paragraph [ref=f5e162]: Show the sidebar with labels, or only icons. Wide screens only.
+                - radiogroup "Sidebar" [ref=f5e164]:
+                  - radio "Expanded" [checked] [ref=f5e165] [cursor=pointer]
+                  - radio "Collapsed" [ref=f5e166] [cursor=pointer]

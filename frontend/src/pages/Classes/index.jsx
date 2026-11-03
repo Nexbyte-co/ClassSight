@@ -1,5 +1,6 @@
 // src/pages/Classes/index.jsx
 import { useState, useMemo, useEffect } from "react";
+import { termLabel } from "../../utils/termLabel";
 import { Link } from "react-router-dom";
 import {
   Search,
@@ -327,7 +328,7 @@ function Classes() {
             </div>
             <span className="cx-term">
               <Calendar size={15} strokeWidth={2} />
-              Spring Term 2026
+              {termLabel()}
             </span>
           </header>
 

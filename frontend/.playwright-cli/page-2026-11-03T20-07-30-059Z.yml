@@ -1,0 +1,89 @@
+- generic [ref=f4e3]:
+  - banner [ref=f4e5]:
+    - generic [ref=f4e6]:
+      - button "Toggle navigation" [expanded] [ref=f4e7] [cursor=pointer]
+      - link "ClassSight" [ref=f4e9] [cursor=pointer]:
+        - /url: /student
+      - generic [ref=f4e18]: Student · Demo
+    - generic [ref=f4e19]:
+      - generic [ref=f4e20]: Wed, Nov 4, 2026
+      - button "Night mode" [ref=f4e24] [cursor=pointer]
+      - button "Notifications (4)" [ref=f4e28] [cursor=pointer]
+      - button "Account menu for Parv Rawat" [ref=f4e34] [cursor=pointer]:
+        - generic [aria-hidden] [ref=f4e35]: P
+        - generic [ref=f4e36]:
+          - generic [ref=f4e37]: Parv
+          - generic [ref=f4e38]: "1024030265"
+  - generic [ref=f4e41]:
+    - complementary "Student navigation" [ref=f4e43]:
+      - navigation [ref=f4e44]:
+        - link "Dashboard" [ref=f4e45] [cursor=pointer]:
+          - /url: /student
+        - link "Timetable" [ref=f4e52] [cursor=pointer]:
+          - /url: /student/timetable
+        - link "My Courses" [ref=f4e56] [cursor=pointer]:
+          - /url: /student/courses
+        - link "Reports" [ref=f4e60] [cursor=pointer]:
+          - /url: /student/reports
+        - link "Settings" [ref=f4e65] [cursor=pointer]:
+          - /url: /student/settings
+      - generic [ref=f4e70]:
+        - generic [ref=f4e71]:
+          - generic [ref=f4e72]: Odd Semester
+          - generic [ref=f4e73]: 2026–27
+          - generic [ref=f4e74]: Student portal · Demo
+        - button "Log Out" [ref=f4e75] [cursor=pointer]
+    - main [ref=f4e80]:
+      - main [ref=f4e82]:
+        - generic [ref=f4e83]:
+          - heading "Settings" [level=1] [ref=f4e84]
+          - paragraph [ref=f4e89]:
+            - text: Choose how ClassSight looks and notifies you. Your records are managed by your college; settings marked
+            - strong [ref=f4e90]: Needs server
+            - text: become available once your account is connected to the ClassSight server.
+        - tablist "Settings sections" [ref=f4e91]:
+          - tab "Profile" [ref=f4e92] [cursor=pointer]
+          - tab "Notifications" [ref=f4e96] [cursor=pointer]
+          - tab "Attendance rules" [ref=f4e100] [cursor=pointer]
+          - tab "Face data" [selected] [ref=f4e105] [cursor=pointer]
+          - tab "Appearance" [ref=f4e113] [cursor=pointer]
+          - tab "Security" [ref=f4e120] [cursor=pointer]
+          - tab "Help & Support" [ref=f4e124] [cursor=pointer]
+        - tabpanel "Face data" [ref=f4e132]:
+          - note [ref=f4e133]:
+            - paragraph [ref=f4e137]: Your teacher or administrator enrols your face from 1–5 clear photos of only you. Your enrolment status and requests need the ClassSight server, which isn't connected yet.
+          - generic [ref=f4e138]:
+            - generic [ref=f4e139]:
+              - generic [ref=f4e140]:
+                - heading "Enrolment" [level=3] [ref=f4e141]
+                - paragraph [ref=f4e142]: Whether ClassSight can recognise you
+              - generic [ref=f4e143]: Needs server
+            - generic [ref=f4e147]:
+              - paragraph [ref=f4e148]: Your enrolment status will appear here once the server is connected.
+              - generic [ref=f4e149]:
+                - generic [ref=f4e150]:
+                  - generic [ref=f4e151]: Ask to re-enrol
+                  - paragraph [ref=f4e152]: Your look changed, or you keep showing as awaiting review.
+                - button "Ask to re-enrol" [disabled] [ref=f4e154]: Request re-enrolment
+              - generic [ref=f4e155]:
+                - generic [ref=f4e156]:
+                  - generic [ref=f4e157]: Remove my face data
+                  - paragraph [ref=f4e158]: Ask for your photos and face signature to be deleted. Your teacher will then mark you by ID card or by hand.
+                - button "Remove my face data" [disabled] [ref=f4e160]: Request removal
+          - generic [ref=f4e161]:
+            - generic [ref=f4e163]:
+              - heading "How your face data is used" [level=3] [ref=f4e164]
+              - paragraph [ref=f4e165]: What ClassSight keeps and why
+            - generic [ref=f4e167]:
+              - generic [ref=f4e168]:
+                - term [ref=f4e169]: What is stored
+                - definition [ref=f4e170]: Up to 5 enrolment photos and one face signature made from them, kept private.
+              - generic [ref=f4e171]:
+                - term [ref=f4e172]: Who can see it
+                - definition [ref=f4e173]: Your teachers and the college's ClassSight administrators. Never other students.
+              - generic [ref=f4e174]:
+                - term [ref=f4e175]: When it's used
+                - definition [ref=f4e176]: Only to find you in the class photos your teacher uploads during attendance.
+              - generic [ref=f4e177]:
+                - term [ref=f4e178]: Unclear matches
+                - definition [ref=f4e179]: ClassSight never guesses. If it isn't sure, the class waits for your teacher instead of marking you absent.

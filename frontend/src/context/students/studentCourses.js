@@ -4,7 +4,8 @@
 // disagree. Attendance statuses come from saved ClassSight sessions when the student appears in them;
 // otherwise the existing labelled demo generator (studentWeek.js) is used. Nothing is stored per student.
 
-import { DAYS, SLOTS, endTime, toMinutes } from "../../data/schedule/timetable";
+import { DAYS, endTime, toMinutes } from "../../data/schedule/timetable";
+import { STUDENT_BATCH, STUDENT_SLOTS } from "../../data/students/studentTimetable";
 import { DEMO_SUBJECTS } from "../../data/students/studentDemo";
 import { DEMO_ACCOUNTS, normalizeEmail } from "../demo-session/demoSession";
 import { getLocalDateKey } from "../schedule/scheduleStatus";
@@ -12,7 +13,7 @@ import { classesNeededToReach } from "./studentOverview";
 import {
   STATUS,
   buildDemoOccurrences,
-  buildSubjectSummary,
+  getRequirementStatus,
   buildWeeklyChart,
   getRecordedOccurrences,
   getWeekDateKeys,
@@ -23,11 +24,31 @@ import {
 // Eight weeks of history matches the sidebar's "Academic Week 8"
 export const STUDENT_HISTORY_WEEKS = 8;
 
-// Which timetable groups each demo student belongs to (membership only, one group per course).
-// The demo teacher's timetable has one course per year, so the demo student takes one group of each.
+// Demo only: share of classes missed per course, chosen so the demo shows healthy, warning and critical courses
+const DEMO_ABSENT_RATE = { UCS615: 0.05, UCS503: 0.1, UML501: 0.15, UCS537: 0.3, UCS510: 0.33, UCS421: 0.45, UCS553: 0.4 };
+
+// Which batch each demo student belongs to; the batch's weekly slots are the mock student timetable
 const ENROLLMENT = {
-  "prawat_be24@thapar.edu": ["2Q3B", "3C2C", "1MCA 2"],
+  "prawat_be24@thapar.edu": [STUDENT_BATCH, "3T1"], // 3T1 is the Source Code Management section
 };
+
+// One attendance percentage covers every class type; a lab counts as two lectures (a tutorial counts as one)
+export const CLASS_WEIGHT = { Lecture: 1, Tutorial: 1, Lab: 2 };
+export const classWeight = (type) => CLASS_WEIGHT[type] ?? 1;
+const classKind = (type) => (type in CLASS_WEIGHT ? type : "Lecture");
+
+// Weighted present/absent/unverified for a set of held classes, plus the plain class counts per type
+function tally(occs) {
+  const t = { present: 0, absent: 0, unverified: 0, byType: {} };
+  occs.forEach((o) => {
+    if (o.status === STATUS.upcoming) return;
+    const kind = classKind(o.type);
+    t[o.status] += classWeight(kind);
+    const b = (t.byType[kind] ??= { present: 0, absent: 0, unverified: 0 });
+    b[o.status] += 1;
+  });
+  return t;
+}
 
 const to12h = (hhmm) => {
   const [h, m] = hhmm.split(":").map(Number);
@@ -36,10 +57,10 @@ const to12h = (hhmm) => {
 
 const addDays = (date, n) => new Date(date.getFullYear(), date.getMonth(), date.getDate() + n);
 
-/** The student's weekly slots, straight from the timetable. */
+/** The student's weekly slots (mock timetable of their batch). */
 export function getStudentSlots(email) {
   const groups = ENROLLMENT[normalizeEmail(email)] || [];
-  return SLOTS.filter((s) => groups.includes(s.group));
+  return STUDENT_SLOTS.filter((s) => groups.includes(s.group));
 }
 
 /** Courses the student takes, one entry per course code, with all of its weekly slots. */
@@ -47,17 +68,17 @@ export function getStudentCourses(email) {
   const teacher = DEMO_ACCOUNTS.find((a) => a.role === "teacher");
   const courses = [];
   getStudentSlots(email).forEach((slot) => {
-    let course = courses.find((c) => c.code === slot.code);
+    // Lecture (…L) and practical (…P) slots of one course share its course code
+    let course = courses.find((c) => c.code === slot.courseCode);
     if (!course) {
       const colors = DEMO_SUBJECTS[courses.length % DEMO_SUBJECTS.length];
       course = {
-        code: slot.code,
+        code: slot.courseCode,
         name: slot.name,
         year: slot.sheet,
         group: slot.group,
         groupId: slot.gid,
-        type: slot.type,
-        instructor: teacher?.name ?? "—",
+        instructor: slot.instructor ?? teacher?.name ?? "—",
         color: colors.color,
         darkColor: colors.darkColor,
         slots: [],
@@ -66,6 +87,9 @@ export function getStudentCourses(email) {
     }
     course.slots.push({
       id: slot.id,
+      label: slot.code,
+      type: slot.type,
+      instructor: slot.instructor ?? null,
       day: slot.day,
       dayIndex: DAYS.indexOf(slot.day),
       start: slot.start,
@@ -123,8 +147,10 @@ function enrich(occ, courses) {
     ...occ,
     course,
     room: slot?.room ?? null,
+    type: slot?.type ?? null,
+    slotCode: slot?.label ?? occ.code,
     endMinutes: slot ? slot.startMinutes + slot.duration : occ.startMinutes,
-    instructor: course?.instructor ?? null,
+    instructor: slot?.instructor ?? course?.instructor ?? null,
     group: course?.group ?? null,
     method: occ.method ?? null,
     review: occ.status === STATUS.unverified ? "Awaiting teacher review" : null,
@@ -137,29 +163,31 @@ function enrich(occ, courses) {
  */
 export function buildStudentModel({ email, roll, now, sessions, scheduleList, threshold }) {
   const courses = getStudentCourses(email);
-  const subjects = courses.map((c) => ({ code: c.code, name: c.name }));
+  const subjects = courses.map((c) => ({ code: c.code, name: c.name, absentRate: DEMO_ABSENT_RATE[c.code] }));
   const recorded = getRecordedOccurrences(roll, sessions, scheduleList);
   const usingDemo = recorded.length === 0;
-  const timetable = getStudentSlots(email).map((s) => ({ day: DAYS.indexOf(s.day), code: s.code, start: to12h(s.start) }));
+  const timetable = getStudentSlots(email).map((s) => ({ day: DAYS.indexOf(s.day), code: s.courseCode, start: to12h(s.start) }));
   const base = usingDemo
     ? buildDemoOccurrences(timetable, subjects, now, STUDENT_HISTORY_WEEKS)
     : mergeOccurrences(recorded, []);
   const occurrences = base.map((o) => enrich(o, courses));
 
-  const summary = buildSubjectSummary(occurrences, subjects, threshold);
   const rows = courses.map((course) => {
-    const s = summary.find((r) => r.code === course.code);
+    const s = tally(occurrences.filter((o) => o.code === course.code));
+    const decided = s.present + s.absent;
+    const pct = decided > 0 ? Math.round((s.present / decided) * 100) : null;
     const next = getUpcomingClasses([course], now, 1)[0] ?? null;
     return {
       ...course,
-      present: s?.present ?? 0,
-      absent: s?.absent ?? 0,
-      unverified: s?.unverified ?? 0,
-      decided: s?.decided ?? 0,
-      pct: s?.pct ?? null,
-      status: s?.status ?? null,
+      present: s.present,
+      absent: s.absent,
+      unverified: s.unverified,
+      decided,
+      pct,
+      status: pct === null ? null : getRequirementStatus(pct, threshold),
+      byType: s.byType,
       next,
-      needed: s?.pct !== null && s?.pct < threshold ? classesNeededToReach(s.present, s.decided, threshold) : 0,
+      needed: pct !== null && pct < threshold ? classesNeededToReach(s.present, decided, threshold) : 0,
     };
   });
 
@@ -168,6 +196,15 @@ export function buildStudentModel({ email, roll, now, sessions, scheduleList, th
   const unverified = rows.reduce((n, r) => n + r.unverified, 0);
   const decided = present + absent;
   const pct = decided > 0 ? Math.round((present / decided) * 100) : null;
+  const byType = {};
+  rows.forEach((r) =>
+    Object.entries(r.byType).forEach(([kind, b]) => {
+      const sum = (byType[kind] ??= { present: 0, absent: 0, unverified: 0 });
+      sum.present += b.present;
+      sum.absent += b.absent;
+      sum.unverified += b.unverified;
+    })
+  );
 
   const todayKey = getLocalDateKey(now);
   const nowMin = now.getHours() * 60 + now.getMinutes();
@@ -185,7 +222,7 @@ export function buildStudentModel({ email, roll, now, sessions, scheduleList, th
       text: Number.isFinite(r.needed)
         ? `Below the ${threshold}% requirement. Attend the next ${r.needed} class${r.needed === 1 ? "" : "es"} in a row to reach it.`
         : `Below the ${threshold}% requirement.`,
-      to: "/student/attendance",
+      to: "/student/reports",
     })),
     ...(unverified > 0
       ? [{
@@ -193,7 +230,7 @@ export function buildStudentModel({ email, roll, now, sessions, scheduleList, th
           tone: "info",
           title: `${unverified} class${unverified === 1 ? "" : "es"} awaiting review`,
           text: "Face verification was unclear, so your teacher will confirm these. They are not counted as absences.",
-          to: "/student/attendance",
+          to: "/student/reports",
         }]
       : []),
   ];
@@ -206,7 +243,7 @@ export function buildStudentModel({ email, roll, now, sessions, scheduleList, th
     occurrences,
     usingDemo,
     threshold,
-    overall: { present, absent, unverified, decided, held: decided, pct },
+    overall: { present, absent, unverified, decided, held: decided, pct, byType },
     atRisk,
     alerts,
     today,
@@ -247,7 +284,9 @@ export function getWeekEntries(model, weekStart) {
               subject: course.name,
               course,
               room: slot.room,
-              instructor: course.instructor,
+              instructor: slot.instructor ?? course.instructor,
+              type: slot.type,
+              slotCode: slot.label,
               group: course.group,
               status: STATUS.upcoming,
               method: null,

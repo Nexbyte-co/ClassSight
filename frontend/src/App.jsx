@@ -74,9 +74,11 @@ function App() {
                 <Route index element={<StudentDashboard />} />
                 <Route path="timetable" element={<StudentTimetable />} />
                 <Route path="courses" element={<StudentCourses />} />
-                <Route path="attendance" element={<StudentAttendance />} />
+                <Route path="reports" element={<StudentAttendance />} />
+                {/* Old URL from before the page was renamed Reports */}
+                <Route path="attendance" element={<Navigate to="/student/reports" replace />} />
                 {/* Old URL from before the portal had a dedicated Attendance page */}
-                <Route path="attendance-reports" element={<Navigate to="/student/attendance" replace />} />
+                <Route path="attendance-reports" element={<Navigate to="/student/reports" replace />} />
                 <Route path="settings" element={<StudentSettings />} />
               </Route>
             </Route>

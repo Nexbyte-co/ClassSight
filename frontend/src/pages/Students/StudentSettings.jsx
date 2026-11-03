@@ -1,119 +1,97 @@
 // src/pages/Students/StudentSettings.jsx
-// Student settings: profile (read-only), account security, notification preferences, theme and logout.
-// Notification preferences decide which attendance alerts reach the bell; the theme is the portal's real theme.
-import { useNavigate } from "react-router-dom";
-import { Bell, LogOut, Moon, Palette, ShieldCheck, Sun, UserRound } from "lucide-react";
-import "./StudentPages.css";
+// Student settings, split into tabs like the teacher Settings page (and built from its parts).
+// Everything a student can change applies straight away and is stored in this browser; records,
+// the attendance requirement and face data belong to the college and are read-only or "Needs server".
+import { useRef } from "react";
+import { useSearchParams } from "react-router-dom";
+import { Settings as SettingsIcon, UserRound, Bell, ClipboardCheck, ScanFace, Palette, ShieldCheck, LifeBuoy } from "lucide-react";
+import "../Settings/Settings.css";
+import "./StudentSettings.css";
 import { useTheme } from "../../context/theme/ThemeContext";
 import { useDemoSession } from "../../context/demo-session/DemoSessionContext";
 import { useStudentModel } from "../../context/students/useStudentModel";
+import {
+  ProfileTab,
+  NotificationsTab,
+  AttendanceTab,
+  FaceTab,
+  AppearanceTab,
+  SecurityTab,
+  HelpTab,
+} from "./settings/StudentSettingsTabs";
 
-function Toggle({ id, label, hint, checked, onChange }) {
-  return (
-    <div className="st-opt">
-      <span>
-        <b id={`${id}-l`}>{label}</b>
-        <span id={`${id}-h`}>{hint}</span>
-      </span>
-      <button type="button" role="switch" id={id} className="sp-switch" aria-checked={checked} aria-labelledby={`${id}-l`} aria-describedby={`${id}-h`} onClick={() => onChange(!checked)} />
-    </div>
-  );
-}
+const TABS = [
+  { id: "profile", label: "Profile", Icon: UserRound, Panel: ProfileTab },
+  { id: "notifications", label: "Notifications", Icon: Bell, Panel: NotificationsTab },
+  { id: "attendance", label: "Attendance rules", Icon: ClipboardCheck, Panel: AttendanceTab },
+  { id: "face", label: "Face data", Icon: ScanFace, Panel: FaceTab },
+  { id: "appearance", label: "Appearance", Icon: Palette, Panel: AppearanceTab },
+  { id: "security", label: "Security", Icon: ShieldCheck, Panel: SecurityTab },
+  { id: "help", label: "Help & Support", Icon: LifeBuoy, Panel: HelpTab },
+];
 
 export default function StudentSettings() {
-  const navigate = useNavigate();
-  const { session, signOut } = useDemoSession();
-  const { isDarkMode, setIsDarkMode } = useTheme();
+  const [params, setParams] = useSearchParams();
+  const activeId = TABS.some((t) => t.id === params.get("tab")) ? params.get("tab") : "profile";
+  const { Panel } = TABS.find((t) => t.id === activeId);
+  const tabRefs = useRef({});
+  const { isDarkMode } = useTheme();
+  const { session } = useDemoSession();
   const m = useStudentModel();
-  const first = m.courses[0];
 
-  const logout = () => {
-    signOut();
-    navigate("/", { replace: true });
+  const selectTab = (id, focus = false) => {
+    setParams(id === "profile" ? {} : { tab: id }, { replace: true });
+    if (focus) tabRefs.current[id]?.focus();
+  };
+
+  // Arrow keys move between tabs (WAI-ARIA tabs pattern)
+  const onTabKey = (e) => {
+    const i = TABS.findIndex((t) => t.id === activeId);
+    const next = { ArrowRight: i + 1, ArrowLeft: i - 1, Home: 0, End: TABS.length - 1 }[e.key];
+    if (next === undefined) return;
+    e.preventDefault();
+    selectTab(TABS[(next + TABS.length) % TABS.length].id, true);
   };
 
   return (
-    <div className="sp-page sp-settings">
-      <header className="sp-hd">
-        <div>
-          <h1>Settings</h1>
-          <p>Your profile and how ClassSight looks and notifies you.</p>
+    <div className={`db-page teacher-ui sp-chrome sp-setwrap ${isDarkMode ? "dark-mode" : ""}`}>
+      <main className="db-main ts-main">
+        <div className="reports-page-header">
+          <h1 className="reports-title">
+            <SettingsIcon size={28} color="var(--cs-crimson)" strokeWidth={2.2} />
+            <span>Settings</span>
+          </h1>
+          <p className="reports-subtitle">
+            Choose how ClassSight looks and notifies you. Your records are managed by your college; settings marked{" "}
+            <strong>Needs server</strong> become available once your account is connected to the ClassSight server.
+          </p>
         </div>
-      </header>
 
-      <div className="st-grid">
-        <section className="sp-card" aria-labelledby="st-profile">
-          <header className="sp-ch">
-            <h2 id="st-profile"><UserRound size={16} strokeWidth={2} />Profile</h2>
-            <span className="sp-sub">Managed by your college</span>
-          </header>
-          <dl className="sp-facts">
-            <div><dt>Name</dt><dd>{session.name}</dd></div>
-            <div><dt>Role</dt><dd>Student</dd></div>
-            <div><dt>Email</dt><dd>{session.email}</dd></div>
-            <div><dt>Batch</dt><dd>{m.courses.map((c) => c.group).join(", ") || "—"}<small>{first ? `${m.courses.length} course${m.courses.length === 1 ? "" : "s"}` : ""}</small></dd></div>
-          </dl>
-        </section>
-
-        <section className="sp-card" aria-labelledby="st-security">
-          <header className="sp-ch">
-            <h2 id="st-security"><ShieldCheck size={16} strokeWidth={2} />Account security</h2>
-          </header>
-          <ul className="st-list">
-            <li><b>Sign-in method</b><span>Demo role sign-in. There is no password in this version of ClassSight.</span></li>
-            <li><b>This device</b><span>You stay signed in on this browser until you log out.</span></li>
-            <li><b>Your data</b><span>You can only see your own attendance records.</span></li>
-          </ul>
-        </section>
-
-        <section className="sp-card" aria-labelledby="st-notify">
-          <header className="sp-ch">
-            <h2 id="st-notify"><Bell size={16} strokeWidth={2} />Notifications</h2>
-            <span className="sp-sub">Shown under the bell</span>
-          </header>
-          <Toggle
-            id="pref-low"
-            label="Low attendance"
-            hint={`Tell me when a course drops below the ${m.threshold}% requirement.`}
-            checked={m.prefs.lowAttendance}
-            onChange={(v) => m.setPref("lowAttendance", v)}
-          />
-          <Toggle
-            id="pref-review"
-            label="Classes awaiting review"
-            hint="Tell me when a class is unverified and waiting for my teacher."
-            checked={m.prefs.pendingReview}
-            onChange={(v) => m.setPref("pendingReview", v)}
-          />
-        </section>
-
-        <section className="sp-card" aria-labelledby="st-theme">
-          <header className="sp-ch">
-            <h2 id="st-theme"><Palette size={16} strokeWidth={2} />Appearance</h2>
-          </header>
-          <div className="st-themes" role="radiogroup" aria-label="Theme">
-            <button type="button" role="radio" aria-checked={!isDarkMode} className={`st-theme ${!isDarkMode ? "on" : ""}`} onClick={() => setIsDarkMode(false)}>
-              <Sun size={18} strokeWidth={2} />Light
+        <div className="cs-tabs ts-tabs" role="tablist" aria-label="Settings sections" onKeyDown={onTabKey}>
+          {TABS.map(({ id, label, Icon }) => (
+            <button
+              key={id}
+              ref={(el) => (tabRefs.current[id] = el)}
+              id={`ss-tab-${id}`}
+              type="button"
+              role="tab"
+              aria-selected={id === activeId}
+              aria-controls={`ss-panel-${id}`}
+              tabIndex={id === activeId ? 0 : -1}
+              className={`cs-tab ${id === activeId ? "on" : ""}`}
+              onClick={() => selectTab(id)}
+            >
+              <Icon size={16} strokeWidth={1.8} aria-hidden="true" />
+              {label}
+              {id === activeId && <span className="cs-tab-ink" aria-hidden="true" />}
             </button>
-            <button type="button" role="radio" aria-checked={isDarkMode} className={`st-theme ${isDarkMode ? "on" : ""}`} onClick={() => setIsDarkMode(true)}>
-              <Moon size={18} strokeWidth={2} />Dark
-            </button>
-          </div>
-        </section>
+          ))}
+        </div>
 
-        <section className="sp-card st-wide" aria-labelledby="st-logout">
-          <header className="sp-ch">
-            <h2 id="st-logout"><LogOut size={16} strokeWidth={2} />Log out</h2>
-          </header>
-          <div className="st-opt">
-            <span>
-              <b>Sign out of ClassSight</b>
-              <span>You will return to the home page.</span>
-            </span>
-            <button type="button" className="sp-btn danger" onClick={logout}>Log out</button>
-          </div>
-        </section>
-      </div>
+        <div className="ts-panel" role="tabpanel" id={`ss-panel-${activeId}`} aria-labelledby={`ss-tab-${activeId}`} tabIndex={0}>
+          <Panel key={activeId} m={m} session={session} goToTab={selectTab} />
+        </div>
+      </main>
     </div>
   );
 }

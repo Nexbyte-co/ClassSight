@@ -1,0 +1,205 @@
+﻿ClassSight attendance report
+Semester,2627ODDSEM
+Date range,Whole semester
+Course,All courses
+Required attendance %,75
+
+Overall attendance %,78
+Classes missed,41
+Eligible courses,3/7
+Lecture-equivalents needed to fix courses below requirement,47
+
+Course summary (a lab counts as 2 lectures)
+Course,Attendance %,Attended,Missed,Status
+Image Processing,97,34,1,Eligible
+Ethics and Risk Mitigation in AI,59,13,9,Below requirement
+Software Engineering,92,35,3,Eligible
+Machine Learning,83,30,6,Eligible
+Enterprise Web Application,61,23,15,Below requirement
+Source Code Management,68,19,9,Below requirement
+Computer Architecture and Organization,71,15,6,Below requirement
+
+Attendance history
+Date,Course,Time,Class type,Status
+2026-11-03,Enterprise Web Application,15:30,Lab,Absent
+2026-11-03,Software Engineering,14:40,Lecture,Absent
+2026-11-03,Enterprise Web Application,13:50,Lecture,Present
+2026-11-03,Machine Learning,13:00,Lecture,Present
+2026-11-02,Software Engineering,09:40,Lab,Present
+2026-11-02,Ethics and Risk Mitigation in AI,08:50,Lecture,Present
+2026-11-02,Image Processing,08:00,Lecture,Unverified
+2026-10-30,Machine Learning,10:30,Lecture,Present
+2026-10-30,Computer Architecture and Organization,09:40,Lecture,Present
+2026-10-30,Image Processing,08:50,Lecture,Present
+2026-10-30,Software Engineering,08:00,Lecture,Present
+2026-10-29,Ethics and Risk Mitigation in AI,16:20,Lecture,Present
+2026-10-29,Image Processing,15:30,Lecture,Present
+2026-10-29,Machine Learning,13:50,Lab,Absent
+2026-10-29,Source Code Management,12:10,Lecture,Present
+2026-10-29,Source Code Management,11:20,Lecture,Absent
+2026-10-29,Enterprise Web Application,10:30,Lecture,Absent
+2026-10-29,Computer Architecture and Organization,09:40,Lecture,Present
+2026-10-28,Image Processing,15:30,Lab,Present
+2026-10-28,Computer Architecture and Organization,14:40,Lecture,Absent
+2026-10-28,Machine Learning,13:50,Lecture,Present
+2026-10-28,Enterprise Web Application,13:00,Lecture,Present
+2026-10-28,Ethics and Risk Mitigation in AI,10:30,Lecture,Absent
+2026-10-28,Software Engineering,09:40,Lecture,Present
+2026-10-28,Source Code Management,08:00,Lab,Present
+2026-10-27,Enterprise Web Application,15:30,Lab,Present
+2026-10-27,Software Engineering,14:40,Lecture,Present
+2026-10-27,Enterprise Web Application,13:50,Lecture,Absent
+2026-10-27,Machine Learning,13:00,Lecture,Present
+2026-10-26,Software Engineering,09:40,Lab,Present
+2026-10-26,Ethics and Risk Mitigation in AI,08:50,Lecture,Present
+2026-10-26,Image Processing,08:00,Lecture,Present
+2026-10-23,Machine Learning,10:30,Lecture,Present
+2026-10-23,Computer Architecture and Organization,09:40,Lecture,Present
+2026-10-23,Image Processing,08:50,Lecture,Present
+2026-10-23,Software Engineering,08:00,Lecture,Present
+2026-10-22,Ethics and Risk Mitigation in AI,16:20,Lecture,Absent
+2026-10-22,Image Processing,15:30,Lecture,Present
+2026-10-22,Machine Learning,13:50,Lab,Present
+2026-10-22,Source Code Management,12:10,Lecture,Present
+2026-10-22,Source Code Management,11:20,Lecture,Absent
+2026-10-22,Enterprise Web Application,10:30,Lecture,Present
+2026-10-22,Computer Architecture and Organization,09:40,Lecture,Present
+2026-10-21,Image Processing,15:30,Lab,Present
+2026-10-21,Computer Architecture and Organization,14:40,Lecture,Absent
+2026-10-21,Machine Learning,13:50,Lecture,Present
+2026-10-21,Enterprise Web Application,13:00,Lecture,Absent
+2026-10-21,Ethics and Risk Mitigation in AI,10:30,Lecture,Present
+2026-10-21,Software Engineering,09:40,Lecture,Present
+2026-10-21,Source Code Management,08:00,Lab,Present
+2026-10-20,Enterprise Web Application,15:30,Lab,Present
+2026-10-20,Software Engineering,14:40,Lecture,Present
+2026-10-20,Enterprise Web Application,13:50,Lecture,Present
+2026-10-20,Machine Learning,13:00,Lecture,Present
+2026-10-19,Software Engineering,09:40,Lab,Present
+2026-10-19,Ethics and Risk Mitigation in AI,08:50,Lecture,Absent
+2026-10-19,Image Processing,08:00,Lecture,Present
+2026-10-16,Machine Learning,10:30,Lecture,Absent
+2026-10-16,Computer Architecture and Organization,09:40,Lecture,Present
+2026-10-16,Image Processing,08:50,Lecture,Absent
+2026-10-16,Software Engineering,08:00,Lecture,Absent
+2026-10-15,Ethics and Risk Mitigation in AI,16:20,Lecture,Present
+2026-10-15,Image Processing,15:30,Lecture,Present
+2026-10-15,Machine Learning,13:50,Lab,Present
+2026-10-15,Source Code Management,12:10,Lecture,Present
+2026-10-15,Source Code Management,11:20,Lecture,Absent
+2026-10-15,Enterprise Web Application,10:30,Lecture,Absent
+2026-10-15,Computer Architecture and Organization,09:40,Lecture,Present
+2026-10-14,Image Processing,15:30,Lab,Present
+2026-10-14,Computer Architecture and Organization,14:40,Lecture,Absent
+2026-10-14,Machine Learning,13:50,Lecture,Present
+2026-10-14,Enterprise Web Application,13:00,Lecture,Present
+2026-10-14,Ethics and Risk Mitigation in AI,10:30,Lecture,Absent
+2026-10-14,Software Engineering,09:40,Lecture,Present
+2026-10-14,Source Code Management,08:00,Lab,Present
+2026-10-13,Enterprise Web Application,15:30,Lab,Absent
+2026-10-13,Software Engineering,14:40,Lecture,Present
+2026-10-13,Enterprise Web Application,13:50,Lecture,Present
+2026-10-13,Machine Learning,13:00,Lecture,Present
+2026-10-12,Software Engineering,09:40,Lab,Present
+2026-10-12,Ethics and Risk Mitigation in AI,08:50,Lecture,Present
+2026-10-12,Image Processing,08:00,Lecture,Present
+2026-10-09,Machine Learning,10:30,Lecture,Present
+2026-10-09,Computer Architecture and Organization,09:40,Lecture,Present
+2026-10-09,Image Processing,08:50,Lecture,Present
+2026-10-09,Software Engineering,08:00,Lecture,Present
+2026-10-08,Ethics and Risk Mitigation in AI,16:20,Lecture,Absent
+2026-10-08,Image Processing,15:30,Lecture,Present
+2026-10-08,Machine Learning,13:50,Lab,Present
+2026-10-08,Source Code Management,12:10,Lecture,Present
+2026-10-08,Source Code Management,11:20,Lecture,Present
+2026-10-08,Enterprise Web Application,10:30,Lecture,Present
+2026-10-08,Computer Architecture and Organization,09:40,Lecture,Present
+2026-10-07,Image Processing,15:30,Lab,Present
+2026-10-07,Computer Architecture and Organization,14:40,Lecture,Absent
+2026-10-07,Machine Learning,13:50,Lecture,Absent
+2026-10-07,Enterprise Web Application,13:00,Lecture,Absent
+2026-10-07,Ethics and Risk Mitigation in AI,10:30,Lecture,Present
+2026-10-07,Software Engineering,09:40,Lecture,Present
+2026-10-07,Source Code Management,08:00,Lab,Absent
+2026-10-06,Enterprise Web Application,15:30,Lab,Present
+2026-10-06,Software Engineering,14:40,Lecture,Present
+2026-10-06,Enterprise Web Application,13:50,Lecture,Absent
+2026-10-06,Machine Learning,13:00,Lecture,Present
+2026-10-05,Software Engineering,09:40,Lab,Present
+2026-10-05,Ethics and Risk Mitigation in AI,08:50,Lecture,Present
+2026-10-05,Image Processing,08:00,Lecture,Present
+2026-10-02,Machine Learning,10:30,Lecture,Present
+2026-10-02,Computer Architecture and Organization,09:40,Lecture,Present
+2026-10-02,Image Processing,08:50,Lecture,Present
+2026-10-02,Software Engineering,08:00,Lecture,Present
+2026-10-01,Ethics and Risk Mitigation in AI,16:20,Lecture,Absent
+2026-10-01,Image Processing,15:30,Lecture,Present
+2026-10-01,Machine Learning,13:50,Lab,Present
+2026-10-01,Source Code Management,12:10,Lecture,Present
+2026-10-01,Source Code Management,11:20,Lecture,Present
+2026-10-01,Enterprise Web Application,10:30,Lecture,Present
+2026-10-01,Computer Architecture and Organization,09:40,Lecture,Present
+2026-09-30,Image Processing,15:30,Lab,Present
+2026-09-30,Computer Architecture and Organization,14:40,Lecture,Absent
+2026-09-30,Machine Learning,13:50,Lecture,Present
+2026-09-30,Enterprise Web Application,13:00,Lecture,Present
+2026-09-30,Ethics and Risk Mitigation in AI,10:30,Lecture,Present
+2026-09-30,Software Engineering,09:40,Lecture,Present
+2026-09-30,Source Code Management,08:00,Lab,Absent
+2026-09-29,Enterprise Web Application,15:30,Lab,Absent
+2026-09-29,Software Engineering,14:40,Lecture,Absent
+2026-09-29,Enterprise Web Application,13:50,Lecture,Present
+2026-09-29,Machine Learning,13:00,Lecture,Present
+2026-09-28,Software Engineering,09:40,Lab,Present
+2026-09-28,Ethics and Risk Mitigation in AI,08:50,Lecture,Absent
+2026-09-28,Image Processing,08:00,Lecture,Present
+2026-09-25,Machine Learning,10:30,Lecture,Present
+2026-09-25,Computer Architecture and Organization,09:40,Lecture,Present
+2026-09-25,Image Processing,08:50,Lecture,Present
+2026-09-25,Software Engineering,08:00,Lecture,Present
+2026-09-24,Ethics and Risk Mitigation in AI,16:20,Lecture,Present
+2026-09-24,Image Processing,15:30,Lecture,Present
+2026-09-24,Machine Learning,13:50,Lab,Absent
+2026-09-24,Source Code Management,12:10,Lecture,Present
+2026-09-24,Source Code Management,11:20,Lecture,Present
+2026-09-24,Enterprise Web Application,10:30,Lecture,Absent
+2026-09-24,Computer Architecture and Organization,09:40,Lecture,Present
+2026-09-23,Image Processing,15:30,Lab,Present
+2026-09-23,Computer Architecture and Organization,14:40,Lecture,Absent
+2026-09-23,Machine Learning,13:50,Lecture,Present
+2026-09-23,Enterprise Web Application,13:00,Lecture,Present
+2026-09-23,Ethics and Risk Mitigation in AI,10:30,Lecture,Absent
+2026-09-23,Software Engineering,09:40,Lecture,Present
+2026-09-23,Source Code Management,08:00,Lab,Absent
+2026-09-22,Enterprise Web Application,15:30,Lab,Present
+2026-09-22,Software Engineering,14:40,Lecture,Present
+2026-09-22,Enterprise Web Application,13:50,Lecture,Absent
+2026-09-22,Machine Learning,13:00,Lecture,Present
+2026-09-21,Software Engineering,09:40,Lab,Present
+2026-09-21,Ethics and Risk Mitigation in AI,08:50,Lecture,Present
+2026-09-21,Image Processing,08:00,Lecture,Present
+2026-09-18,Machine Learning,10:30,Lecture,Present
+2026-09-18,Computer Architecture and Organization,09:40,Lecture,Present
+2026-09-18,Image Processing,08:50,Lecture,Present
+2026-09-18,Software Engineering,08:00,Lecture,Present
+2026-09-17,Ethics and Risk Mitigation in AI,16:20,Lecture,Absent
+2026-09-17,Image Processing,15:30,Lecture,Present
+2026-09-17,Machine Learning,13:50,Lab,Present
+2026-09-17,Source Code Management,12:10,Lecture,Present
+2026-09-17,Source Code Management,11:20,Lecture,Present
+2026-09-17,Enterprise Web Application,10:30,Lecture,Present
+2026-09-17,Computer Architecture and Organization,09:40,Lecture,Present
+2026-09-16,Image Processing,15:30,Lab,Present
+2026-09-16,Computer Architecture and Organization,14:40,Lecture,Present
+2026-09-16,Machine Learning,13:50,Lecture,Present
+2026-09-16,Enterprise Web Application,13:00,Lecture,Absent
+2026-09-16,Ethics and Risk Mitigation in AI,10:30,Lecture,Present
+2026-09-16,Software Engineering,09:40,Lecture,Present
+2026-09-16,Source Code Management,08:00,Lab,Present
+2026-09-15,Enterprise Web Application,15:30,Lab,Present
+2026-09-15,Software Engineering,14:40,Lecture,Present
+2026-09-15,Enterprise Web Application,13:50,Lecture,Present
+2026-09-15,Machine Learning,13:00,Lecture,Present
+2026-09-14,Software Engineering,09:40,Lab,Present
+2026-09-14,Ethics and Risk Mitigation in AI,08:50,Lecture,Present
+2026-09-14,Image Processing,08:00,Lecture,Present

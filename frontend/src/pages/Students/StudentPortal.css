@@ -34,9 +34,12 @@
   display: flex;
 }
 
+/* Fill all the space beside the sidebar (the shared .dashboard-main caps itself at 1400px and centres) */
 .sp-body > .dashboard-main {
   flex: 1;
   min-width: 0;
+  max-width: none;
+  margin: 0;
 }
 
 .db-page.teacher-ui .sp-badge {

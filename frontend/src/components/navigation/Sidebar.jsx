@@ -1,5 +1,6 @@
 import { useLayoutEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
+import { termLabel } from "../../utils/termLabel";
 import {
   BookOpen,
   CircleCheck,
@@ -82,7 +83,7 @@ function Sidebar({ active, collapsed, liveBadge = false, onSignOut }) {
       </nav>
       <div className="db-bot">
         <div className="db-term">
-          <b>Spring Term 2026</b>
+          <b>{termLabel()}</b>
           <span>CSE Dept. • Semester 6</span>
           <i>Academic Week 8</i>
         </div>

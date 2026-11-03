@@ -23,8 +23,9 @@ const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "
 const START_MIN = 8 * 60; // grid starts at 08:00
 const PERIOD_MIN = 50;
 const PERIODS = 11;
-const PX_PER_MIN = 1.6;
-const GRID_HEIGHT = PERIODS * PERIOD_MIN * PX_PER_MIN;
+const TOTAL_MIN = PERIODS * PERIOD_MIN;
+// Positions are percentages of the day, so the whole grid always fits its box (no scrolling)
+const pct = (min) => `${(min / TOTAL_MIN) * 100}%`;
 const TIME_MARKS = Array.from({ length: PERIODS + 1 }, (_, i) => START_MIN + i * PERIOD_MIN);
 
 function startOfWeek(offset) {
@@ -94,7 +95,7 @@ function ClassSchedule() {
   const weekLabel = `${first.getDate()} ${MONTHS[first.getMonth()]} – ${last.getDate()} ${MONTHS[last.getMonth()]}`;
 
   return (
-    <TeacherShell active="schedule">
+    <TeacherShell active="schedule" rootClassName="sc-root">
       <main className="db-main">
         <div className="sc-page">
           <div className="sc-hd">
@@ -119,7 +120,7 @@ function ClassSchedule() {
 
           <ClassesTabs />
           <div className="sc-grid">
-            <div className="sc-tt" role="region" aria-label="Weekly timetable" tabIndex={0}>
+            <div className="sc-tt" role="region" aria-label="Weekly timetable">
               <div className="sc-tti">
                 <div className="sc-tth">
                   <div />
@@ -131,15 +132,15 @@ function ClassSchedule() {
                   ))}
                 </div>
                 <div className="sc-ttb" key={weekOffset}>
-                  <div className="sc-tlab" style={{ height: GRID_HEIGHT }}>
+                  <div className="sc-tlab">
                     {TIME_MARKS.map((m) => (
-                      <span key={m} style={{ top: (m - START_MIN) * PX_PER_MIN }}>{toClock(m)}</span>
+                      <span key={m} style={{ top: pct(m - START_MIN) }}>{toClock(m)}</span>
                     ))}
                   </div>
                   {days.map(({ name, date }) => (
-                    <div key={name} className={`sc-tcol ${isToday(date) ? "td" : ""}`} style={{ height: GRID_HEIGHT }}>
+                    <div key={name} className={`sc-tcol ${isToday(date) ? "td" : ""}`}>
                       {isToday(date) && nowMin >= START_MIN && nowMin <= START_MIN + PERIODS * PERIOD_MIN && (
-                        <div className="sc-now" style={{ top: (nowMin - START_MIN) * PX_PER_MIN }} aria-hidden="true" />
+                        <div className="sc-now" style={{ top: pct(nowMin - START_MIN) }} aria-hidden="true" />
                       )}
                       {SLOTS.filter((o) => o.day === name).map((o) => {
                         const state = selectedCourse == null ? "" : selectedCourse === o.courseIndex ? "hi" : "dim";
@@ -159,8 +160,8 @@ function ClassSchedule() {
                               }
                             }}
                             style={{
-                              top: (toMinutes(o.start) - START_MIN) * PX_PER_MIN,
-                              height: o.dur * PX_PER_MIN,
+                              top: pct(toMinutes(o.start) - START_MIN),
+                              height: pct(o.dur),
                             }}
                           >
                             <div className="n">{o.name}</div>

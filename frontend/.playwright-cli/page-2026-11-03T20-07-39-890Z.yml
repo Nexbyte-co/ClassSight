@@ -1,0 +1,97 @@
+- generic [ref=f8e3]:
+  - banner [ref=f8e5]:
+    - generic [ref=f8e6]:
+      - button "Toggle navigation" [expanded] [ref=f8e7] [cursor=pointer]
+      - link "ClassSight" [ref=f8e9] [cursor=pointer]:
+        - /url: /student
+      - generic [ref=f8e18]: Student · Demo
+    - generic [ref=f8e19]:
+      - generic [ref=f8e20]: Wed, Nov 4, 2026
+      - button "Night mode" [ref=f8e24] [cursor=pointer]
+      - button "Notifications (4)" [ref=f8e194] [cursor=pointer]
+      - button "Account menu for Parv Rawat" [ref=f8e34] [cursor=pointer]:
+        - generic [aria-hidden] [ref=f8e35]: P
+        - generic [ref=f8e36]:
+          - generic [ref=f8e37]: Parv
+          - generic [ref=f8e38]: "1024030265"
+  - generic [ref=f8e41]:
+    - complementary "Student navigation" [ref=f8e43]:
+      - navigation [ref=f8e44]:
+        - link "Dashboard" [ref=f8e45] [cursor=pointer]:
+          - /url: /student
+        - link "Timetable" [ref=f8e52] [cursor=pointer]:
+          - /url: /student/timetable
+        - link "My Courses" [ref=f8e56] [cursor=pointer]:
+          - /url: /student/courses
+        - link "Reports" [ref=f8e60] [cursor=pointer]:
+          - /url: /student/reports
+        - link "Settings" [ref=f8e65] [cursor=pointer]:
+          - /url: /student/settings
+      - generic [ref=f8e70]:
+        - generic [ref=f8e71]:
+          - generic [ref=f8e72]: Odd Semester
+          - generic [ref=f8e73]: 2026–27
+          - generic [ref=f8e74]: Student portal · Demo
+        - button "Log Out" [ref=f8e75] [cursor=pointer]
+    - main [ref=f8e80]:
+      - main [ref=f8e82]:
+        - generic [ref=f8e83]:
+          - heading "Settings" [level=1] [ref=f8e84]
+          - paragraph [ref=f8e89]:
+            - text: Choose how ClassSight looks and notifies you. Your records are managed by your college; settings marked
+            - strong [ref=f8e90]: Needs server
+            - text: become available once your account is connected to the ClassSight server.
+        - tablist "Settings sections" [ref=f8e91]:
+          - tab "Profile" [ref=f8e92] [cursor=pointer]
+          - tab "Notifications" [selected] [ref=f8e96] [cursor=pointer]
+          - tab "Attendance rules" [ref=f8e101] [cursor=pointer]
+          - tab "Face data" [ref=f8e106] [cursor=pointer]
+          - tab "Appearance" [ref=f8e113] [cursor=pointer]
+          - tab "Security" [ref=f8e120] [cursor=pointer]
+          - tab "Help & Support" [ref=f8e124] [cursor=pointer]
+        - tabpanel "Notifications" [ref=f8e132]:
+          - generic [ref=f8e133]:
+            - generic [ref=f8e134]:
+              - generic [ref=f8e135]:
+                - heading "Alerts under the bell" [level=3] [ref=f8e136]
+                - paragraph [ref=f8e137]: Applied straight away on this device
+              - generic [ref=f8e138]: Saved in this browser
+            - generic [ref=f8e139]:
+              - generic [ref=f8e140]:
+                - generic [ref=f8e141]:
+                  - generic [ref=f8e142]: Low attendance
+                  - paragraph [ref=f8e143]: When a course drops below the 75% requirement, with how many classes you need to recover.
+                - switch "Low attendance" [checked] [active] [ref=f8e145] [cursor=pointer]
+              - generic [ref=f8e147]:
+                - generic [ref=f8e148]:
+                  - generic [ref=f8e149]: Classes awaiting review
+                  - paragraph [ref=f8e150]: When face verification was unclear and your teacher still has to confirm a class.
+                - switch "Classes awaiting review" [checked] [ref=f8e152] [cursor=pointer]
+              - paragraph [ref=f8e154]: 4 alerts under the bell right now.
+          - generic [ref=f8e155]:
+            - generic [ref=f8e156]:
+              - generic [ref=f8e157]:
+                - heading "Email and reminders" [level=3] [ref=f8e158]
+                - paragraph [ref=f8e159]: Sent by the ClassSight server
+              - generic [ref=f8e160]: Needs server
+            - generic [ref=f8e164]:
+              - generic [ref=f8e165]:
+                - generic [ref=f8e166]:
+                  - generic [ref=f8e167]: Email me about low attendance
+                  - paragraph [ref=f8e168]: A message to your college email when a course falls below the requirement.
+                - switch "Email me about low attendance" [checked] [disabled] [ref=f8e170]
+              - generic [ref=f8e172]:
+                - generic [ref=f8e173]:
+                  - generic [ref=f8e174]: Class reminders
+                  - paragraph [ref=f8e175]: A reminder a few minutes before each class starts.
+                - switch "Class reminders" [disabled] [ref=f8e177]
+              - generic [ref=f8e179]:
+                - generic [ref=f8e180]:
+                  - generic [ref=f8e181]: Timetable changes
+                  - paragraph [ref=f8e182]: When a class is moved, cancelled or changes room.
+                - switch "Timetable changes" [checked] [disabled] [ref=f8e184]
+              - generic [ref=f8e186]:
+                - generic [ref=f8e187]:
+                  - generic [ref=f8e188]: Weekly summary
+                  - paragraph [ref=f8e189]: Your attendance for the week, every Sunday.
+                - switch "Weekly summary" [disabled] [ref=f8e191]

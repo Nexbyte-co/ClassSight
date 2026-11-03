@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { termLabel } from "../../utils/termLabel";
 import {
   LayoutDashboard,
   BookOpen,
@@ -185,7 +186,7 @@ function AppNavigationDrawer({ isOpen, onClose, activePage }) {
         {/* Drawer Footer */}
         <div className="app-nav-footer">
           <div className="app-nav-term-badge">
-            <strong>Spring Term 2026</strong>
+            <strong>{termLabel()}</strong>
             <span>CSE Dept. · Semester 6</span>
           </div>
 

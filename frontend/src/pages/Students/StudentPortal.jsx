@@ -8,7 +8,7 @@ import {
   Calendar,
   CalendarDays,
   ChevronDown,
-  CircleCheck,
+  FileChartColumn,
   LayoutDashboard,
   LogOut,
   Menu,
@@ -31,7 +31,7 @@ const STUDENT_NAV = [
   { to: "/student", label: "Dashboard", Icon: LayoutDashboard, end: true },
   { to: "/student/timetable", label: "Timetable", Icon: CalendarDays },
   { to: "/student/courses", label: "My Courses", Icon: BookOpen },
-  { to: "/student/attendance", label: "Attendance", Icon: CircleCheck },
+  { to: "/student/reports", label: "Reports", Icon: FileChartColumn },
   { to: "/student/settings", label: "Settings", Icon: SettingsIcon },
 ];
 
@@ -126,7 +126,7 @@ function StudentProfileMenu({ session, onSignOut }) {
         <span className="profile-avatar" aria-hidden="true">{session.name.charAt(0)}</span>
         <span className="profile-stack">
           <span className="profile-stack-name">{first}</span>
-          <span className="profile-stack-dept">Student</span>
+          <span className="profile-stack-dept">{session.roll ?? "Student"}</span>
         </span>
         <ChevronDown size={16} strokeWidth={2} className={`profile-chevron ${open ? "open" : ""}`} aria-hidden="true" />
       </button>
@@ -238,17 +238,19 @@ export function StudentPortalLayout() {
     navigate("/", { replace: true });
   };
 
+  // Used by the menu button and by Settings > Appearance
+  const setSideCollapsed = (collapsed) => {
+    setIsSideCollapsed(collapsed);
+    try {
+      localStorage.setItem(SIDE_COLLAPSED_KEY, collapsed ? "1" : "0");
+    } catch {
+      // storage blocked: the setting still works for this page
+    }
+  };
+
   const handleToggleNav = () => {
     if (window.matchMedia(MOBILE_NAV_QUERY).matches) setIsNavOpen((open) => !open);
-    else
-      setIsSideCollapsed((collapsed) => {
-        try {
-          localStorage.setItem(SIDE_COLLAPSED_KEY, collapsed ? "0" : "1");
-        } catch {
-          // storage blocked: the toggle still works for this page
-        }
-        return !collapsed;
-      });
+    else setSideCollapsed(!isSideCollapsed);
   };
 
   const chrome = `db-page teacher-ui sp-chrome ${isDarkMode ? "dark-mode" : ""}`;
@@ -334,7 +336,7 @@ export function StudentPortalLayout() {
         </div>
 
         <main className="dashboard-main">
-          <Outlet context={{ ...model, prefs, setPref }} />
+          <Outlet context={{ ...model, prefs, setPref, sideCollapsed: isSideCollapsed, setSideCollapsed, signOut: handleSignOut }} />
         </main>
       </div>
 

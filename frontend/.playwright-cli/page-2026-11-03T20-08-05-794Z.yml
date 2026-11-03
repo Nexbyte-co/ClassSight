@@ -1,0 +1,73 @@
+- generic [ref=f12e3]:
+  - banner [ref=f12e5]:
+    - generic [ref=f12e6]:
+      - button "Toggle navigation" [expanded] [ref=f12e7] [cursor=pointer]
+      - link "ClassSight" [ref=f12e9] [cursor=pointer]:
+        - /url: /student
+    - generic [ref=f12e18]:
+      - button "Night mode" [ref=f12e19] [cursor=pointer]
+      - button "Notifications (4)" [ref=f12e23] [cursor=pointer]
+      - button "Account menu for Parv Rawat" [ref=f12e29] [cursor=pointer]:
+        - generic [aria-hidden] [ref=f12e30]: P
+  - main [ref=f12e32]:
+    - main [ref=f12e34]:
+      - generic [ref=f12e35]:
+        - heading "Settings" [level=1] [ref=f12e36]
+        - paragraph [ref=f12e41]:
+          - text: Choose how ClassSight looks and notifies you. Your records are managed by your college; settings marked
+          - strong [ref=f12e42]: Needs server
+          - text: become available once your account is connected to the ClassSight server.
+      - tablist "Settings sections" [ref=f12e43]:
+        - tab "Profile" [ref=f12e44] [cursor=pointer]
+        - tab "Notifications" [selected] [ref=f12e48] [cursor=pointer]
+        - tab "Attendance rules" [ref=f12e53] [cursor=pointer]
+        - tab "Face data" [ref=f12e58] [cursor=pointer]
+        - tab "Appearance" [ref=f12e65] [cursor=pointer]
+        - tab "Security" [ref=f12e72] [cursor=pointer]
+        - tab "Help & Support" [ref=f12e76] [cursor=pointer]
+      - tabpanel "Notifications" [ref=f12e84]:
+        - generic [ref=f12e85]:
+          - generic [ref=f12e86]:
+            - generic [ref=f12e87]:
+              - heading "Alerts under the bell" [level=3] [ref=f12e88]
+              - paragraph [ref=f12e89]: Applied straight away on this device
+            - generic [ref=f12e90]: Saved in this browser
+          - generic [ref=f12e91]:
+            - generic [ref=f12e92]:
+              - generic [ref=f12e93]:
+                - generic [ref=f12e94]: Low attendance
+                - paragraph [ref=f12e95]: When a course drops below the 75% requirement, with how many classes you need to recover.
+              - switch "Low attendance" [checked] [ref=f12e97] [cursor=pointer]
+            - generic [ref=f12e99]:
+              - generic [ref=f12e100]:
+                - generic [ref=f12e101]: Classes awaiting review
+                - paragraph [ref=f12e102]: When face verification was unclear and your teacher still has to confirm a class.
+              - switch "Classes awaiting review" [checked] [ref=f12e104] [cursor=pointer]
+            - paragraph [ref=f12e106]: 4 alerts under the bell right now.
+        - generic [ref=f12e107]:
+          - generic [ref=f12e108]:
+            - generic [ref=f12e109]:
+              - heading "Email and reminders" [level=3] [ref=f12e110]
+              - paragraph [ref=f12e111]: Sent by the ClassSight server
+            - generic [ref=f12e112]: Needs server
+          - generic [ref=f12e116]:
+            - generic [ref=f12e117]:
+              - generic [ref=f12e118]:
+                - generic [ref=f12e119]: Email me about low attendance
+                - paragraph [ref=f12e120]: A message to your college email when a course falls below the requirement.
+              - switch "Email me about low attendance" [checked] [disabled] [ref=f12e122]
+            - generic [ref=f12e124]:
+              - generic [ref=f12e125]:
+                - generic [ref=f12e126]: Class reminders
+                - paragraph [ref=f12e127]: A reminder a few minutes before each class starts.
+              - switch "Class reminders" [disabled] [ref=f12e129]
+            - generic [ref=f12e131]:
+              - generic [ref=f12e132]:
+                - generic [ref=f12e133]: Timetable changes
+                - paragraph [ref=f12e134]: When a class is moved, cancelled or changes room.
+              - switch "Timetable changes" [checked] [disabled] [ref=f12e136]
+            - generic [ref=f12e138]:
+              - generic [ref=f12e139]:
+                - generic [ref=f12e140]: Weekly summary
+                - paragraph [ref=f12e141]: Your attendance for the week, every Sunday.
+              - switch "Weekly summary" [disabled] [ref=f12e143]
