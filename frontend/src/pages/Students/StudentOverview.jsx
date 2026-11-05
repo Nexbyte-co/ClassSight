@@ -74,7 +74,7 @@ function StudentHeader() {
           </div>
           <span className="brand-name">ClassSight</span>
         </Link>
-        <span className="section-chip">Student · Demo</span>
+        <span className="section-chip">Student</span>
       </div>
 
       <div className="header-right">

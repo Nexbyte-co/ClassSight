@@ -20,7 +20,6 @@ import {
 import "./Classes.css";
 import Dropdown from "./Dropdown";
 import TeacherShell from "../../components/navigation/TeacherShell";
-import ClassesTabs from "../../components/classes/ClassesTabs";
 import { useDialogA11y } from "../../hooks/useDialogA11y";
 import { SLOTS, COURSES, YEARS, DAYS, HEALTHY_ATTENDANCE, endTime, toMinutes } from "../../data/schedule/timetable";
 
@@ -331,8 +330,6 @@ function Classes() {
               {termLabel()}
             </span>
           </header>
-
-          <ClassesTabs />
 
           <div className="cx-layout">
             <div className="cx-left">

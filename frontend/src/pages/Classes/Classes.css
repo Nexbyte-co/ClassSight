@@ -303,7 +303,7 @@
   .db-page.teacher-ui.cx-root { height: 100vh; min-height: 0; overflow: hidden; }
   .db-page.teacher-ui.cx-root .db-body { min-height: 0; overflow: hidden; }
   .db-page.teacher-ui.cx-root .db-main { min-height: 0; overflow: hidden; display: flex; flex-direction: column; }
-  .db-page.teacher-ui.cx-root .cx-panel { flex: 1; min-height: 0; grid-template-rows: auto auto minmax(0, 1fr); }
+  .db-page.teacher-ui.cx-root .cx-panel { flex: 1; min-height: 0; grid-template-rows: auto minmax(0, 1fr); }
   .db-page.teacher-ui.cx-root .cx-layout { min-height: 0; grid-template-columns: minmax(0, 1fr) clamp(340px, 27vw, 420px); }
   .db-page.teacher-ui.cx-root .cx-left { min-height: 0; grid-template-rows: auto auto minmax(0, 1fr); }
   .db-page.teacher-ui.cx-root .cx-scroll {

@@ -3,7 +3,6 @@ import { useState, useMemo, useEffect } from "react";
 import { Calendar, ChevronLeft, ChevronRight } from "lucide-react";
 import "./ClassSchedule.css";
 import TeacherShell from "../../components/navigation/TeacherShell";
-import ClassesTabs from "../../components/classes/ClassesTabs";
 import { SLOTS, COURSES, DAYS, toMinutes, toClock, endTime } from "../../data/schedule/timetable";
 
 // Accent per course (colours live in ClassSchedule.css as .ac-* classes)
@@ -118,7 +117,6 @@ function ClassSchedule() {
             </div>
           </div>
 
-          <ClassesTabs />
           <div className="sc-grid">
             <div className="sc-tt" role="region" aria-label="Weekly timetable">
               <div className="sc-tti">

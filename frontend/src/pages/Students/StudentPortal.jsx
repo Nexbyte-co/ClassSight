@@ -36,7 +36,7 @@ const STUDENT_NAV = [
 ];
 
 // Fixed mock semester information
-const TERM = { title: "Odd Semester", sub: "2026–27", note: "Student portal · Demo" };
+const TERM = { title: "Odd Semester", sub: "2026–27", note: "Student portal" };
 
 // Below this width the sidebar is hidden and the menu button opens the drawer instead (same as TeacherShell)
 const MOBILE_NAV_QUERY = "(max-width: 700px)";
@@ -275,7 +275,7 @@ export function StudentPortalLayout() {
               </div>
               <span className="db-brand">ClassSight</span>
             </Link>
-            <span className="sp-badge">Student · Demo</span>
+            <span className="sp-badge">Student</span>
           </div>
 
           <div className="db-row">

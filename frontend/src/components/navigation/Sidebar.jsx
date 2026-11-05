@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { termLabel } from "../../utils/termLabel";
 import {
   BookOpen,
+  CalendarDays,
   CircleCheck,
   LayoutDashboard,
   LogOut,
@@ -14,6 +15,7 @@ import ReportsIcon from "./ReportsIcon";
 const SIDEBAR_LINKS = [
   { to: "/dashboard", key: "dashboard", label: "Dashboard", Icon: LayoutDashboard },
   { to: "/classes", key: "classes", label: "Classes", Icon: BookOpen },
+  { to: "/classes/schedule", key: "schedule", label: "Class Schedule", Icon: CalendarDays },
   { to: "/attendance", key: "attendance", label: "Attendance", Icon: CircleCheck },
   { to: "/students", key: "students", label: "Students", Icon: UserRound },
   { to: "/reports", key: "reports", label: "Reports", Icon: ReportsIcon },
@@ -28,7 +30,6 @@ function Sidebar({ active, collapsed, liveBadge = false, onSignOut }) {
   const navRef = useRef(null);
   const [pill, setPill] = useState(lastPill);
   const [pillAnimates, setPillAnimates] = useState(false);
-  const onClassesPage = active === "classes" || active === "schedule";
 
   useLayoutEffect(() => {
     const nav = navRef.current;
@@ -65,7 +66,7 @@ function Sidebar({ active, collapsed, liveBadge = false, onSignOut }) {
           />
         )}
         {SIDEBAR_LINKS.map(({ to, key, label, Icon }) => {
-          const isOn = key === "classes" ? onClassesPage : key === active;
+          const isOn = key === active;
           return (
             <Link
               key={to}

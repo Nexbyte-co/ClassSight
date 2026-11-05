@@ -151,7 +151,7 @@
   .db-page.teacher-ui.sc-root { height: 100vh; min-height: 0; overflow: hidden; }
   .db-page.teacher-ui.sc-root .db-body { min-height: 0; overflow: hidden; }
   .db-page.teacher-ui.sc-root .db-body > .db-main { min-height: 0; overflow: hidden; grid-template-rows: minmax(0, 1fr); }
-  .db-page.teacher-ui .sc-page { min-height: 0; grid-template-rows: auto auto minmax(0, 1fr); }
+  .db-page.teacher-ui .sc-page { min-height: 0; grid-template-rows: auto minmax(0, 1fr); }
   .db-page.teacher-ui .sc-grid { height: auto; min-height: 0; }
 }
 

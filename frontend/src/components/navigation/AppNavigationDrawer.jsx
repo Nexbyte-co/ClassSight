@@ -4,6 +4,7 @@ import { termLabel } from "../../utils/termLabel";
 import {
   LayoutDashboard,
   BookOpen,
+  CalendarDays,
   Camera,
   GraduationCap,
   Settings,
@@ -139,11 +140,20 @@ function AppNavigationDrawer({ isOpen, onClose, activePage }) {
 
           <Link
             to="/classes"
-            className={`app-nav-link ${activePage === "classes" || activePage === "class-schedule" ? "active" : ""}`}
+            className={`app-nav-link ${activePage === "classes" ? "active" : ""}`}
             onClick={onClose}
           >
             <BookOpen size={19} strokeWidth={1.8} />
             <span>Classes</span>
+          </Link>
+
+          <Link
+            to="/classes/schedule"
+            className={`app-nav-link ${activePage === "class-schedule" ? "active" : ""}`}
+            onClick={onClose}
+          >
+            <CalendarDays size={19} strokeWidth={1.8} />
+            <span>Class Schedule</span>
           </Link>
 
           <Link

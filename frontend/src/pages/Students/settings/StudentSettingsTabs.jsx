@@ -276,7 +276,7 @@ export function SecurityTab({ m, session }) {
             Log out
           </button>
         </SettingRow>
-        <p className="ts-hint">This is the demo sign-in: there is no password yet. You can only ever see your own attendance.</p>
+        <p className="ts-hint">There is no password yet. You can only ever see your own attendance.</p>
       </SettingsCard>
       <SettingsCard title="Change password" desc="Use at least 8 characters" server>
         <div className="ts-pw-grid">

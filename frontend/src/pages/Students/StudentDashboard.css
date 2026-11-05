@@ -165,4 +165,4 @@
 .db-page.teacher-ui .sp-alertcard .db-list { flex: 1 1 auto; max-height: none; min-height: 0; }
 .db-page.teacher-ui .sp-ov-el { max-height: none; height: 100%; }
 .db-page.teacher-ui .sp-ov-el .sp-ov-r,
-.db-page.teacher-ui .sp-ov-el .sp-ov-r b { font-size: 15px; }
+.db-page.teacher-ui .sp-ov-el .sp-ov-r b { font-size: 13px; }

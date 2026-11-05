@@ -57,7 +57,7 @@ export default function Building() {
   const uid = useId().replace(/:/g, "");
   const stripes = `lp-stripes-${uid}`;
   const slats = `lp-slats-${uid}`;
-  const brick = `lp-brick-${uid}`;
+  const wallClip = `lp-wall-${uid}`;
   const shade = `lp-shade-${uid}`;
 
   return (
@@ -70,11 +70,6 @@ export default function Building() {
         {/* bands of fine vertical slats, one band per storey */}
         <pattern id={slats} width="4" height="25" patternUnits="userSpaceOnUse">
           <rect className="lp-stripe" width="1.2" height="19" y="2" />
-        </pattern>
-        <pattern id={brick} width="30" height="12" patternUnits="userSpaceOnUse">
-          <rect className="lp-stripe" width="30" height="1" />
-          <rect className="lp-stripe" width="1" height="6" />
-          <rect className="lp-stripe" x="15" y="6" width="1" height="6" />
         </pattern>
         <radialGradient id={shade}>
           <stop offset="0" className="lp-shade-stop" />
@@ -98,14 +93,21 @@ export default function Building() {
           <polygon className="tex" points={P("91,218 335,187 335,372 91,380")} fill={`url(#${slats})`} />
           {/* brick-coursed wall */}
           <polygon className="front" points={P("335,187 550,247 550,495 335,495")} />
-          <polygon className="tex" points={P("335,187 550,247 550,330 335,330")} fill={`url(#${brick})`} />
+          {/* courses fan from the rising roofline down to the flat ground line, so they sit in perspective */}
+          <clipPath id={wallClip}><polygon points={P("335,187 550,247 550,330 335,330")} /></clipPath>
+          <g className="tex" opacity="0.8" clipPath={`url(#${wallClip})`}>
+            {Array.from({ length: 16 }, (_, k) => {
+              const t = k * 0.031 + 0.01;
+              return <line key={k} x1={335 - OX} y1={187 + t * 308 - OY} x2={550 - OX} y2={187 + t * 308 + 26 - t * 40 - OY} stroke="var(--lp-bld-tex)" strokeWidth="0.9" />;
+            })}
+          </g>
           {/* right return with horizontal banding */}
           <polygon className="side" points={P("550,247 665,357 665,493 550,493")} />
           <polygon className="tex dim" points={P("550,335 665,395 665,480 550,480")} fill={`url(#${stripes})`} />
           {/* plinth line + openings */}
           <rect className="open" {...R(196, 402, 32, 53)} />
           <polygon className="open" points={P("352,418 490,432 490,495 352,495")} />
-          <polygon className="open shade" points={P("380,455 440,425 490,435 490,495 380,495")} />
+          <polygon className="open shade" points={P("380,455 440,431 490,437 490,495 380,495")} />
           <Windows x={100} y={228} cols={27} rows={9} w={5} h={13} gapX={3.5} gapY={4} seed={1} natural hit="91,218 335,187 550,247 665,357 665,397 91,397" />
         </g>
         </g>
