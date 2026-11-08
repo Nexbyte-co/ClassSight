@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Eye, EyeOff, GraduationCap, Info, Search, ShieldCheck, UserPlus, Users } from "lucide-react";
+import { Eye, EyeOff, KeyRound, Info, Search, ShieldCheck, UserPlus, Users } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import { useAdminData } from "../../context/AdminDataContext";
 import { createUser } from "../../api/users";
@@ -93,7 +93,7 @@ function AddUserForm() {
 
 function AdminUsers() {
   const { session } = useAuth();
-  const { teachers, admins, students, sectionById, classrooms } = useAdminData();
+  const { teachers, admins, classrooms } = useAdminData();
   const [tab, setTab] = useState("teachers");
   const [query, setQuery] = useState("");
 
@@ -108,28 +108,27 @@ function AdminUsers() {
 
   const tabs = [
     { key: "teachers", label: "Teachers", count: teachers.length },
-    { key: "students", label: "Students", count: students.length },
     { key: "admins", label: "Administrators", count: admins.length },
   ];
 
   const staffRows = (tab === "admins" ? admins : teachers).filter((u) => match(u.name, u.email));
-  const studentRows = students.filter((s) => match(s.name, s.roll_number, sectionById.get(s.section_id)?.name));
 
   return (
-    <>
-      <AdminPageHeader title="Users" lead="Teachers, students and administrators on ClassSight." />
+    <div className="adm-fit">
+      <AdminPageHeader title="Users" lead="Teacher and administrator accounts on ClassSight." />
       <AdminLoadState />
 
-      <div className="adm-grid adm-grid-wide">
+      <div className="adm-grid adm-grid-wide adm-fill">
         <Card
           title="Directory"
+          className="adm-card-fill"
           delay={60}
           actions={
             <label className="adm-search">
               <Search size={15} aria-hidden="true" />
               <input
                 type="search"
-                placeholder={tab === "students" ? "Search name, roll no., section" : "Search name or email"}
+                placeholder="Search name or email"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 aria-label="Search users"
@@ -139,41 +138,8 @@ function AdminUsers() {
         >
           <Tabs tabs={tabs} value={tab} onChange={setTab} label="User type" />
 
-          {tab === "students" ? (
-            studentRows.length ? (
-              <div className="adm-table-wrap">
-                <table className="adm-table">
-                  <thead>
-                    <tr>
-                      <th>Roll no.</th>
-                      <th>Name</th>
-                      <th>Section</th>
-                      <th>Face data</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {studentRows.map((s) => (
-                      <tr key={s.id}>
-                        <td className="adm-mono">{s.roll_number}</td>
-                        <td>{s.name}</td>
-                        <td>{sectionById.get(s.section_id)?.name || "—"}</td>
-                        <td>
-                          <span className={`adm-chip ${s.face_enrolled ? "adm-chip-good" : ""}`}>
-                            {s.face_enrolled ? "Enrolled" : "Not enrolled"}
-                          </span>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            ) : (
-              <Empty icon={GraduationCap} title={q ? "No matching students" : "No students yet"}>
-                {!q && "Students are added to a section under Classes & Subjects."}
-              </Empty>
-            )
-          ) : staffRows.length ? (
-            <div className="adm-table-wrap">
+          {staffRows.length ? (
+            <div className="adm-table-wrap adm-scroll">
               <table className="adm-table">
                 <thead>
                   <tr>
@@ -214,11 +180,23 @@ function AdminUsers() {
           </p>
         </Card>
 
-        <Card title="Add a user" sub="Create a teacher or administrator account" delay={100}>
-          <AddUserForm />
-        </Card>
+        <div className="adm-col">
+          <Card title="Add a user" sub="Create a teacher or administrator account" delay={100}>
+            <AddUserForm />
+          </Card>
+          <Card title="Accounts at a glance" delay={140}>
+            <div className="adm-mini-stats">
+              <div className="adm-mini"><Users size={16} aria-hidden="true" /><b>{teachers.length}</b><span>Teachers</span></div>
+              <div className="adm-mini"><ShieldCheck size={16} aria-hidden="true" /><b>{admins.length}</b><span>Admins</span></div>
+              <div className="adm-mini"><UserPlus size={16} aria-hidden="true" /><b>{teachers.filter((t) => !classCount.get(t.id)).length}</b><span>Without classes</span></div>
+            </div>
+            <p className="adm-note">
+              <KeyRound size={15} aria-hidden="true" /> New users sign in with the email and initial password you set here. Students don't need accounts; add them to a section under Classes &amp; Subjects.
+            </p>
+          </Card>
+        </div>
       </div>
-    </>
+    </div>
   );
 }
 

@@ -1,5 +1,5 @@
 // Building blocks for the admin pages (header, stat tiles, cards, states, charts).
-import { useEffect, useId, useRef, useState } from "react";
+import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import { AlertCircle, CheckCircle2, Loader2, RefreshCw } from "lucide-react";
 import { useAdminData } from "../../context/AdminDataContext";
 import { pct, shortDate } from "./format";
@@ -109,9 +109,25 @@ export function FormMessage({ msg }) {
   );
 }
 
+// Segmented filter with a sliding highlight (same feel as the students/teacher filters).
 export function Tabs({ tabs, value, onChange, label }) {
+  const ref = useRef(null);
+  const [ind, setInd] = useState(null);
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el) return undefined;
+    const place = () => {
+      const on = el.querySelector("button.on");
+      if (on) setInd({ left: on.offsetLeft, top: on.offsetTop, width: on.offsetWidth, height: on.offsetHeight });
+    };
+    place();
+    const ro = new ResizeObserver(place);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [value, tabs.length]);
   return (
-    <div className="adm-tabs" role="tablist" aria-label={label}>
+    <div className="adm-tabs" role="tablist" aria-label={label} ref={ref}>
+      {ind && <span className="adm-tabs-ind" style={ind} aria-hidden="true" />}
       {tabs.map((t) => (
         <button
           key={t.key}

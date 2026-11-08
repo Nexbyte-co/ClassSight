@@ -8,12 +8,12 @@ import {
   ChartColumn,
   ClipboardCheck,
   LayoutDashboard,
+  ChevronDown,
   LogOut,
   Menu,
   Moon,
   ScanFace,
   Settings,
-  ShieldCheck,
   Sun,
   Users,
 } from "lucide-react";
@@ -52,9 +52,69 @@ const readSideCollapsed = () => {
   }
 };
 
+// Top-right account menu, same look and keyboard behaviour as the teacher/student one.
+function AdminProfileMenu({ session, initials, onSignOut }) {
+  const [open, setOpen] = useState(false);
+  const wrapRef = useRef(null);
+  const triggerRef = useRef(null);
+  useEffect(() => {
+    if (!open) return undefined;
+    const onDown = (e) => !wrapRef.current?.contains(e.target) && setOpen(false);
+    const onKey = (e) => {
+      if (e.key === "Escape") {
+        setOpen(false);
+        triggerRef.current?.focus();
+      }
+    };
+    document.addEventListener("pointerdown", onDown);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("pointerdown", onDown);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [open]);
+  return (
+    <div className="user-profile-wrapper teacher-profile-menu" ref={wrapRef}>
+      <button
+        type="button"
+        ref={triggerRef}
+        className="profile-trigger"
+        aria-haspopup="menu"
+        aria-expanded={open}
+        aria-label={`${session?.name || "Admin"} — account menu`}
+        onClick={() => setOpen((v) => !v)}
+      >
+        <span className="profile-avatar" aria-hidden="true">{initials}</span>
+        <span className="profile-stack">
+          <span className="profile-stack-name">{session?.name || "Admin"}</span>
+          <span className="profile-stack-dept">Administrator</span>
+        </span>
+        <ChevronDown size={16} strokeWidth={2} className={`profile-chevron ${open ? "open" : ""}`} aria-hidden="true" />
+      </button>
+      {open && (
+        <div className="dropdown-menu" role="menu" aria-label="Account">
+          <div className="dropdown-user-header">
+            <div className="dropdown-user-name">{session?.name || "Admin"}</div>
+            <div className="dropdown-user-email">{session?.email}</div>
+          </div>
+          <Link to="/admin/settings" role="menuitem" className="dropdown-item" onClick={() => setOpen(false)}>
+            <Settings size={16} strokeWidth={1.8} aria-hidden="true" />
+            <span>Settings</span>
+          </Link>
+          <div className="dropdown-divider" role="separator" />
+          <button type="button" role="menuitem" className="dropdown-item dropdown-item-danger" onClick={onSignOut}>
+            <LogOut size={16} strokeWidth={1.8} aria-hidden="true" />
+            <span>Sign Out</span>
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
 let lastPill = null; // keeps the active pill's position between page changes
 
-function AdminSidebar({ active, collapsed, onSignOut, session }) {
+function AdminSidebar({ active, collapsed }) {
   const navRef = useRef(null);
   const [pill, setPill] = useState(lastPill);
   const [pillAnimates, setPillAnimates] = useState(false);
@@ -109,22 +169,11 @@ function AdminSidebar({ active, collapsed, onSignOut, session }) {
           );
         })}
       </nav>
-      <div className="db-bot">
-        <div className="db-term">
-          <b>Administrator</b>
-          <span>{session?.name || "Admin"}</span>
-          <i>{session?.email}</i>
-        </div>
-        <button type="button" className="db-logout" onClick={onSignOut}>
-          <LogOut size={16} strokeWidth={2} />
-          <span className="db-tx">Log Out</span>
-        </button>
-      </div>
     </aside>
   );
 }
 
-function AdminDrawer({ isOpen, onClose, active, onSignOut, session }) {
+function AdminDrawer({ isOpen, onClose, active }) {
   const drawerRef = useRef(null);
 
   // Tap/click outside or Escape closes it; the toggle button handles itself.
@@ -158,10 +207,7 @@ function AdminDrawer({ isOpen, onClose, active, onSignOut, session }) {
           <div className="app-nav-brand-icon">
             <ScanFace size={20} strokeWidth={2.2} />
           </div>
-          <span className="adm-brand-text">
-            <span className="app-nav-brand-name">ClassSight</span>
-            <span className="adm-brand-sub">Administrator</span>
-          </span>
+          <span className="app-nav-brand-name">ClassSight</span>
         </Link>
       </div>
       <nav className="app-nav-links">
@@ -179,16 +225,6 @@ function AdminDrawer({ isOpen, onClose, active, onSignOut, session }) {
           </Link>
         ))}
       </nav>
-      <div className="app-nav-footer">
-        <div className="app-nav-term-badge">
-          <strong>Administrator</strong>
-          <span>{session?.email}</span>
-        </div>
-        <button type="button" className="app-nav-logout-btn" onClick={onSignOut} tabIndex={isOpen ? 0 : -1}>
-          <LogOut size={17} strokeWidth={1.8} />
-          <span>Log Out</span>
-        </button>
-      </div>
     </aside>
   );
 }
@@ -249,10 +285,7 @@ function AdminLayout() {
               <div className="db-logo">
                 <ScanFace size={20} strokeWidth={2} />
               </div>
-              <span className="adm-brand-text">
-                <span className="db-brand">ClassSight</span>
-                <span className="adm-brand-sub">Administrator</span>
-              </span>
+              <span className="db-brand">ClassSight</span>
             </Link>
           </div>
 
@@ -266,17 +299,7 @@ function AdminLayout() {
             >
               {isDarkMode ? <Sun size={16} strokeWidth={2} /> : <Moon size={16} strokeWidth={2} />}
             </button>
-            <div className="adm-user" title={session?.email}>
-              <span className="adm-avatar" aria-hidden="true">
-                {initials}
-              </span>
-              <span className="adm-user-text">
-                <span className="adm-user-name">{session?.name || "Admin"}</span>
-                <span className="adm-user-role">
-                  <ShieldCheck size={12} strokeWidth={2.2} aria-hidden="true" /> Admin
-                </span>
-              </span>
-            </div>
+            <AdminProfileMenu session={session} initials={initials} onSignOut={handleSignOut} />
           </div>
         </header>
 
@@ -285,14 +308,10 @@ function AdminLayout() {
             isOpen={isNavOpen}
             onClose={() => setIsNavOpen(false)}
             active={active}
-            onSignOut={handleSignOut}
-            session={session}
           />
           <AdminSidebar
             active={active}
             collapsed={isSideCollapsed}
-            onSignOut={handleSignOut}
-            session={session}
           />
           <main className="db-main adm-main" id="admin-main">
             <Outlet />

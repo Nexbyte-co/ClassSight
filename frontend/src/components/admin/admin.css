@@ -109,17 +109,26 @@
 .admin-ui .adm-action-icon { width: 36px; height: 36px; flex: none; border-radius: 10px; display: grid; place-items: center; background: var(--db-badge-bg); color: var(--db-mr-text); }
 .admin-ui .adm-action-go { color: var(--db-muted); flex: none; }
 
-/* ---------- Tabs ---------- */
-.admin-ui .adm-tabs { display: flex; gap: 4px; flex-wrap: wrap; border-bottom: 1px solid var(--db-row-line); }
+/* ---------- Tabs (segmented, sliding highlight) ---------- */
+.admin-ui .adm-tabs {
+  position: relative; display: inline-flex; gap: 2px; flex-wrap: wrap; width: fit-content; max-width: 100%;
+  padding: 4px; border-radius: 12px; background: var(--db-soft); border: 1px solid var(--db-row-line);
+}
+.admin-ui .adm-tabs-ind {
+  position: absolute; z-index: 0; border-radius: 9px; background: var(--db-card); box-shadow: var(--db-lift);
+  transition: left 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), width 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), top 0.35s, height 0.35s;
+}
 .admin-ui .adm-tabs button {
-  border: 0; background: transparent; padding: 9px 12px; margin-bottom: -1px;
-  font-size: 13.5px; font-weight: 600; color: var(--db-muted);
-  border-bottom: 2px solid transparent; display: inline-flex; align-items: center; gap: 7px;
+  position: relative; z-index: 1; border: 0; background: transparent; padding: 7px 14px; border-radius: 9px;
+  font-size: 13px; font-weight: 600; color: var(--db-muted); display: inline-flex; align-items: center; gap: 7px;
+  transition: color 0.25s;
 }
 .admin-ui .adm-tabs button:hover { color: var(--db-ink); }
-.admin-ui .adm-tabs button.on { color: var(--db-mr-text); border-bottom-color: var(--db-mr); }
-.admin-ui .adm-tab-count { font-size: 11px; padding: 1px 7px; border-radius: 99px; background: var(--db-soft); color: var(--db-muted); }
+.admin-ui .adm-tabs button.on { color: var(--db-mr-text); }
+.admin-ui .adm-tabs button:focus-visible { outline: 2px solid var(--db-mr); outline-offset: 1px; }
+.admin-ui .adm-tab-count { font-size: 11px; padding: 1px 7px; border-radius: 99px; background: var(--db-card); color: var(--db-muted); transition: background-color 0.25s, color 0.25s; }
 .admin-ui .adm-tabs button.on .adm-tab-count { background: var(--db-active-tag); color: var(--db-mr-text); }
+@media (prefers-reduced-motion: reduce) { .admin-ui .adm-tabs-ind { transition: none; } }
 
 /* ---------- Tables ---------- */
 .admin-ui .adm-table-wrap { overflow-x: auto; border: 1px solid var(--db-row-line); border-radius: 12px; }
@@ -278,6 +287,67 @@
 .admin-ui .adm-embed .students-main-content { padding: 0; max-width: none; margin: 0; }
 .admin-ui .adm-back { display: inline-flex; align-items: center; gap: 6px; width: fit-content; font-size: 13px; font-weight: 600; color: var(--db-mr-text); text-decoration: none; }
 .admin-ui .adm-back:hover { text-decoration: underline; }
+
+/* ---------- Hover & motion ---------- */
+.admin-ui .adm-card,
+.admin-ui .adm-stat,
+.admin-ui .adm-role {
+  transition: transform 0.25s cubic-bezier(0.2, 0.7, 0.2, 1), box-shadow 0.25s, border-color 0.25s;
+}
+.admin-ui .adm-card:hover,
+.admin-ui .adm-role:hover { box-shadow: var(--db-lift); border-color: var(--db-hover-line); }
+.admin-ui .adm-stat:hover { transform: translateY(-3px); box-shadow: var(--db-lift); border-color: var(--db-hover-line); }
+.admin-ui .adm-stat-icon { transition: transform 0.3s cubic-bezier(0.3, 1.5, 0.5, 1); }
+.admin-ui .adm-stat:hover .adm-stat-icon { transform: scale(1.12) rotate(-6deg); }
+.admin-ui .adm-list li { transition: background-color 0.2s, padding-left 0.2s; border-radius: 8px; }
+.admin-ui .adm-list li:hover { background: var(--db-soft); padding-left: 8px; }
+.admin-ui .adm-action-go { transition: transform 0.2s, color 0.2s; }
+.admin-ui .adm-action:hover .adm-action-go { transform: translateX(3px); color: var(--db-mr-text); }
+.admin-ui .adm-action-icon { transition: transform 0.25s; }
+.admin-ui .adm-action:hover .adm-action-icon { transform: scale(1.08); }
+.admin-ui .adm-pick button { transition: border-color 0.2s, background-color 0.2s, transform 0.2s; }
+.admin-ui .adm-pick button:hover:not(.on) { transform: translateX(2px); }
+.admin-ui .adm-table tbody tr td { transition: background-color 0.15s; }
+.admin-ui .adm-bar-fill { animation: adm-grow 0.8s cubic-bezier(0.2, 0.7, 0.2, 1) backwards; transform-origin: left; }
+@keyframes adm-grow { from { transform: scaleX(0); } }
+.admin-ui .adm-tabs ~ * { animation: db-rise 0.4s cubic-bezier(0.2, 0.7, 0.2, 1) backwards; }
+@media (prefers-reduced-motion: reduce) {
+  .admin-ui .adm-stat:hover, .admin-ui .adm-pick button:hover:not(.on) { transform: none; }
+  .admin-ui .adm-bar-fill, .admin-ui .adm-tabs ~ * { animation: none; }
+}
+
+/* ---------- Mini stats (Users) ---------- */
+.admin-ui .adm-col { display: grid; gap: 20px; align-content: start; min-height: 0; }
+.admin-ui .adm-mini-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.admin-ui .adm-mini {
+  display: grid; justify-items: start; gap: 2px; padding: 12px; border-radius: 12px;
+  background: var(--db-panel); border: 1px solid var(--db-card-line); transition: transform 0.2s, border-color 0.2s;
+}
+.admin-ui .adm-mini:hover { transform: translateY(-2px); border-color: var(--db-hover-line); }
+.admin-ui .adm-mini svg { color: var(--db-mr-text); }
+.admin-ui .adm-mini b { font-size: 22px; color: var(--db-ink); font-variant-numeric: tabular-nums; }
+.admin-ui .adm-mini span { font-size: 12px; color: var(--db-muted); }
+
+/* ---------- Fit-to-screen pages (Dashboard, Users): no page scroll on desktop ---------- */
+@media (min-width: 1101px) {
+  .db-page.admin-ui .db-body:has(.adm-fit) { min-height: 0; height: calc(100vh - 64px); }
+  .db-page.admin-ui .adm-main:has(.adm-fit) { height: calc(100vh - 64px); overflow: hidden; display: block; }
+  .admin-ui .adm-fit { height: 100%; display: flex; flex-direction: column; gap: clamp(14px, 1.4vw, 22px); min-height: 0; }
+  .admin-ui .adm-fit > * { flex: none; }
+  .admin-ui .adm-fit > .adm-fill { flex: 1 1 0; min-height: 0; align-items: stretch; grid-auto-rows: minmax(0, 1fr); }
+  .admin-ui .adm-fill > .adm-card,
+  .admin-ui .adm-fill > .adm-col { min-height: 0; overflow: hidden; grid-template-rows: auto minmax(0, 1fr); }
+  .admin-ui .adm-fill > .adm-card > :last-child { min-height: 0; overflow-y: auto; }
+  .admin-ui .adm-fill > .adm-col { grid-template-rows: auto minmax(0, 1fr); overflow-y: auto; }
+  .admin-ui .adm-card-fill { grid-template-rows: auto auto minmax(0, 1fr) auto !important; }
+  .admin-ui .adm-card-fill > :last-child { overflow: visible !important; }
+  .admin-ui .adm-card-fill .adm-scroll { min-height: 0; overflow-y: auto; height: 100%; }
+  .admin-ui .adm-fit .adm-hd h1 { font-size: clamp(24px, 2vw, 32px); }
+  .admin-ui .adm-fit .adm-list li { padding-top: 8px; padding-bottom: 8px; }
+  .admin-ui .adm-fit .adm-actions { grid-template-columns: repeat(2, minmax(0, 1fr)); align-content: start; }
+  .admin-ui .adm-fit .adm-empty { align-content: center; }
+  .admin-ui .adm-fit .adm-col .adm-card { gap: 12px; padding: 18px 20px; }
+}
 
 /* ---------- Responsive ---------- */
 @media (max-width: 1100px) {

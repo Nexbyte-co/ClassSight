@@ -6,7 +6,6 @@ import {
   BookOpen,
   CalendarRange,
   ClipboardCheck,
-  Clock,
   GraduationCap,
   Layers,
   ScanFace,
@@ -16,7 +15,7 @@ import {
 import { useAuth } from "../../context/AuthContext";
 import { useAdminData } from "../../context/AdminDataContext";
 import { listSchedule } from "../../api/lectures";
-import { AdminLoadState, AdminPageHeader, BarList, Card, Empty, StatTile, StatusSplit, TrendChart } from "../../components/admin/ui";
+import { AdminLoadState, AdminPageHeader, BarList, Card, Empty, StatTile } from "../../components/admin/ui";
 import { hhmm, num, pct, shortDate, todayWeekday, WEEKDAYS } from "../../components/admin/format";
 
 const QUICK_ACTIONS = [
@@ -80,7 +79,6 @@ function AdminDashboard() {
     students,
     totals,
     sessions,
-    dailyTrend,
     faceEnrolled,
     classroomById,
     analytics,
@@ -104,7 +102,7 @@ function AdminDashboard() {
     .slice(0, 6);
 
   return (
-    <>
+    <div className="adm-fit">
       <AdminPageHeader
         title={`${greeting()}, ${(session?.name || "Admin").split(" ")[0]}`}
         lead="Here's an overview of ClassSight across all classes and users."
@@ -130,20 +128,11 @@ function AdminDashboard() {
         />
       </div>
 
-      <div className="adm-grid">
-        <Card title="Attendance trend" sub="Share of students marked present each day, all classes" delay={100}>
-          <TrendChart points={dailyTrend} ariaLabel="Daily attendance rate across all classes" />
-        </Card>
-        <Card title="Attendance overview" sub="All recorded attendance" delay={140}>
-          <StatusSplit present={totals.present} absent={totals.absent} excused={totals.excused} />
-        </Card>
-      </div>
-
-      <div className="adm-grid">
+      <div className="adm-grid adm-fill">
         <Card
           title="Recent activity"
           sub="Latest attendance sessions"
-          delay={180}
+          delay={100}
           actions={
             <Link to="/admin/attendance" className="adm-link">
               View all <ArrowRight size={14} />
@@ -176,16 +165,16 @@ function AdminDashboard() {
           )}
         </Card>
 
-        <Card title={`Today · ${WEEKDAYS[todayWeekday()]}`} sub="Scheduled lectures" delay={220}>
+        <Card title={`Today · ${WEEKDAYS[todayWeekday()]}`} sub="Scheduled lectures" delay={140}>
           <TodaySchedule />
         </Card>
       </div>
 
-      <div className="adm-grid">
-        <Card title="Lowest attendance" sub="Classes with recorded attendance, lowest first" delay={260}>
+      <div className="adm-grid adm-fill">
+        <Card title="Lowest attendance" sub="Classes with recorded attendance, lowest first" delay={180}>
           <BarList rows={classRates} max={1} ariaLabel="Attendance rate by class" emptyText="No class has recorded attendance yet." />
         </Card>
-        <Card title="Quick actions" delay={300}>
+        <Card title="Quick actions" delay={220}>
           <div className="adm-actions">
             {QUICK_ACTIONS.map(({ to, Icon, label, sub }) => (
               <Link key={to} to={to} className="adm-action">
@@ -203,10 +192,7 @@ function AdminDashboard() {
         </Card>
       </div>
 
-      <p className="db-sm adm-foot">
-        <Clock size={13} aria-hidden="true" /> Figures come straight from the ClassSight server.
-      </p>
-    </>
+    </div>
   );
 }
 
