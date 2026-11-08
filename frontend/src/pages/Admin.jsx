@@ -1,6 +1,6 @@
 // Admin setup: create teacher accounts and classes (and assign each class to a teacher).
 import { useCallback, useEffect, useRef, useState } from "react";
-import AdminShell from "../components/AdminShell";
+import PageShell from "../components/PageShell";
 import { createTeacher, listUsers } from "../api/users";
 import { createClassroom } from "../api/classrooms";
 import { createLecture, deleteLecture, listClassLectures } from "../api/lectures";
@@ -247,7 +247,7 @@ function Admin() {
   };
 
   return (
-    <AdminShell>
+    <PageShell crumb="Admin" activePage="admin" showClassPicker={false}>
       <div className="students-page-header">
         <div>
           <h1 className="students-page-title">Admin setup</h1>
@@ -364,7 +364,7 @@ function Admin() {
       </form>
 
       <LectureTimes classrooms={classrooms} />
-    </AdminShell>
+    </PageShell>
   );
 }
 
