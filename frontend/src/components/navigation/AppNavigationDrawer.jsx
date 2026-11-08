@@ -8,6 +8,7 @@ import {
   Camera,
   GraduationCap,
   Settings,
+  ShieldCheck,
   LogOut,
   ScanFace,
 } from "lucide-react";
@@ -98,7 +99,7 @@ function AppNavigationDrawer({ isOpen, onClose, activePage }) {
   }, [isOpen]);
 
   // Ends the mock demo sign-in and returns to the public landing page
-  const { signOut } = useAuth();
+  const { session, signOut } = useAuth();
   const handleSignOut = () => {
     onClose();
     logout(); // also clear any API token from the backend login
@@ -129,6 +130,16 @@ function AppNavigationDrawer({ isOpen, onClose, activePage }) {
 
         {/* Main Navigation Links */}
         <nav className="app-nav-links">
+          {session?.apiRole === "admin" && (
+            <Link
+              to="/admin"
+              className={`app-nav-link ${activePage === "admin" ? "active" : ""}`}
+              onClick={onClose}
+            >
+              <ShieldCheck size={19} strokeWidth={2} />
+              <span>Admin setup</span>
+            </Link>
+          )}
           <Link
             to="/dashboard"
             className={`app-nav-link ${activePage === "dashboard" ? "active" : ""}`}
