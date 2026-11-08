@@ -8,13 +8,9 @@ import {
   LayoutDashboard,
   LogOut,
   Settings,
-  ShieldCheck,
   UserRound,
 } from "lucide-react";
 import ReportsIcon from "./ReportsIcon";
-import { useAuth } from "../../context/AuthContext";
-
-const ADMIN_LINK = { to: "/admin", key: "admin", label: "Admin setup", Icon: ShieldCheck };
 
 const SIDEBAR_LINKS = [
   { to: "/dashboard", key: "dashboard", label: "Dashboard", Icon: LayoutDashboard },
@@ -31,8 +27,6 @@ let lastPill = null;
 
 /** Shared desktop teacher navigation. It uses the existing db-* styles in Dashboard.css. */
 function Sidebar({ active, collapsed, liveBadge = false, onSignOut }) {
-  const { session } = useAuth();
-  const links = session?.apiRole === "admin" ? [ADMIN_LINK, ...SIDEBAR_LINKS] : SIDEBAR_LINKS;
   const navRef = useRef(null);
   const [pill, setPill] = useState(lastPill);
   const [pillAnimates, setPillAnimates] = useState(false);
@@ -71,7 +65,7 @@ function Sidebar({ active, collapsed, liveBadge = false, onSignOut }) {
             aria-hidden="true"
           />
         )}
-        {links.map(({ to, key, label, Icon }) => {
+        {SIDEBAR_LINKS.map(({ to, key, label, Icon }) => {
           const isOn = key === active;
           return (
             <Link
