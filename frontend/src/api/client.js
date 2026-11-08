@@ -5,16 +5,37 @@ const TOKEN_STORAGE_KEY = "classsight_access_token";
 // Fired when the API rejects our token (expired or revoked) so the app can sign out.
 export const UNAUTHORIZED_EVENT = "classsight:unauthorized";
 
-export function getToken() {
-  return localStorage.getItem(TOKEN_STORAGE_KEY);
+// "Remember me" keeps the token in localStorage (survives closing the browser);
+// otherwise it lives in sessionStorage and ends with the browser session.
+function safeGet(storage) {
+  try {
+    return storage.getItem(TOKEN_STORAGE_KEY);
+  } catch {
+    return null;
+  }
 }
 
-export function setToken(token) {
-  localStorage.setItem(TOKEN_STORAGE_KEY, token);
+export function getToken() {
+  return safeGet(localStorage) || safeGet(sessionStorage);
+}
+
+export function setToken(token, { remember = true } = {}) {
+  clearToken();
+  try {
+    (remember ? localStorage : sessionStorage).setItem(TOKEN_STORAGE_KEY, token);
+  } catch {
+    // storage blocked: the session lasts until the page is reloaded
+  }
 }
 
 export function clearToken() {
-  localStorage.removeItem(TOKEN_STORAGE_KEY);
+  for (const storage of [localStorage, sessionStorage]) {
+    try {
+      storage.removeItem(TOKEN_STORAGE_KEY);
+    } catch {
+      // storage blocked: nothing stored to clear
+    }
+  }
 }
 
 export class ApiError extends Error {

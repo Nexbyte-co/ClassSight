@@ -13,6 +13,13 @@ import AllReports from "./pages/Reports/AllReports";
 import ReportDetails from "./pages/Reports/ReportDetails";
 import Settings from "./pages/Settings";
 import Admin from "./pages/Admin";
+import AdminLayout from "./components/admin/AdminLayout";
+import AdminDashboard from "./pages/AdminPanel/AdminDashboard";
+import AdminUsers from "./pages/AdminPanel/AdminUsers";
+import AdminClasses from "./pages/AdminPanel/AdminClasses";
+import AdminAttendance from "./pages/AdminPanel/AdminAttendance";
+import AdminAnalytics from "./pages/AdminPanel/AdminAnalytics";
+import AdminSettings from "./pages/AdminPanel/AdminSettings";
 import {
   AdminArea,
   AuthProvider,
@@ -75,8 +82,18 @@ function App() {
               <Route path="/student/preview/:studentId" element={<StudentOverview />} />
             </Route>
             {/* Student portal (mock role check: signed-out -> "/", teacher -> /dashboard) */}
+            {/* Admin area: its own layout and navigation, separate from the teacher panel */}
             <Route element={<AdminArea />}>
-              <Route path="/admin" element={<Admin />} />
+              <Route path="/admin" element={<AdminLayout />}>
+                <Route index element={<AdminDashboard />} />
+                <Route path="users" element={<AdminUsers />} />
+                <Route path="classes" element={<AdminClasses />} />
+                <Route path="setup" element={<Admin />} />
+                <Route path="attendance" element={<AdminAttendance />} />
+                <Route path="analytics" element={<AdminAnalytics />} />
+                <Route path="settings" element={<AdminSettings />} />
+                <Route path="*" element={<Navigate to="/admin" replace />} />
+              </Route>
             </Route>
 
             <Route element={<StudentArea />}>

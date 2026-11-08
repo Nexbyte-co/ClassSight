@@ -23,6 +23,8 @@ function toSession(user) {
 
 export function AuthProvider({ children }) {
   const [session, setSession] = useState(null);
+  // True right after the user signs out, so guards send them to the landing page, not /login.
+  const [signedOut, setSignedOut] = useState(false);
   // With a stored token we don't know who it is until /auth/me answers.
   const [loading, setLoading] = useState(() => Boolean(getToken()));
 
@@ -50,8 +52,9 @@ export function AuthProvider({ children }) {
   }, []);
 
   // Throws ApiError (wrong password, throttled, server down); returns the session on success.
-  const signIn = useCallback(async (email, password) => {
-    await login(email.trim(), password);
+  const signIn = useCallback(async (email, password, { remember = true } = {}) => {
+    await login(email.trim(), password, { remember });
+    setSignedOut(false);
     try {
       const next = toSession(await getCurrentUser());
       setSession(next);
@@ -64,11 +67,12 @@ export function AuthProvider({ children }) {
 
   const signOut = useCallback(() => {
     logout();
+    setSignedOut(true);
     setSession(null);
   }, []);
 
   return (
-    <AuthContext.Provider value={{ session, loading, signIn, signOut }}>
+    <AuthContext.Provider value={{ session, loading, signedOut, signIn, signOut }}>
       {children}
     </AuthContext.Provider>
   );
@@ -84,9 +88,9 @@ export function useAuth() {
 
 // Teacher area: signed-out visitors go to the login page; admins go to their own area.
 export function TeacherArea() {
-  const { session, loading } = useAuth();
+  const { session, loading, signedOut } = useAuth();
   if (loading) return null;
-  if (!session) return <Navigate to="/login" replace />;
+  if (!session) return <Navigate to={signedOut ? "/" : "/login"} replace />;
   // Admin setup is a separate area from the teacher panel.
   if (session.apiRole === "admin") return <Navigate to="/admin" replace />;
   return <Outlet />;
@@ -94,23 +98,23 @@ export function TeacherArea() {
 
 // Admin-only screens (set up teachers and classes); everyone else goes to the dashboard.
 export function AdminArea() {
-  const { session, loading } = useAuth();
+  const { session, loading, signedOut } = useAuth();
   if (loading) return null;
-  if (!session) return <Navigate to="/login" replace />;
+  if (!session) return <Navigate to={signedOut ? "/" : "/login"} replace />;
   if (session.apiRole !== "admin") return <Navigate to="/dashboard" replace />;
   return <Outlet />;
 }
 
 // There are no student accounts in the backend yet, so the student portal is not reachable.
 export function StudentArea() {
-  const { session, loading } = useAuth();
+  const { session, loading, signedOut } = useAuth();
   if (loading) return null;
-  return <Navigate to={session ? "/dashboard" : "/login"} replace />;
+  return <Navigate to={session ? "/dashboard" : signedOut ? "/" : "/login"} replace />;
 }
 
 // Old /student/:studentId links: teacher preview lives at /student/preview/:studentId
 export function LegacyStudentRedirect() {
-  const { session, loading } = useAuth();
+  const { session, loading, signedOut } = useAuth();
   if (loading) return null;
-  return <Navigate to={session ? "/dashboard" : "/login"} replace />;
+  return <Navigate to={session ? "/dashboard" : signedOut ? "/" : "/login"} replace />;
 }

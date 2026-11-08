@@ -1,0 +1,225 @@
+import { useMemo, useState } from "react";
+import { Eye, EyeOff, GraduationCap, Info, Search, ShieldCheck, UserPlus, Users } from "lucide-react";
+import { useAuth } from "../../context/AuthContext";
+import { useAdminData } from "../../context/AdminDataContext";
+import { createUser } from "../../api/users";
+import { AdminLoadState, AdminPageHeader, Card, Empty, FormMessage, Tabs } from "../../components/admin/ui";
+
+const EMPTY_FORM = { name: "", email: "", password: "", role: "teacher" };
+
+function AddUserForm() {
+  const { refresh } = useAdminData();
+  const [form, setForm] = useState(EMPTY_FORM);
+  const [show, setShow] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [msg, setMsg] = useState(null);
+
+  const set = (key) => (e) => {
+    setForm((f) => ({ ...f, [key]: e.target.value }));
+    setMsg(null);
+  };
+
+  const submit = async (e) => {
+    e.preventDefault();
+    if (!form.name.trim() || !form.email.trim()) {
+      setMsg({ kind: "error", text: "Name and email are required." });
+      return;
+    }
+    if (form.password.length < 8) {
+      setMsg({ kind: "error", text: "Password must be at least 8 characters." });
+      return;
+    }
+    setBusy(true);
+    try {
+      const user = await createUser({ ...form, name: form.name.trim(), email: form.email.trim() });
+      setMsg({ kind: "ok", text: `Created ${user.role} account for ${user.email}. Share the password with them securely.` });
+      setForm(EMPTY_FORM);
+      refresh();
+    } catch (err) {
+      setMsg({ kind: "error", text: err.status === 409 ? "That email is already registered." : err.message });
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <form className="adm-form" onSubmit={submit} noValidate>
+      <div className="adm-field">
+        <label htmlFor="nu-role">Role</label>
+        <select id="nu-role" value={form.role} onChange={set("role")} disabled={busy}>
+          <option value="teacher">Teacher</option>
+          <option value="admin">Administrator</option>
+        </select>
+      </div>
+      <div className="adm-field">
+        <label htmlFor="nu-name">Full name</label>
+        <input id="nu-name" value={form.name} onChange={set("name")} disabled={busy} autoComplete="off" />
+      </div>
+      <div className="adm-field">
+        <label htmlFor="nu-email">Email</label>
+        <input id="nu-email" type="email" value={form.email} onChange={set("email")} disabled={busy} autoComplete="off" />
+      </div>
+      <div className="adm-field">
+        <label htmlFor="nu-pass">Initial password</label>
+        <div className="adm-input-group">
+          <input
+            id="nu-pass"
+            type={show ? "text" : "password"}
+            value={form.password}
+            onChange={set("password")}
+            disabled={busy}
+            autoComplete="new-password"
+            aria-describedby="nu-pass-hint"
+          />
+          <button type="button" className="adm-icon-btn" onClick={() => setShow((v) => !v)} aria-label={show ? "Hide password" : "Show password"}>
+            {show ? <EyeOff size={16} /> : <Eye size={16} />}
+          </button>
+        </div>
+        <span id="nu-pass-hint" className="db-sm">At least 8 characters.</span>
+      </div>
+      {form.role === "admin" && (
+        <p className="adm-note">
+          <ShieldCheck size={15} aria-hidden="true" /> Administrators get full access to every class, user and report.
+        </p>
+      )}
+      <FormMessage msg={msg} />
+      <button type="submit" className="db-btn adm-primary" disabled={busy}>
+        <UserPlus size={16} aria-hidden="true" />
+        {busy ? "Creating…" : `Create ${form.role === "admin" ? "administrator" : "teacher"}`}
+      </button>
+    </form>
+  );
+}
+
+function AdminUsers() {
+  const { session } = useAuth();
+  const { teachers, admins, students, sectionById, classrooms } = useAdminData();
+  const [tab, setTab] = useState("teachers");
+  const [query, setQuery] = useState("");
+
+  const classCount = useMemo(() => {
+    const m = new Map();
+    classrooms.forEach((c) => m.set(c.teacher_id, (m.get(c.teacher_id) || 0) + 1));
+    return m;
+  }, [classrooms]);
+
+  const q = query.trim().toLowerCase();
+  const match = (...fields) => !q || fields.some((f) => String(f || "").toLowerCase().includes(q));
+
+  const tabs = [
+    { key: "teachers", label: "Teachers", count: teachers.length },
+    { key: "students", label: "Students", count: students.length },
+    { key: "admins", label: "Administrators", count: admins.length },
+  ];
+
+  const staffRows = (tab === "admins" ? admins : teachers).filter((u) => match(u.name, u.email));
+  const studentRows = students.filter((s) => match(s.name, s.roll_number, sectionById.get(s.section_id)?.name));
+
+  return (
+    <>
+      <AdminPageHeader title="Users" lead="Teachers, students and administrators on ClassSight." />
+      <AdminLoadState />
+
+      <div className="adm-grid adm-grid-wide">
+        <Card
+          title="Directory"
+          delay={60}
+          actions={
+            <label className="adm-search">
+              <Search size={15} aria-hidden="true" />
+              <input
+                type="search"
+                placeholder={tab === "students" ? "Search name, roll no., section" : "Search name or email"}
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                aria-label="Search users"
+              />
+            </label>
+          }
+        >
+          <Tabs tabs={tabs} value={tab} onChange={setTab} label="User type" />
+
+          {tab === "students" ? (
+            studentRows.length ? (
+              <div className="adm-table-wrap">
+                <table className="adm-table">
+                  <thead>
+                    <tr>
+                      <th>Roll no.</th>
+                      <th>Name</th>
+                      <th>Section</th>
+                      <th>Face data</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {studentRows.map((s) => (
+                      <tr key={s.id}>
+                        <td className="adm-mono">{s.roll_number}</td>
+                        <td>{s.name}</td>
+                        <td>{sectionById.get(s.section_id)?.name || "—"}</td>
+                        <td>
+                          <span className={`adm-chip ${s.face_enrolled ? "adm-chip-good" : ""}`}>
+                            {s.face_enrolled ? "Enrolled" : "Not enrolled"}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <Empty icon={GraduationCap} title={q ? "No matching students" : "No students yet"}>
+                {!q && "Students are added to a section under Classes & Subjects."}
+              </Empty>
+            )
+          ) : staffRows.length ? (
+            <div className="adm-table-wrap">
+              <table className="adm-table">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    {tab === "teachers" && <th>Classes</th>}
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {staffRows.map((u) => (
+                    <tr key={u.id}>
+                      <td>
+                        {u.name}
+                        {u.id === session?.id && <span className="adm-you">You</span>}
+                      </td>
+                      <td className="adm-mono">{u.email}</td>
+                      <td>{u.role === "admin" ? "Administrator" : "Teacher"}</td>
+                      {tab === "teachers" && <td>{classCount.get(u.id) || 0}</td>}
+                      <td>
+                        <span className="adm-chip adm-chip-good">Active</span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <Empty icon={Users} title={q ? "No matching users" : "No accounts yet"}>
+              {!q && "Use the form to create one."}
+            </Empty>
+          )}
+
+          <p className="adm-note">
+            <Info size={15} aria-hidden="true" /> Editing, deactivating and password resets aren't available yet: the server
+            doesn't provide them. Every account listed is active.
+          </p>
+        </Card>
+
+        <Card title="Add a user" sub="Create a teacher or administrator account" delay={100}>
+          <AddUserForm />
+        </Card>
+      </div>
+    </>
+  );
+}
+
+export default AdminUsers;

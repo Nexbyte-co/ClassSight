@@ -1,8 +1,8 @@
 import { api, setToken, clearToken } from "./client";
 
-export async function login(email, password) {
+export async function login(email, password, { remember = true } = {}) {
   const data = await api.post("/auth/login", { email, password });
-  setToken(data.access_token);
+  setToken(data.access_token, { remember });
   return data;
 }
 
