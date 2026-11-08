@@ -5,6 +5,9 @@ import { useTheme } from "../../context/theme/ThemeContext";
 import { useAuth } from "../../context/AuthContext";
 import "./Login.css";
 
+// Admins have their own area; teachers go to the teacher panel.
+const homeFor = (session) => (session?.apiRole === "admin" ? "/admin" : "/dashboard");
+
 function Login() {
   const navigate = useNavigate();
   const { isDarkMode, toggleDarkMode } = useTheme();
@@ -15,9 +18,9 @@ function Login() {
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
-  // Already signed in (e.g. opened /login with a valid token): go straight to the dashboard.
+  // Already signed in (e.g. opened /login with a valid token): go to that role's home.
   if (!loading && session) {
-    return <Navigate to="/dashboard" replace />;
+    return <Navigate to={homeFor(session)} replace />;
   }
 
   const handleSubmit = async (e) => {
@@ -28,8 +31,8 @@ function Login() {
     }
     setSubmitting(true);
     try {
-      await signIn(email, password);
-      navigate("/dashboard", { replace: true });
+      const next = await signIn(email, password);
+      navigate(homeFor(next), { replace: true });
     } catch (err) {
       setError(err.message || "Could not sign in.");
     } finally {

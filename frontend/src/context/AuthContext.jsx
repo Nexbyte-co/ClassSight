@@ -82,11 +82,13 @@ export function useAuth() {
   return context;
 }
 
-// Teacher area: signed-out visitors go to the login page.
+// Teacher area: signed-out visitors go to the login page; admins go to their own area.
 export function TeacherArea() {
   const { session, loading } = useAuth();
   if (loading) return null;
   if (!session) return <Navigate to="/login" replace />;
+  // Admin setup is a separate area from the teacher panel.
+  if (session.apiRole === "admin") return <Navigate to="/admin" replace />;
   return <Outlet />;
 }
 
