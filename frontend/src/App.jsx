@@ -12,6 +12,9 @@ import Reports from "./pages/Reports";
 import AllReports from "./pages/Reports/AllReports";
 import ReportDetails from "./pages/Reports/ReportDetails";
 import Settings from "./pages/Settings";
+import Admin from "./pages/Admin";
+import { AdminArea, AuthProvider } from "./context/AuthContext";
+import { ClassroomProvider } from "./context/ClassroomContext";
 
 import { ThemeProvider } from "./context/theme/ThemeContext";
 import { AttendanceProvider } from "./context/attendance/AttendanceContext";
@@ -42,6 +45,8 @@ function App() {
       <AttendanceProvider>
         <ScheduleProvider>
         <DemoSessionProvider>
+        <AuthProvider>
+        <ClassroomProvider>
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Home />} />
@@ -69,6 +74,10 @@ function App() {
               <Route path="/student/preview/:studentId" element={<StudentOverview />} />
             </Route>
             {/* Student portal (mock role check: signed-out -> "/", teacher -> /dashboard) */}
+            <Route element={<AdminArea />}>
+              <Route path="/admin" element={<Admin />} />
+            </Route>
+
             <Route element={<StudentArea />}>
               <Route path="/student" element={<StudentPortalLayout />}>
                 <Route index element={<StudentDashboard />} />
@@ -85,6 +94,8 @@ function App() {
             <Route path="/student/:studentId" element={<LegacyStudentRedirect />} />
           </Routes>
         </BrowserRouter>
+        </ClassroomProvider>
+        </AuthProvider>
         </DemoSessionProvider>
         </ScheduleProvider>
       </AttendanceProvider>
