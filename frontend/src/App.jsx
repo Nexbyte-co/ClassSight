@@ -13,19 +13,20 @@ import AllReports from "./pages/Reports/AllReports";
 import ReportDetails from "./pages/Reports/ReportDetails";
 import Settings from "./pages/Settings";
 import Admin from "./pages/Admin";
-import { AdminArea, AuthProvider } from "./context/AuthContext";
+import {
+  AdminArea,
+  AuthProvider,
+  LegacyStudentRedirect,
+  StudentArea,
+  TeacherArea,
+} from "./context/AuthContext";
 import { ClassroomProvider } from "./context/ClassroomContext";
 
 import { ThemeProvider } from "./context/theme/ThemeContext";
 import { AttendanceProvider } from "./context/attendance/AttendanceContext";
 import { ScheduleProvider } from "./context/schedule/ScheduleContext";
 import { SettingsProvider } from "./context/settings/SettingsContext";
-import {
-  DemoSessionProvider,
-  LegacyStudentRedirect,
-  StudentArea,
-  TeacherArea,
-} from "./context/demo-session/DemoSessionContext";
+import { DemoSessionProvider } from "./context/demo-session/DemoSessionContext";
 import { StudentPortalLayout } from "./pages/Students/StudentPortal";
 import StudentTimetable from "./pages/Students/StudentTimetable";
 import StudentCourses from "./pages/Students/StudentCourses";

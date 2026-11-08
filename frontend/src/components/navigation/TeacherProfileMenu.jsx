@@ -6,7 +6,7 @@ import { useEffect, useId, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ChevronDown, User, Settings, LogOut } from "lucide-react";
 import { logout } from "../../api/auth";
-import { useDemoSession } from "../../context/demo-session/DemoSessionContext";
+import { useAuth } from "../../context/AuthContext";
 
 const TEACHER = {
   initials: "PJ",
@@ -19,7 +19,7 @@ const TEACHER = {
 // variant "stacked" shows the short name over the department (Dashboard header)
 function TeacherProfileMenu({ open: controlledOpen, onOpenChange, variant }) {
   const navigate = useNavigate();
-  const { signOut } = useDemoSession();
+  const { signOut } = useAuth();
   const [internalOpen, setInternalOpen] = useState(false);
   const isControlled = controlledOpen !== undefined;
   const open = isControlled ? controlledOpen : internalOpen;

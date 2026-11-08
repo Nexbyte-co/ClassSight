@@ -10,7 +10,7 @@ import {
 import "../../styles/Dashboard.css";
 import { useTheme } from "../../context/theme/ThemeContext";
 import { logout } from "../../api/auth";
-import { useDemoSession } from "../../context/demo-session/DemoSessionContext";
+import { useAuth } from "../../context/AuthContext";
 import AppNavigationDrawer from "./AppNavigationDrawer";
 import Sidebar from "./Sidebar";
 import TeacherProfileMenu from "./TeacherProfileMenu";
@@ -55,7 +55,7 @@ function TeacherShell({
 }) {
   const navigate = useNavigate();
   const { isDarkMode, toggleDarkMode } = useTheme();
-  const { signOut } = useDemoSession();
+  const { signOut } = useAuth();
 
   const [isNavOpen, setIsNavOpen] = useState(false);
   const [isSideCollapsed, setIsSideCollapsed] = useState(readSideCollapsed);

@@ -14,7 +14,7 @@ import {
 import "./AppNavigationDrawer.css";
 import ReportsIcon from "./ReportsIcon";
 import { logout } from "../../api/auth";
-import { useDemoSession } from "../../context/demo-session/DemoSessionContext";
+import { useAuth } from "../../context/AuthContext";
 
 // Delay before the drawer closes after a mouse pointer leaves it (avoids flicker).
 // Only mouse pointers trigger it; touch and pen keep the click-only behaviour.
@@ -98,7 +98,7 @@ function AppNavigationDrawer({ isOpen, onClose, activePage }) {
   }, [isOpen]);
 
   // Ends the mock demo sign-in and returns to the public landing page
-  const { signOut } = useDemoSession();
+  const { signOut } = useAuth();
   const handleSignOut = () => {
     onClose();
     logout(); // also clear any API token from the backend login
