@@ -1,0 +1,64 @@
+/* src/pages/Students/StudentPortal.css
+   Student portal frame, laid out like the teacher shell (top bar, collapsible sidebar, phone drawer).
+   The top bar and sidebar are wrapped in `.db-page.teacher-ui.sp-chrome` so the teacher shell
+   styles from Dashboard.css apply to them; the page content below keeps its own styles. */
+
+.student-portal-root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* The chrome wrappers only carry the teacher tokens/styles; they are not full pages */
+.db-page.teacher-ui.sp-chrome {
+  min-height: 0;
+  display: block;
+  background: transparent;
+}
+
+.db-page.teacher-ui.sp-top {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+}
+
+.sp-body {
+  flex: 1;
+  display: flex;
+  align-items: stretch;
+  min-width: 0;
+}
+
+.db-page.teacher-ui.sp-side {
+  flex: none;
+  display: flex;
+}
+
+/* Fill all the space beside the sidebar (the shared .dashboard-main caps itself at 1400px and centres) */
+.sp-body > .dashboard-main {
+  flex: 1;
+  min-width: 0;
+  max-width: none;
+  margin: 0;
+}
+
+.db-page.teacher-ui .sp-badge {
+  margin-left: 4px;
+  padding: 3px 9px;
+  border-radius: 99px;
+  border: 1px solid var(--db-hover-line);
+  background: color-mix(in srgb, var(--db-mr) 7%, var(--db-card));
+  color: var(--db-mr-text);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+@media (max-width: 700px) {
+  .db-page.teacher-ui.sp-side { display: none; }
+}
+
+@media (max-width: 480px) {
+  .db-page.teacher-ui .sp-badge { display: none; }
+}
