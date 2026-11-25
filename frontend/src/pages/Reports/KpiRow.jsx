@@ -1,5 +1,5 @@
 import { Icon } from "./icons";
-import { KPIS } from "./reportsMock";
+import { KPIS } from "./reportData";
 
 function Half({ icon, label, value }) {
   return (
@@ -17,8 +17,7 @@ function KpiRow() {
   return (
     <div className="rp-kpis">
       <div className="rp-kpi rp-kpi-wide">
-        <Half icon="book" label="Lectures held" value={KPIS.lecturesHeld} />
-        <Half icon="monitor" label="Labs held" value={KPIS.labsHeld} />
+        <Half icon="book" label="Classes held" value={KPIS.sessionsHeld} />
       </div>
       <div className="rp-kpi">
         <Half icon="users" label="Total batches" value={KPIS.totalBatches} />

@@ -1,5 +1,5 @@
 import { Icon } from "./icons";
-import { BATCHES, SUBJECTS, batchesOfSubject, batchStats, formatRange } from "./reportsMock";
+import { BATCHES, SUBJECTS, batchesOfSubject, batchStats, formatRange } from "./reportData";
 
 function BatchSelectedCard({ subject, batchIndex, allMode, from, to, onSubjectChange, onBatchChange, onToggleAll }) {
   const batch = BATCHES[batchIndex];
@@ -49,8 +49,7 @@ function BatchSelectedCard({ subject, batchIndex, allMode, from, to, onSubjectCh
               </div>
               <div className="rp-abst">
                 <div className="rp-abox">
-                  <div><b>Lecs held</b><span>{stats.lecsHeld}</span></div>
-                  <div><b>Labs held</b><span>{stats.labsHeld}</span></div>
+                  <div><b>Classes held</b><span>{stats.lecsHeld}</span></div>
                 </div>
                 <div className="rp-abox">
                   <div><b>Best week</b><span>W{stats.best.week} · {stats.best.v}%</span></div>
