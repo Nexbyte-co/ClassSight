@@ -37,6 +37,12 @@ def test_one_lecture_per_class_per_weekday(client, teacher_user, classroom):
     assert "weekday" in again.json()["detail"]
 
 
+def test_lecture_may_fill_the_whole_window(client, teacher_user, classroom):
+    headers = auth_headers(client, *TEACHER)
+    ok = client.post(_url(classroom), json=_slot(start="08:00", end="20:00"), headers=headers)
+    assert ok.status_code == 201
+
+
 @pytest.mark.parametrize(
     "payload",
     [
@@ -48,6 +54,9 @@ def test_one_lecture_per_class_per_weekday(client, teacher_user, classroom):
         {**_slot(), "room": "x" * 41},
         {**_slot(), "start_time": "09:40+05:30"},  # timezone offsets are rejected, not a 500
         {**_slot(), "start_time": "09:40", "end_time": "11:00Z"},
+        {**_slot(), "start_time": "07:50", "end_time": "08:40"},  # starts before 08:00
+        {**_slot(), "start_time": "19:30", "end_time": "20:10"},  # ends after 20:00
+        {**_slot(), "start_time": "23:00", "end_time": "23:59"},
     ],
 )
 def test_invalid_lecture_rejected(client, teacher_user, classroom, payload):

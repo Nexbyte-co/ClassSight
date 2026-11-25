@@ -1,0 +1,32 @@
+/* src/pages/Students/StudentSettings.css
+   The student Settings page reuses the teacher Settings styles (Settings.css, `.teacher-ui`).
+   This file only fits that page into the student portal frame. */
+
+/* The page supplies its own padding, so the portal's content padding is removed for it */
+.student-portal-root .sp-body > .dashboard-main:has(> .sp-setwrap) {
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+.db-page.teacher-ui.sp-setwrap {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+/* Header, tabs and panel keep the teacher page's own spacing */
+.db-page.teacher-ui.sp-setwrap > .db-main {
+  flex: 1;
+  min-height: 0;
+  display: block;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--cs-border) transparent;
+}
+.db-page.teacher-ui.sp-setwrap .ts-panel { padding-bottom: 8px; }
+.db-page.teacher-ui.sp-setwrap .ts-details + .ts-bands { margin-top: 16px; }
+.db-page.teacher-ui.sp-setwrap .btn-modal-delete-confirm {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}

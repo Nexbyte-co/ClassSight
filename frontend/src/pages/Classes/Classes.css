@@ -1,0 +1,358 @@
+/* src/pages/Classes/Classes.css — Classes → All Classes.
+   Every rule is scoped to .cx-root (set on the TeacherShell root by this page only). */
+
+.db-page.teacher-ui.cx-root .cx-panel {
+  display: grid; gap: 20px; align-content: start; min-width: 0;
+  background: transparent; border: 0; box-shadow: none; padding: 0;
+}
+
+/* ---------- Header ---------- */
+.db-page.teacher-ui.cx-root .cx-hd { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.db-page.teacher-ui.cx-root .cx-hl { display: flex; align-items: center; gap: 14px; min-width: 0; }
+.db-page.teacher-ui.cx-root .cx-hico {
+  width: 48px; height: 48px; flex: none; border-radius: 12px; display: grid; place-items: center;
+  background: var(--db-pink); color: var(--db-mr-text);
+}
+.db-page.teacher-ui.cx-root h1.cx-title { margin: 0; color: var(--db-ink); }
+.db-page.teacher-ui.cx-root .cx-sub { margin: 2px 0 0; font-size: 14px; color: var(--db-muted); }
+.db-page.teacher-ui.cx-root .cx-term {
+  display: inline-flex; align-items: center; gap: 8px; height: 36px; padding: 0 12px; border-radius: 8px;
+  border: 1px solid var(--db-line); background: var(--db-card); color: var(--db-ink); font-size: 13px; font-weight: 600;
+}
+.db-page.teacher-ui.cx-root .cx-term svg { color: var(--db-mr-text); }
+
+.db-page.teacher-ui.cx-root .cx-layout { display: grid; gap: 24px; min-width: 0; }
+.db-page.teacher-ui.cx-root .cx-left { display: grid; gap: 14px; align-content: start; min-width: 0; }
+
+/* ---------- Term overview (empty panel on wide screens, strip above the toolbar otherwise) ---------- */
+.db-page.teacher-ui.cx-root .cx-ovw { margin: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.db-page.teacher-ui.cx-root .cx-ovw > div { padding: 12px 14px; border-radius: 10px; border: 1px solid var(--db-row-line); background: var(--db-top-bg); }
+.db-page.teacher-ui.cx-root .cx-ovw dt { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--db-muted); white-space: nowrap; }
+.db-page.teacher-ui.cx-root .cx-ovw dd { margin: 4px 0 0; font-size: 22px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.1; color: var(--db-ink); font-variant-numeric: tabular-nums; }
+.db-page.teacher-ui.cx-root .cx-ovw dd.warn { color: var(--db-amber); }
+.db-page.teacher-ui.cx-root .cx-ovw.strip {
+  grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0; border-radius: 12px; overflow: hidden;
+  border: 1px solid var(--db-card-line); background: var(--db-card); box-shadow: var(--db-shadow);
+}
+.db-page.teacher-ui.cx-root .cx-ovw.strip > div { border: 0; border-radius: 0; background: transparent; padding: 14px 18px; }
+.db-page.teacher-ui.cx-root .cx-ovw.strip > div + div { border-left: 1px solid var(--db-row-line); }
+
+/* ---------- Toolbar ---------- */
+.db-page.teacher-ui.cx-root .cx-tools {
+  display: grid; gap: 10px; padding: 12px; border-radius: 12px;
+  border: 1px solid var(--db-card-line); background: var(--db-card); box-shadow: var(--db-shadow);
+}
+.db-page.teacher-ui.cx-root .cx-tools-r1 { display: flex; gap: 10px; }
+.db-page.teacher-ui.cx-root .cx-tools-r2 { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+
+.db-page.teacher-ui.cx-root .cx-search { position: relative; flex: 1; min-width: 0; }
+.db-page.teacher-ui.cx-root .cx-search svg { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--db-muted); pointer-events: none; }
+.db-page.teacher-ui.cx-root .cx-search input {
+  width: 100%; height: 40px; padding: 0 12px 0 38px; border: 1px solid var(--db-line); border-radius: 10px;
+  background: var(--db-top-bg); color: var(--db-ink); font: inherit; font-size: 14px; outline: 0;
+  transition: border-color 0.2s, background-color 0.2s, box-shadow 0.2s;
+}
+.db-page.teacher-ui.cx-root .cx-search input::placeholder { color: var(--db-muted); }
+.db-page.teacher-ui.cx-root .cx-search input:hover { border-color: var(--db-hover-line); }
+.db-page.teacher-ui.cx-root .cx-search input:focus {
+  border-color: var(--db-mr); background: var(--db-card);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--db-mr) 16%, transparent);
+}
+
+/* Dropdowns (filters + sort): one trigger and one floating menu style */
+.db-page.teacher-ui.cx-root .cx-dd { position: relative; min-width: 0; }
+.db-page.teacher-ui.cx-root .cx-dd-btn {
+  width: 100%; height: 40px; display: flex; align-items: center; gap: 6px; padding: 0 10px 0 12px; border-radius: 10px;
+  border: 1px solid var(--db-line); background: var(--db-card); color: var(--db-ink); font: inherit; text-align: left; cursor: pointer;
+  transition: border-color 0.16s, background-color 0.16s, box-shadow 0.16s;
+}
+.db-page.teacher-ui.cx-root .cx-dd-btn:hover { border-color: var(--db-hover-line); background: var(--db-top-bg); }
+.db-page.teacher-ui.cx-root .cx-dd-btn:focus-visible, .db-page.teacher-ui.cx-root .cx-dd.open .cx-dd-btn {
+  outline: 0; border-color: var(--db-mr); box-shadow: 0 0 0 3px color-mix(in srgb, var(--db-mr) 16%, transparent);
+}
+.db-page.teacher-ui.cx-root .cx-dd.on .cx-dd-btn { border-color: color-mix(in srgb, var(--db-mr) 40%, var(--db-line)); background: color-mix(in srgb, var(--db-mr) 6%, var(--db-card)); }
+.db-page.teacher-ui.cx-root .cx-dd-ico { flex: none; color: var(--db-mr-text); }
+.db-page.teacher-ui.cx-root .cx-dd-k { flex: none; font-size: 12px; font-weight: 500; color: var(--db-muted); }
+.db-page.teacher-ui.cx-root .cx-dd.on .cx-dd-k { color: var(--db-mr-text); }
+.db-page.teacher-ui.cx-root .cx-dd-v { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13px; font-weight: 600; }
+.db-page.teacher-ui.cx-root .cx-dd-chev { flex: none; margin-left: auto; color: var(--db-muted); transition: transform 0.18s cubic-bezier(0.2, 0.7, 0.2, 1); }
+.db-page.teacher-ui.cx-root .cx-dd.open .cx-dd-chev { transform: rotate(180deg); color: var(--db-mr-text); }
+
+.db-page.teacher-ui.cx-root .cx-dd-menu {
+  position: absolute; z-index: 30; top: calc(100% + 6px); left: 0; min-width: max(100%, 184px); max-height: 280px; overflow-y: auto;
+  margin: 0; padding: 5px; display: grid; gap: 2px; list-style: none; outline: 0; border-radius: 12px;
+  border: 1px solid var(--db-card-line); background: var(--db-card);
+  box-shadow: 0 12px 32px color-mix(in srgb, var(--db-ink) 14%, transparent), 0 2px 6px color-mix(in srgb, var(--db-ink) 6%, transparent);
+  scrollbar-width: thin; scrollbar-color: var(--db-scroll) transparent;
+  opacity: 0; visibility: hidden; transform: translateY(-4px); pointer-events: none;
+  transition: opacity 0.16s ease-out, transform 0.16s ease-out, visibility 0s linear 0.16s;
+}
+.db-page.teacher-ui.cx-root .cx-dd-menu.right { left: auto; right: 0; }
+.db-page.teacher-ui.cx-root .cx-dd.open .cx-dd-menu { opacity: 1; visibility: visible; transform: none; pointer-events: auto; transition-delay: 0s; }
+.db-page.teacher-ui.cx-root .cx-dd-menu li {
+  position: relative; display: flex; align-items: center; justify-content: space-between; gap: 16px; height: 36px; padding: 0 10px 0 14px;
+  border-radius: 8px; font-size: 13px; font-weight: 500; white-space: nowrap; cursor: pointer;
+  color: color-mix(in srgb, var(--db-ink) 78%, var(--db-card));
+  transition: background-color 0.14s ease, color 0.14s ease;
+}
+/* Thin maroon marker on the left: faint on hover/keyboard cursor, solid on the selected option */
+.db-page.teacher-ui.cx-root .cx-dd-menu li::before {
+  content: ""; position: absolute; left: 5px; top: 10px; bottom: 10px; width: 3px; border-radius: 2px;
+  background: var(--db-mr); opacity: 0; transform: scaleY(0.4); transition: opacity 0.14s ease, transform 0.14s ease;
+}
+.db-page.teacher-ui.cx-root .cx-dd-menu li svg { flex: none; width: 15px; height: 15px; color: var(--db-mr-text); }
+.db-page.teacher-ui.cx-root .cx-dd-menu li.cur { background: color-mix(in srgb, var(--db-mr) 5%, var(--db-card)); color: var(--db-ink); }
+.db-page.teacher-ui.cx-root .cx-dd-menu li.cur::before { opacity: 0.35; transform: none; }
+.db-page.teacher-ui.cx-root .cx-dd-menu li[aria-selected="true"] { background: color-mix(in srgb, var(--db-mr) 10%, var(--db-card)); color: var(--db-mr-text); font-weight: 600; }
+.db-page.teacher-ui.cx-root .cx-dd-menu li[aria-selected="true"]::before { opacity: 1; transform: none; }
+.db-page.teacher-ui.cx-root .cx-dd-menu li[aria-selected="true"].cur { background: color-mix(in srgb, var(--db-mr) 15%, var(--db-card)); }
+/* Keyboard users see a ring on the highlighted option */
+.db-page.teacher-ui.cx-root .cx-dd-menu:focus-visible li.cur { box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--db-mr) 45%, transparent); }
+.db-page.teacher-ui.cx-root .cx-sort { flex: 0 0 216px; }
+
+/* ---------- Result count + active filters ---------- */
+.db-page.teacher-ui.cx-root .cx-status { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; min-height: 28px; }
+.db-page.teacher-ui.cx-root .cx-count { font-size: 13px; color: var(--db-muted); }
+.db-page.teacher-ui.cx-root .cx-count b { color: var(--db-ink); }
+.db-page.teacher-ui.cx-root .cx-active { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.db-page.teacher-ui.cx-root .cx-active li {
+  display: inline-flex; align-items: center; gap: 2px; height: 28px; padding: 0 3px 0 10px; border-radius: 99px;
+  border: 1px solid var(--db-hover-line); background: color-mix(in srgb, var(--db-mr) 7%, var(--db-card));
+  color: var(--db-mr-text); font-size: 12px; font-weight: 500; animation: cx-in 0.18s ease-out;
+}
+.db-page.teacher-ui.cx-root .cx-active li b { font-weight: 600; }
+.db-page.teacher-ui.cx-root .cx-active li button {
+  width: 22px; height: 22px; display: grid; place-items: center; border: 0; border-radius: 99px;
+  background: transparent; color: inherit; cursor: pointer; transition: background-color 0.15s;
+}
+.db-page.teacher-ui.cx-root .cx-active li button:hover { background: color-mix(in srgb, var(--db-mr) 14%, transparent); }
+.db-page.teacher-ui.cx-root .cx-active li:last-child { border: 0; background: transparent; padding: 0; }
+.db-page.teacher-ui.cx-root .cx-active li button.cx-clear {
+  width: auto; height: 28px; padding: 0 8px; border-radius: 6px; font: inherit; font-size: 12px; font-weight: 600;
+}
+.db-page.teacher-ui.cx-root :is(.cx-active button, .cx-btn, .cx-x):focus-visible { outline: 2px solid var(--db-mr); outline-offset: 2px; }
+
+/* ---------- Class cards ---------- */
+.db-page.teacher-ui.cx-root .cx-grid {
+  list-style: none; margin: 0; padding: 0; display: grid; gap: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(max(min(100%, 270px), calc((100% - 32px) / 3)), 1fr));
+}
+.db-page.teacher-ui.cx-root .cx-grid > li { display: flex; min-width: 0; }
+.db-page.teacher-ui.cx-root .cx-card {
+  width: 100%; display: flex; flex-direction: column; padding: 18px 18px 16px; border-radius: 12px; text-align: left;
+  border: 1px solid var(--db-card-line); background: var(--db-card); color: var(--db-ink); box-shadow: var(--db-shadow);
+  font: inherit; cursor: pointer;
+  transition: transform 0.2s cubic-bezier(0.2, 0.7, 0.2, 1), border-color 0.2s, box-shadow 0.2s, background-color 0.2s;
+}
+.db-page.teacher-ui.cx-root .cx-card:hover { transform: translateY(-2px); border-color: var(--db-hover-line); box-shadow: var(--db-lift); }
+.db-page.teacher-ui.cx-root .cx-card:focus-visible { outline: 2px solid var(--db-mr); outline-offset: 2px; }
+.db-page.teacher-ui.cx-root .cx-card.sel {
+  background: color-mix(in srgb, var(--db-mr) 5%, var(--db-card));
+  border-color: color-mix(in srgb, var(--db-mr) 55%, var(--db-card-line));
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--db-mr) 30%, transparent), var(--db-lift);
+}
+.db-page.teacher-ui.cx-root .cx-c-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 12px; }
+.db-page.teacher-ui.cx-root .cx-year { font-size: 12px; font-weight: 600; color: var(--db-muted); }
+.db-page.teacher-ui.cx-root .cx-pill {
+  display: inline-flex; align-items: center; gap: 6px; height: 22px; padding: 0 9px; border-radius: 99px;
+  font-size: 11px; font-weight: 600; white-space: nowrap; border: 1px solid transparent;
+}
+.db-page.teacher-ui.cx-root .cx-pill::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.db-page.teacher-ui.cx-root .cx-pill.ok { color: var(--db-green); background: var(--db-green-bg); border-color: var(--db-green-line); }
+.db-page.teacher-ui.cx-root .cx-pill.warn { color: var(--db-amber); background: var(--db-amber-bg); border-color: var(--db-amber-line); }
+.db-page.teacher-ui.cx-root .cx-c-name {
+  font-size: 16px; font-weight: 700; line-height: 1.3; letter-spacing: -0.01em; color: var(--db-ink);
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+.db-page.teacher-ui.cx-root .cx-c-sub { margin-top: 4px; font-size: 12.5px; font-weight: 500; color: var(--db-muted); }
+.db-page.teacher-ui.cx-root .cx-c-att { margin-top: auto; padding-top: 18px; display: grid; gap: 8px; }
+.db-page.teacher-ui.cx-root .cx-c-pct { display: flex; align-items: baseline; gap: 8px; }
+.db-page.teacher-ui.cx-root .cx-c-pct b { font-size: 28px; font-weight: 700; letter-spacing: -0.03em; line-height: 1; color: var(--db-ink); font-variant-numeric: tabular-nums; }
+.db-page.teacher-ui.cx-root .cx-c-pct span { font-size: 12px; color: var(--db-muted); }
+.db-page.teacher-ui.cx-root .cx-bar { position: relative; display: block; height: 6px; border-radius: 99px; background: var(--db-soft); }
+.db-page.teacher-ui.cx-root .cx-bar i {
+  display: block; height: 100%; border-radius: 99px; transform-origin: left;
+  animation: cx-grow 0.8s cubic-bezier(0.2, 0.7, 0.2, 1) backwards;
+}
+.db-page.teacher-ui.cx-root .cx-bar.ok i { background: var(--db-green); }
+.db-page.teacher-ui.cx-root .cx-bar.warn i { background: var(--db-amber); }
+.db-page.teacher-ui.cx-root .cx-bar s { position: absolute; top: -3px; bottom: -3px; width: 2px; margin-left: -1px; border-radius: 1px; background: var(--db-ink); opacity: 0.35; }
+.db-page.teacher-ui.cx-root .cx-still .cx-bar i { animation: none; }
+.db-page.teacher-ui.cx-root .cx-c-meta {
+  display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 12px; margin-top: 16px; padding-top: 12px;
+  border-top: 1px solid var(--db-row-line); font-size: 12.5px; color: var(--db-muted);
+}
+.db-page.teacher-ui.cx-root .cx-c-meta > span { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
+.db-page.teacher-ui.cx-root .cx-c-meta .live { color: var(--db-mr-text); font-weight: 600; }
+.db-page.teacher-ui.cx-root .cx-card.sel .cx-c-meta { border-top-color: color-mix(in srgb, var(--db-mr) 18%, var(--db-row-line)); }
+
+/* ---------- Empty states ---------- */
+.db-page.teacher-ui.cx-root .cx-empty {
+  display: grid; justify-items: center; gap: 8px; padding: 56px 24px; text-align: center;
+  border: 1px dashed var(--db-line); border-radius: 12px; background: var(--db-card);
+}
+.db-page.teacher-ui.cx-root .cx-empty-ico {
+  width: 48px; height: 48px; display: grid; place-items: center; margin-bottom: 4px; border-radius: 12px;
+  background: color-mix(in srgb, var(--db-mr) 8%, var(--db-card)); color: var(--db-mr-text);
+}
+.db-page.teacher-ui.cx-root :is(.cx-empty h3, .cx-side-empty h2) { margin: 0; font-size: 16px; font-weight: 700; color: var(--db-ink); }
+.db-page.teacher-ui.cx-root :is(.cx-empty p, .cx-side-empty > p) { margin: 0; max-width: 320px; font-size: 13px; line-height: 1.5; color: var(--db-muted); }
+.db-page.teacher-ui.cx-root .cx-btn {
+  margin-top: 8px; height: 36px; padding: 0 14px; border-radius: 8px; border: 1px solid var(--db-line);
+  background: var(--db-card); color: var(--db-ink); font: inherit; font-size: 13px; font-weight: 600; cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+.db-page.teacher-ui.cx-root .cx-btn:hover { background: var(--db-pink); border-color: var(--db-hover-line); }
+
+/* ---------- Class details (docked panel and drawer) ---------- */
+.db-page.teacher-ui.cx-root .cx-dh {
+  display: flex; align-items: flex-start; justify-content: space-between; gap: 12px;
+  padding: 20px 22px 16px; border-bottom: 1px solid var(--db-row-line);
+}
+.db-page.teacher-ui.cx-root .cx-dh-t { min-width: 0; display: grid; gap: 6px; }
+.db-page.teacher-ui.cx-root .cx-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.db-page.teacher-ui.cx-root .cx-tags span {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.04em; padding: 3px 8px; border-radius: 6px;
+  background: var(--db-soft); color: var(--db-muted); border: 1px solid var(--db-row-line);
+}
+.db-page.teacher-ui.cx-root .cx-tags span.cd { background: var(--db-pink); color: var(--db-mr-text); border-color: var(--db-hover-line); }
+.db-page.teacher-ui.cx-root .cx-dh h2 { margin: 4px 0 0; font-size: 20px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.25; color: var(--db-ink); }
+.db-page.teacher-ui.cx-root .cx-dh p { margin: 0; font-size: 13px; color: var(--db-muted); }
+.db-page.teacher-ui.cx-root .cx-x {
+  width: 32px; height: 32px; flex: none; display: grid; place-items: center; border-radius: 8px; cursor: pointer;
+  border: 1px solid var(--db-line); background: transparent; color: var(--db-muted);
+  transition: background-color 0.15s, color 0.15s, border-color 0.15s;
+}
+.db-page.teacher-ui.cx-root .cx-x:hover { background: var(--db-pink); color: var(--db-mr-text); border-color: var(--db-hover-line); }
+
+.db-page.teacher-ui.cx-root .cx-db {
+  flex: 1; min-height: 0; overflow-y: auto; padding: 14px 22px; display: grid; grid-auto-rows: max-content; gap: 10px; align-content: start;
+  scrollbar-width: thin; scrollbar-color: var(--db-scroll) transparent;
+}
+.db-page.teacher-ui.cx-root .cx-att {
+  display: flex; align-items: center; gap: 18px; padding: 14px 16px; border-radius: 12px;
+  border: 1px solid var(--db-row-line); background: var(--db-top-bg);
+}
+.db-page.teacher-ui.cx-root .cx-ring { position: relative; width: 108px; flex: none; aspect-ratio: 1; }
+.db-page.teacher-ui.cx-root .cx-ring svg { display: block; width: 100%; height: 100%; }
+.db-page.teacher-ui.cx-root .cx-ring .trk { fill: none; stroke: var(--db-soft); }
+.db-page.teacher-ui.cx-root .cx-ring .arc { fill: none; stroke-linecap: round; transition: stroke-dashoffset 0.6s cubic-bezier(0.2, 0.7, 0.2, 1); }
+.db-page.teacher-ui.cx-root .cx-ring.ok .arc { stroke: var(--db-green); }
+.db-page.teacher-ui.cx-root .cx-ring.warn .arc { stroke: var(--db-amber); }
+.db-page.teacher-ui.cx-root .cx-ring .tgt { stroke: var(--db-ink); stroke-width: 2; stroke-linecap: round; opacity: 0.45; }
+.db-page.teacher-ui.cx-root .cx-ring-val { position: absolute; inset: 0; display: grid; place-content: center; text-align: center; }
+.db-page.teacher-ui.cx-root .cx-ring-val b { font-size: 28px; font-weight: 700; letter-spacing: -0.03em; line-height: 1; color: var(--db-ink); font-variant-numeric: tabular-nums; }
+.db-page.teacher-ui.cx-root .cx-ring-val span { margin-top: 4px; font-size: 10.5px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--db-muted); }
+.db-page.teacher-ui.cx-root .cx-att-tx { min-width: 0; display: grid; gap: 6px; justify-items: start; }
+.db-page.teacher-ui.cx-root .cx-gap { margin: 0; font-size: 13.5px; font-weight: 600; color: var(--db-ink); }
+.db-page.teacher-ui.cx-root .cx-note { margin: 0; font-size: 12px; color: var(--db-muted); }
+
+.db-page.teacher-ui.cx-root .cx-next {
+  display: flex; align-items: flex-start; gap: 12px; padding: 12px 16px; border-radius: 12px;
+  border: 1px solid color-mix(in srgb, var(--db-mr) 22%, var(--db-row-line));
+  background: color-mix(in srgb, var(--db-mr) 5%, var(--db-card));
+}
+.db-page.teacher-ui.cx-root .cx-next-ico {
+  width: 36px; height: 36px; flex: none; display: grid; place-items: center; border-radius: 10px;
+  border: 1px solid var(--db-hover-line); background: var(--db-card); color: var(--db-mr-text);
+}
+.db-page.teacher-ui.cx-root .cx-next > div { display: grid; gap: 2px; min-width: 0; }
+.db-page.teacher-ui.cx-root .cx-next-k { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--db-muted); }
+.db-page.teacher-ui.cx-root .cx-next b { font-size: 15px; font-weight: 700; color: var(--db-ink); }
+.db-page.teacher-ui.cx-root .cx-next.live b { color: var(--db-mr-text); }
+.db-page.teacher-ui.cx-root .cx-next-s { font-size: 12.5px; color: var(--db-muted); }
+
+.db-page.teacher-ui.cx-root .cx-info { margin: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.db-page.teacher-ui.cx-root .cx-info > div {
+  display: grid; grid-template-columns: auto 1fr; align-items: center; align-content: start; column-gap: 8px; row-gap: 4px; padding: 11px 14px;
+  border-radius: 12px; border: 1px solid var(--db-row-line); background: var(--db-top-bg); min-width: 0;
+}
+.db-page.teacher-ui.cx-root .cx-info svg { width: 18px; height: 18px; color: var(--db-mr-text); }
+.db-page.teacher-ui.cx-root .cx-info dt { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--db-muted); }
+.db-page.teacher-ui.cx-root .cx-info dd { grid-column: 1 / -1; margin: 0; min-width: 0; font-size: 18px; font-weight: 700; letter-spacing: -0.01em; line-height: 1.2; color: var(--db-ink); }
+.db-page.teacher-ui.cx-root .cx-info dd small { display: block; margin-top: 3px; font-size: 12.5px; font-weight: 500; letter-spacing: 0; color: var(--db-muted); }
+
+.db-page.teacher-ui.cx-root .cx-df { flex: none; padding: 14px 22px 18px; border-top: 1px solid var(--db-row-line); background: var(--db-card); }
+.db-page.teacher-ui.cx-root .cx-start {
+  width: 100%; height: 44px; display: flex; align-items: center; justify-content: center; gap: 8px; border-radius: 10px;
+  background: var(--db-mr); color: #fff; font-size: 14px; font-weight: 600; text-decoration: none;
+  transition: background-color 0.2s, box-shadow 0.2s, transform 0.2s;
+}
+.db-page.teacher-ui.cx-root .cx-start:hover { background: var(--db-mr-hover); box-shadow: 0 6px 16px color-mix(in srgb, var(--db-mr) 30%, transparent); transform: translateY(-1px); }
+.db-page.teacher-ui.cx-root .cx-start:focus-visible { outline: 2px solid var(--db-mr); outline-offset: 3px; }
+
+/* Drawer (below the wide breakpoint) */
+.db-page.teacher-ui.cx-root .cx-drawer-bg {
+  position: fixed; inset: 0; z-index: 1000; display: flex; justify-content: flex-end;
+  background: color-mix(in srgb, var(--db-ink) 45%, transparent); animation: cx-fade 0.2s ease-out;
+}
+.db-page.teacher-ui.cx-root .cx-drawer {
+  width: min(440px, 100vw); height: 100%; display: flex; flex-direction: column; outline: 0;
+  background: var(--db-card); border-left: 1px solid var(--db-card-line);
+  box-shadow: -14px 0 36px color-mix(in srgb, var(--db-ink) 18%, transparent);
+  animation: cx-slide 0.26s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+@keyframes cx-grow { from { transform: scaleX(0); } }
+@keyframes cx-in { from { opacity: 0; transform: translateY(4px); } }
+@keyframes cx-fade { from { opacity: 0; } }
+@keyframes cx-slide { from { transform: translateX(32px); opacity: 0; } }
+
+/* ---------- Wide screens: page height locked, only the card grid scrolls, details docked right ---------- */
+@media (min-width: 1366px) and (min-height: 640px) {
+  .db-page.teacher-ui.cx-root { height: 100vh; min-height: 0; overflow: hidden; }
+  .db-page.teacher-ui.cx-root .db-body { min-height: 0; overflow: hidden; }
+  .db-page.teacher-ui.cx-root .db-main { min-height: 0; overflow: hidden; display: flex; flex-direction: column; }
+  .db-page.teacher-ui.cx-root .cx-panel { flex: 1; min-height: 0; grid-template-rows: auto minmax(0, 1fr); }
+  .db-page.teacher-ui.cx-root .cx-layout { min-height: 0; grid-template-columns: minmax(0, 1fr) clamp(340px, 27vw, 420px); }
+  .db-page.teacher-ui.cx-root .cx-left { min-height: 0; grid-template-rows: auto auto minmax(0, 1fr); }
+  .db-page.teacher-ui.cx-root .cx-scroll {
+    min-height: 0; overflow-y: auto; margin: -4px -10px 0 -6px; padding: 4px 10px 16px 6px; overscroll-behavior: contain;
+    scrollbar-width: thin; scrollbar-color: var(--db-scroll) transparent;
+  }
+  .db-page.teacher-ui.cx-root .cx-side {
+    min-height: 0; display: flex; flex-direction: column; overflow: hidden; border-radius: 16px;
+    border: 1px solid var(--db-card-line); background: var(--db-card); box-shadow: var(--db-shadow);
+  }
+  .db-page.teacher-ui.cx-root .cx-side-in { flex: 1; min-height: 0; display: flex; flex-direction: column; animation: cx-in 0.22s ease-out; }
+  .db-page.teacher-ui.cx-root .cx-side-empty {
+    flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;
+    padding: 32px 28px; text-align: center;
+  }
+  .db-page.teacher-ui.cx-root .cx-side-ovw {
+    width: 100%; display: grid; gap: 10px; margin-top: 24px; padding-top: 20px; text-align: left;
+    border-top: 1px solid var(--db-row-line);
+  }
+  .db-page.teacher-ui.cx-root .cx-ovw-k {
+    display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.08em; color: var(--db-muted);
+  }
+}
+
+/* ---------- Tablet and mobile ---------- */
+@media (max-width: 960px) {
+  .db-page.teacher-ui.cx-root .cx-tools-r2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .db-page.teacher-ui.cx-root .cx-ovw.strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .db-page.teacher-ui.cx-root .cx-ovw.strip > div:nth-child(3) { border-left: 0; }
+  .db-page.teacher-ui.cx-root .cx-ovw.strip > div:nth-child(n + 3) { border-top: 1px solid var(--db-row-line); }
+}
+@media (max-width: 640px) {
+  .db-page.teacher-ui.cx-root .cx-tools-r1 { flex-direction: column; }
+  .db-page.teacher-ui.cx-root .cx-sort { flex: none; }
+  .db-page.teacher-ui.cx-root .cx-ovw.strip > div { padding: 12px 14px; }
+  .db-page.teacher-ui.cx-root .cx-ovw dd { font-size: 19px; }
+  .db-page.teacher-ui.cx-root .cx-hd .cx-term { order: -1; }
+}
+@media (max-width: 480px) {
+  .db-page.teacher-ui.cx-root .cx-sub { font-size: 13px; }
+  .db-page.teacher-ui.cx-root .cx-hico { width: 40px; height: 40px; }
+  .db-page.teacher-ui.cx-root .cx-att { flex-direction: column; align-items: flex-start; }
+  .db-page.teacher-ui.cx-root .cx-dh, .db-page.teacher-ui.cx-root .cx-db { padding-left: 18px; padding-right: 18px; }
+  .db-page.teacher-ui.cx-root .cx-df { padding: 12px 18px 16px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .db-page.teacher-ui.cx-root :is(.cx-card, .cx-dd-btn, .cx-dd-chev, .cx-dd-menu, .cx-dd-menu li, .cx-dd-menu li::before, .cx-search input, .cx-start, .cx-ring .arc, .cx-x, .cx-btn) { transition: none; }
+  .db-page.teacher-ui.cx-root :is(.cx-bar i, .cx-side-in, .cx-active li, .cx-drawer, .cx-drawer-bg) { animation: none; }
+  .db-page.teacher-ui.cx-root .cx-card:hover, .db-page.teacher-ui.cx-root .cx-start:hover { transform: none; }
+}

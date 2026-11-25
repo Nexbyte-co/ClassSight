@@ -5,6 +5,7 @@ import { createTeacher, listUsers } from "../api/users";
 import { createClassroom } from "../api/classrooms";
 import { createLecture, deleteLecture, listClassLectures } from "../api/lectures";
 import { useClassroom } from "../context/ClassroomContext";
+import { DAY_START, DAY_END } from "../data/schedule/timetable";
 
 const WEEKDAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
@@ -48,6 +49,10 @@ function LectureTimes({ classrooms }) {
 
   const add = async (e) => {
     e.preventDefault();
+    if (form.startTime < DAY_START || form.endTime > DAY_END) {
+      setMsg({ kind: "error", text: `Classes run between ${DAY_START} and ${DAY_END}.` });
+      return;
+    }
     setBusy(true);
     setMsg(null);
     try {
@@ -110,12 +115,12 @@ function LectureTimes({ classrooms }) {
               </select>
             </label>
             <label className="mg-field">
-              Start time
-              <input type="time" value={form.startTime} onChange={(e) => setForm({ ...form, startTime: e.target.value })} required />
+              Start time ({DAY_START} to {DAY_END})
+              <input type="time" min={DAY_START} max={DAY_END} value={form.startTime} onChange={(e) => setForm({ ...form, startTime: e.target.value })} required />
             </label>
             <label className="mg-field">
               End time
-              <input type="time" value={form.endTime} onChange={(e) => setForm({ ...form, endTime: e.target.value })} required />
+              <input type="time" min={DAY_START} max={DAY_END} value={form.endTime} onChange={(e) => setForm({ ...form, endTime: e.target.value })} required />
             </label>
             <label className="mg-field">
               Room

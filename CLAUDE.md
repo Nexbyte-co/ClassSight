@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project
 
-AI classroom attendance. Teachers manage classrooms, upload photos, face recognition identifies students. Backend API complete + tested. Frontend still mock: login uses hardcoded demo accounts and no page calls the API yet (Phase E). Deployed to a single EC2 instance for the demo (see Deployment).
+AI classroom attendance. Teachers manage classrooms, upload photos, face recognition identifies students. Backend API complete + tested. Frontend: login, Dashboard, Attendance, Verify, roster/enrollment and the admin area are wired to the API; Reports, Classes, Class Schedule and the student pages still show sample data. Deployed to a single EC2 instance for the demo (see Deployment).
 
 ## Structure
 
@@ -88,14 +88,15 @@ npm run lint     # oxlint
 
 - React 19, React Router v7, Vite
 - `src/App.jsx` — all routes defined here
-- `src/context/AttendanceContext.jsx` — global state for active session; verified/unverified student lists; persisted to `localStorage`
-- `src/context/ThemeContext.jsx` — light/dark theme
-- `src/pages/` — one file per route
-- `src/api/` — fetch client (`client.js`: Bearer token from localStorage, `ApiError`), `auth.js`, `classrooms.js`. Base URL from `VITE_API_BASE_URL`
-- `src/components/RequireAuth.jsx` — route guard (token presence only); wraps all routes except `/` + `/login`
-- `src/data/mockAttendance.js`, `mockStudents.js` — **all data still mock; login uses demo accounts in `DemoSessionContext`; nothing calls the API** (Phase E must wire it, and tell the teammate first)
+- `src/api/` — fetch client (`client.js`: Bearer token in localStorage or sessionStorage, `ApiError`), plus `auth`, `users`, `classrooms`, `sections`, `lectures`, `attendance`. Base URL from `VITE_API_BASE_URL`
+- `src/context/AuthContext.jsx` — real sign-in (`/auth/login`, `/auth/me`) and the route guards `TeacherArea` (admins are sent to `/admin`), `AdminArea`, `StudentArea`
+- `src/context/ClassroomContext.jsx` — the user's classes and the selected one; `components/ClassPicker.jsx` switches it
+- `src/context/schedule/ScheduleContext.jsx` — today's lectures from `GET /lectures`; only "started early"/"dismissed" flags stay in the browser
+- `src/context/AdminDataContext.jsx` — admin-wide data loaded once for every admin page
+- **Real pages:** Dashboard (`pages/Dashboard`, with `hooks/useTodayAttendance.js`), Attendance (`pages/AttendanceSession`: `useAttendanceSession.js` runs create session → upload photo → process → review → confirm; "Check by photo" uses `/verify`), `pages/Verify.jsx`, `pages/Roster.jsx` (admin at `/admin/students`: add students, enroll/delete faces, profiles; teacher at `/students`: read-only), the admin area (`pages/AdminPanel`, `pages/Admin.jsx`)
+- **Still sample data:** Reports, Classes, Class Schedule, `pages/Students/*` (the old mock directory and student portal; the student routes redirect because the API has no student accounts), `context/demo-session` (used only by the student pages)
 
-`AttendanceContext` is primary shared state. `resolveStudent(id, method)` moves student from unverified → verified with method label (`"ai"`, `"nfc"`, `"manual"`).
+Attendance rows are `st` p/u/a (present / needs review / absent) with `m` ai/man; the API stores only a face-match confidence, so ai vs manual is inferred from it after a reload. NFC is not built.
 
 ## Deployment (EC2)
 

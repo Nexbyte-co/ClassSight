@@ -1,7 +1,11 @@
 // Verify one student: capture a photo, the server says which enrolled student it is (or not).
 import { useEffect, useMemo, useRef, useState } from "react";
 import { CheckCircle2, HelpCircle, ScanFace } from "lucide-react";
-import PageShell from "../components/PageShell";
+import TeacherShell from "../components/navigation/TeacherShell";
+import ClassPicker from "../components/ClassPicker";
+import { useTheme } from "../context/theme/ThemeContext";
+import "./Students/Students.css";
+import "./Manage.css";
 import CameraCapture from "../components/CameraCapture";
 import { useClassroom } from "../context/ClassroomContext";
 import { verifyPhoto } from "../api/classrooms";
@@ -16,6 +20,7 @@ const NO_MATCH_TEXT = {
 
 function Verify() {
   const { classroom } = useClassroom();
+  const { isDarkMode } = useTheme();
   const [cameraOn, setCameraOn] = useState(false);
   const [photo, setPhoto] = useState(null);
   const [busy, setBusy] = useState(false);
@@ -71,7 +76,9 @@ function Verify() {
   };
 
   return (
-    <PageShell crumb="Verify" activePage="verify">
+    <TeacherShell active="attendance">
+      <main style={{ flex: 1, minWidth: 0 }}>
+      <div className={`students-page-root ${isDarkMode ? "dark-mode" : ""}`} style={{ minHeight: "100%", padding: "24px 28px" }}>
       <div className="students-page-header">
         <div>
           <h1 className="students-page-title">Verify a student</h1>
@@ -81,6 +88,7 @@ function Verify() {
               : "No class is available yet."}
           </p>
         </div>
+        <ClassPicker />
       </div>
 
       {classroom && (
@@ -152,7 +160,9 @@ function Verify() {
           )}
         </div>
       )}
-    </PageShell>
+      </div>
+      </main>
+    </TeacherShell>
   );
 }
 

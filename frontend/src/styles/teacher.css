@@ -136,6 +136,17 @@ html .teacher-ui.dark-mode {
   background: var(--cs-crimson-light);
 }
 
+/* Page entry motion for teacher routes outside the Dashboard's own card sequence. */
+@keyframes cs-teacher-page-in {
+  from { opacity: 0; transform: translateY(8px); }
+}
+.db-page.teacher-ui .db-body > main:not(.db-dash) {
+  animation: cs-teacher-page-in 0.34s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .db-page.teacher-ui .db-body > main:not(.db-dash) { animation: none; }
+}
+
 /* Visually hidden text for screen readers */
 .teacher-ui .sr-only {
   position: absolute;
@@ -1094,5 +1105,251 @@ html .teacher-ui.dark-mode {
     max-width: none;
     max-height: calc(100vh - 84px);
     overflow-y: auto;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   23. Page consistency — sizes follow DESIGN.md (spacing, `rounded.md` 8px
+       controls, `headline` 28px titles); colours stay the burgundy tokens above.
+       Prefixed with `.db-page` to outrank `.db-page.teacher-ui button { font: inherit }`.
+   -------------------------------------------------------------------------- */
+
+/* Same page gutter on the older pages as on the db-main pages */
+.db-page.teacher-ui :is(.students-main-content, .reports-main) {
+  padding: clamp(16px, 1.8vw, 32px) clamp(16px, 1.8vw, 32px) 48px;
+}
+
+/* One page-title style */
+.db-page.teacher-ui :is(h1.cx-title, h1.sc-title, h1.rp-title, h1.st-title, h1.students-page-title, h1.reports-title) {
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.6px;
+}
+
+/* Inline title icons (All Reports, Settings) become the same 48px tile as Classes/Schedule/Reports */
+.db-page.teacher-ui h1.reports-title {
+  gap: 14px;
+}
+
+.db-page.teacher-ui h1.reports-title > svg {
+  box-sizing: border-box;
+  width: 48px;
+  height: 48px;
+  flex: none;
+  padding: 12px;
+  border-radius: var(--cs-radius-card);
+  background: var(--cs-crimson-light);
+  color: var(--cs-crimson-text);
+  stroke: currentColor;
+}
+
+/* Classes: header and content sit on the page like every other page, not inside one big card */
+.db-page.teacher-ui .cx-panel {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  padding: 0;
+}
+
+/* Toolbar and form controls: 40px high, 8px radius (buttons use min-height so wrapped labels still fit) */
+.db-page.teacher-ui :is(
+    .search-input,
+    .sort-select,
+    .reports-search-input,
+    .reports-controls-bar select,
+    .control-item select,
+    .settings-section .picker-date-input,
+    .cx-search input,
+    .cx-sem select,
+    .rp-sel
+  ) {
+  height: 40px;
+  border-radius: var(--cs-radius-control);
+}
+
+.db-page.teacher-ui :is(.class-pill-btn, .cx-chip, .sc-ib, .sc-today, .btn-modal-submit, .btn-modal-cancel) {
+  min-height: 40px;
+  border-radius: var(--cs-radius-control);
+}
+
+/* Compact actions in rows and card headers: 32px */
+.db-page.teacher-ui :is(.btn-view-details, .btn-view-session, .btn-back-breadcrumb, .rp-exp, .db-btn, .db-b1:not(.db-b1-wide)) {
+  min-height: 32px;
+  border-radius: var(--cs-radius-control);
+}
+
+/* Button labels: 13px semibold everywhere */
+.db-page.teacher-ui :is(
+    .class-pill-btn,
+    .cx-chip,
+    .sc-today,
+    .rp-exp,
+    .btn-modal-submit,
+    .btn-modal-cancel,
+    .btn-view-details,
+    .btn-view-session,
+    .btn-back-breadcrumb
+  ) {
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.db-page.teacher-ui :is(.btn-modal-submit, .btn-modal-cancel, .class-pill-btn) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+/* --------------------------------------------------------------------------
+   24. Page tabs (Classes: All Classes / Class Schedule) — underline tabs on a
+       hairline, 40px high; the active tab carries the burgundy underline,
+       which slides between tabs during the page's view transition.
+   -------------------------------------------------------------------------- */
+.teacher-ui .cs-tabs {
+  display: flex;
+  gap: 4px;
+  border-bottom: 1px solid var(--cs-border);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.teacher-ui .cs-tab {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 40px;
+  padding: 0 12px;
+  border-radius: var(--cs-radius-control) var(--cs-radius-control) 0 0;
+  color: var(--cs-text-muted);
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+  text-decoration: none;
+  transition: color 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.teacher-ui .cs-tab:hover {
+  color: var(--cs-text-primary);
+  background: var(--cs-card-hover);
+}
+
+.teacher-ui .cs-tab.on {
+  color: var(--cs-crimson-text);
+  font-weight: 600;
+}
+
+/* Underline of the active tab: its own element so the view transition can slide it between tabs */
+.teacher-ui .cs-tab-ink {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--cs-crimson);
+  view-transition-name: cs-tab-ink;
+}
+
+.teacher-ui.dark-mode .cs-tab-ink {
+  background: var(--cs-crimson-text);
+}
+
+/* Switching tabs: header + content fade in with a small rise; the tab bar holds still, the underline slides.
+   Browsers without View Transitions just switch instantly. */
+.teacher-ui .db-main:has(> .cx-panel > .cs-tabs, > .sc-page > .cs-tabs) {
+  view-transition-name: cs-page;
+}
+
+.teacher-ui .cs-tabs {
+  view-transition-name: cs-tabs;
+}
+
+::view-transition-group(cs-page),
+::view-transition-group(cs-tabs) {
+  animation: none;
+}
+
+::view-transition-old(cs-page) {
+  animation: cs-page-out 120ms ease-in both;
+}
+
+::view-transition-new(cs-page) {
+  animation: cs-page-in 260ms cubic-bezier(0.2, 0.7, 0.2, 1) 40ms both;
+}
+
+::view-transition-old(cs-tabs),
+::view-transition-new(cs-tabs) {
+  animation-duration: 200ms;
+}
+
+::view-transition-group(cs-tab-ink) {
+  animation-duration: 300ms;
+  animation-timing-function: cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+@keyframes cs-page-out {
+  to { opacity: 0; }
+}
+
+@keyframes cs-page-in {
+  from { opacity: 0; transform: translateY(6px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   25. Page entrance — header, toolbar and cards rise in once, staggered
+       (Settings, Classes). Same easing as the page-tab transition above.
+   -------------------------------------------------------------------------- */
+@keyframes cs-rise {
+  from { opacity: 0; transform: translateY(10px); }
+}
+
+@keyframes cs-fade {
+  from { opacity: 0; }
+}
+
+.teacher-ui.settings-root .reports-page-header,
+.teacher-ui.cx-root .cx-hd {
+  animation: cs-rise 0.4s cubic-bezier(0.2, 0.7, 0.2, 1) backwards;
+}
+
+.teacher-ui.settings-root .ts-tabs,
+.teacher-ui.cx-root .cx-tools {
+  animation: cs-rise 0.4s cubic-bezier(0.2, 0.7, 0.2, 1) 60ms backwards;
+}
+
+.teacher-ui.cx-root .cx-grid > li {
+  animation: cs-rise 0.45s cubic-bezier(0.2, 0.7, 0.2, 1) backwards;
+  animation-delay: calc(min(var(--i, 0), 9) * 45ms + 120ms);
+}
+
+.teacher-ui.cx-root .cx-grid > li:nth-child(2) { --i: 1; }
+.teacher-ui.cx-root .cx-grid > li:nth-child(3) { --i: 2; }
+.teacher-ui.cx-root .cx-grid > li:nth-child(4) { --i: 3; }
+.teacher-ui.cx-root .cx-grid > li:nth-child(5) { --i: 4; }
+.teacher-ui.cx-root .cx-grid > li:nth-child(6) { --i: 5; }
+.teacher-ui.cx-root .cx-grid > li:nth-child(7) { --i: 6; }
+.teacher-ui.cx-root .cx-grid > li:nth-child(8) { --i: 7; }
+.teacher-ui.cx-root .cx-grid > li:nth-child(n + 9) { --i: 8; }
+
+.teacher-ui.cx-root .cx-layout > :last-child {
+  animation: cx-fade 0.5s ease 0.2s backwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .teacher-ui :is(.reports-page-header, .cx-hd, .ts-tabs, .cx-tools, .cx-grid > li, .cx-layout > *, .ts-panel > *, .ts-savebar, .ts-band, .ts-faq-item p) {
+    animation: none !important;
   }
 }

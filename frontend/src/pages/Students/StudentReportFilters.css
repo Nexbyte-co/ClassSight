@@ -1,0 +1,180 @@
+/* src/pages/Students/StudentReportFilters.css — the Reports filters, styled like the teacher All Classes dropdowns
+   (Classes/Dropdown.jsx), scoped to the student Reports page and its portal colour tokens. */
+.sp-page.rp .rp-fl { display: grid; gap: 8px; align-content: start; }
+.sp-page.rp .rp-fl .cx-dd { position: relative; min-width: 0; animation: sp-rise 0.5s var(--sp-ease) backwards; }
+.sp-page.rp .rp-fl .cx-dd:nth-child(2) { animation-delay: 70ms; }
+.sp-page.rp .cx-dd-btn {
+  width: 100%; height: 40px; display: flex; align-items: center; gap: 6px; padding: 0 10px 0 12px; border-radius: 10px;
+  border: 1px solid var(--sp-line); background: var(--cs-card-bg); color: var(--cs-text-primary); font: inherit; text-align: left; cursor: pointer;
+  transition: border-color 0.16s, background-color 0.16s, box-shadow 0.16s, transform 0.16s;
+}
+.sp-page.rp .cx-dd-btn:hover { border-color: var(--cs-crimson-border); background: var(--sp-soft); transform: translateY(-1px); }
+.sp-page.rp .cx-dd-btn:focus-visible, .sp-page.rp .cx-dd.open .cx-dd-btn {
+  outline: 0; border-color: var(--cs-crimson); box-shadow: 0 0 0 3px color-mix(in srgb, var(--cs-crimson) 16%, transparent);
+}
+.sp-page.rp .cx-dd.on .cx-dd-btn { border-color: color-mix(in srgb, var(--cs-crimson) 40%, var(--sp-line)); background: color-mix(in srgb, var(--cs-crimson) 6%, var(--cs-card-bg)); }
+.sp-page.rp .cx-dd-k { flex: none; font-size: 12px; font-weight: 500; color: var(--cs-text-muted); }
+.sp-page.rp .cx-dd.on .cx-dd-k, .sp-page.rp .cx-dd.open .cx-dd-chev { color: var(--cs-crimson); }
+.sp-page.rp .cx-dd-v { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13px; font-weight: 600; }
+.sp-page.rp .cx-dd-chev { flex: none; margin-left: auto; color: var(--cs-text-muted); transition: transform 0.18s cubic-bezier(0.2, 0.7, 0.2, 1), color 0.18s; }
+.sp-page.rp .cx-dd.open .cx-dd-chev { transform: rotate(180deg); }
+.dashboard-root.dark-mode .sp-page.rp .cx-dd.on .cx-dd-k, .dashboard-root.dark-mode .sp-page.rp .cx-dd.open .cx-dd-chev { color: #f19a9a; }
+
+.sp-page.rp .cx-dd-menu {
+  position: absolute; z-index: 30; top: calc(100% + 6px); left: 0; min-width: max(100%, 184px); max-height: 280px; overflow-y: auto;
+  margin: 0; padding: 5px; display: grid; gap: 2px; list-style: none; outline: 0; border-radius: 12px;
+  border: 1px solid var(--sp-line); background: var(--cs-card-bg);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.16), 0 2px 6px rgba(0, 0, 0, 0.06);
+  scrollbar-width: thin; scrollbar-color: var(--cs-border) transparent;
+  opacity: 0; visibility: hidden; transform: translateY(-4px); pointer-events: none;
+  transition: opacity 0.16s ease-out, transform 0.16s ease-out, visibility 0s linear 0.16s;
+}
+.sp-page.rp .cx-dd.open .cx-dd-menu { opacity: 1; visibility: visible; transform: none; pointer-events: auto; transition-delay: 0s; }
+.sp-page.rp .cx-dd-menu li {
+  position: relative; display: flex; align-items: center; justify-content: space-between; gap: 16px; height: 36px; padding: 0 10px 0 14px;
+  border-radius: 8px; font-size: 13px; font-weight: 500; white-space: nowrap; cursor: pointer; color: var(--cs-text-secondary);
+  transition: background-color 0.14s ease, color 0.14s ease;
+}
+.sp-page.rp .cx-dd-menu li::before {
+  content: ""; position: absolute; left: 5px; top: 10px; bottom: 10px; width: 3px; border-radius: 2px;
+  background: var(--cs-crimson); opacity: 0; transform: scaleY(0.4); transition: opacity 0.14s ease, transform 0.14s ease;
+}
+.sp-page.rp .cx-dd-menu li svg { flex: none; width: 15px; height: 15px; color: var(--cs-crimson); }
+.sp-page.rp .cx-dd-menu li.cur { background: color-mix(in srgb, var(--cs-crimson) 5%, var(--cs-card-bg)); color: var(--cs-text-primary); }
+.sp-page.rp .cx-dd-menu li.cur::before { opacity: 0.35; transform: none; }
+.sp-page.rp .cx-dd-menu li[aria-selected="true"] { background: color-mix(in srgb, var(--cs-crimson) 10%, var(--cs-card-bg)); color: var(--cs-crimson); font-weight: 600; }
+.sp-page.rp .cx-dd-menu li[aria-selected="true"]::before { opacity: 1; transform: none; }
+.dashboard-root.dark-mode .sp-page.rp .cx-dd-menu li[aria-selected="true"], .dashboard-root.dark-mode .sp-page.rp .cx-dd-menu li svg { color: #f19a9a; }
+.sp-page.rp .cx-dd-menu:focus-visible li.cur { box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--cs-crimson) 45%, transparent); }
+
+/* Board: overall card + filters on top of the trend and calendar, course comparison on the right from the top */
+.sp-page.rp .rp-board { display: grid; grid-template-columns: minmax(0, 1.1fr) 296px minmax(0, 1.078fr); grid-template-rows: auto auto 1fr; gap: 16px; align-items: start; }
+.sp-page.rp .rp-board > .rp-kpis, .sp-page.rp .rp-board > .rp-mid { display: contents; }
+.sp-page.rp .rp-board .rp-overall { grid-column: 1; grid-row: 1; }
+.sp-page.rp .rp-board .rp-fl { grid-column: 2; grid-row: 1; }
+.sp-page.rp .rp-board .rp-tr { grid-column: 1; grid-row: 2; }
+.sp-page.rp .rp-board .rp-cal { grid-column: 2; grid-row: 2; }
+.sp-page.rp .rp-board .rp-cmp { grid-column: 3; grid-row: 1 / span 3; }
+@media (min-width: 1101px) and (min-height: 700px) {
+  .student-portal-root.sp-fit .sp-page.rp { grid-template-rows: auto auto; }
+}
+@media (max-width: 1100px) {
+  .sp-page.rp .rp-board { grid-template-columns: minmax(0, 1fr); }
+  .sp-page.rp .rp-board > * , .sp-page.rp .rp-board .rp-overall, .sp-page.rp .rp-board .rp-fl, .sp-page.rp .rp-board .rp-tr, .sp-page.rp .rp-board .rp-cal, .sp-page.rp .rp-board .rp-cmp { grid-column: 1; grid-row: auto; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sp-page.rp .rp-fl .cx-dd { animation: none; }
+  .sp-page.rp .cx-dd-btn:hover { transform: none; }
+  .sp-page.rp .cx-dd-btn, .sp-page.rp .cx-dd-chev, .sp-page.rp .cx-dd-menu, .sp-page.rp .cx-dd-menu li { transition: none; }
+}
+
+/* Overall card and the two filters share the top row, filters side by side */
+.sp-page.rp .rp-board > .rp-top { grid-column: 1 / span 2; grid-row: 1; display: flex; gap: 16px; align-items: stretch; }
+.sp-page.rp .rp-top .rp-kpis { display: block; flex: 0 0 280px; order: -1; }
+.sp-page.rp .rp-top .rp-overall { height: 100%; }
+.sp-page.rp .rp-top .rp-fl { flex: 1; min-width: 0; grid-template-columns: repeat(2, minmax(0, 1fr)); align-content: center; gap: 12px; }
+.sp-page.rp .rp-board .rp-fl, .sp-page.rp .rp-board .rp-overall { grid-column: auto; grid-row: auto; }
+.sp-page.rp .rp-top .rp-fl .cx-dd-btn { height: 44px; }
+.sp-page.rp .rp-board .rp-tr { grid-row: 2; }
+@media (max-width: 1100px) { .sp-page.rp .rp-board > .rp-top { grid-column: 1; grid-row: auto; flex-wrap: wrap; } }
+
+/* Filters fill the height of the top row; the row sits closer to the trend and calendar cards */
+.sp-page.rp .rp-top .rp-fl { align-content: stretch; grid-template-rows: 1fr; }
+.sp-page.rp .rp-top .rp-fl .cx-dd { height: 100%; }
+.sp-page.rp .rp-top .rp-fl .cx-dd-btn { height: 100%; }
+@media (min-width: 1101px) { .sp-page.rp .rp-board > .rp-top { margin-bottom: -6px; } }
+
+/* Tall filter: small caption on top, the chosen value below it, chevron on the right (matches the Overall card's caption style) */
+.sp-page.rp .rp-top .cx-dd-btn { display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-rows: 1fr 1fr; align-items: center; row-gap: 0; padding: 14px 14px 14px 18px; }
+.sp-page.rp .rp-top .cx-dd-k { grid-column: 1; grid-row: 1; align-self: end; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; }
+.sp-page.rp .rp-top .cx-dd-v { grid-column: 1; grid-row: 2; align-self: start; font-size: 19px; font-weight: 700; letter-spacing: -0.01em; line-height: 1.3; }
+.sp-page.rp .rp-top .cx-dd-chev { grid-column: 2; grid-row: 1 / span 2; width: 18px; height: 18px; margin: 0; }
+
+/* Course comparison ends level with the calendar */
+@media (min-width: 1101px) {
+  .sp-page.rp .rp-board .rp-cmp { grid-row: 1 / span 2; height: auto; align-self: stretch; }
+}
+@media (min-width: 1101px) {
+  .sp-page.rp .rp-board .rp-cmp { contain: size; min-height: 0; }
+}
+.sp-page.rp .rp-cmp .rp-bar { padding: 2px 8px; }
+.sp-page.rp .rp-cmp .rp-bars { gap: 0; }
+.sp-page.rp .rp-cmp .rp-detail { padding: 8px 12px; gap: 5px; }
+.sp-page.rp .rp-cmp .rp-detail dl { gap: 4px 14px; }
+
+/* Course comparison: rows spread evenly over the space above the detail panel */
+.sp-page.rp .rp-cmp > .rp-scroll { display: flex; flex-direction: column; }
+.sp-page.rp .rp-cmp .rp-bars { flex: 1; display: flex; flex-direction: column; justify-content: space-evenly; gap: 4px; }
+.sp-page.rp .rp-cmp .rp-bar { padding: 5px 8px; }
+
+/* Course history: fills the space under the trend, calendar and comparison */
+.sp-page.rp .rp-board .rp-hist { grid-column: 1 / -1; grid-row: 3; }
+@media (min-width: 1101px) and (min-height: 700px) {
+  .student-portal-root.sp-fit .sp-page.rp { grid-template-rows: auto minmax(0, 1fr); }
+  .sp-page.rp .rp-board { grid-template-rows: auto auto minmax(0, 1fr); min-height: 0; }
+  .sp-page.rp .rp-board .rp-hist { align-self: stretch; min-height: 0; grid-template-rows: auto minmax(0, 1fr); overflow: hidden; }
+}
+.rp-hist .rp-key i.bad { background: var(--sp-bad); }
+.rp-hbody { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 20px; min-height: 0; }
+.rp-hc { position: relative; min-height: 150px; height: 100%; }
+.rp-hcols { display: flex; align-items: stretch; gap: 6px; height: 100%; }
+.rp-hcol { flex: 1; min-width: 0; display: grid; grid-template-rows: minmax(0, 1fr) 16px; gap: 4px; cursor: default; }
+.rp-hstack { align-self: end; display: flex; flex-direction: column; min-height: 4px; border-radius: 6px 6px 3px 3px; overflow: hidden; transform-origin: bottom; animation: rp-colgrow 0.6s var(--sp-ease) backwards; animation-delay: calc(var(--i) * 25ms); transition: filter 0.15s, transform 0.15s; }
+.rp-hstack i { display: block; min-height: 2px; }
+.rp-hstack i.p { background: var(--sp-ok); }
+.rp-hstack i.a { background: var(--sp-bad); }
+.rp-hstack i.u { background: var(--sp-warn); }
+.rp-hcol.on .rp-hstack { filter: brightness(1.12); transform: scaleY(1.03); }
+.rp-hcol span { font-size: 10.5px; color: var(--cs-text-muted); text-align: center; white-space: nowrap; overflow: visible; }
+@keyframes rp-colgrow { from { transform: scaleY(0); } }
+.rp-htip { position: absolute; top: 0; transform: translateX(-50%); display: grid; gap: 2px; padding: 7px 10px; border-radius: 9px; pointer-events: none; white-space: nowrap; background: var(--cs-card-bg); border: 1px solid var(--sp-line); box-shadow: 0 10px 24px rgba(0,0,0,0.14); font-size: 12px; }
+.rp-htip b { color: var(--cs-text-primary); }
+.rp-htip small { color: var(--cs-text-muted); }
+.rp-hlist { display: grid; align-content: start; gap: 4px; padding-right: 4px; }
+.rp-hlist li { display: flex; align-items: center; gap: 10px; padding: 6px 8px; border-radius: 8px; transition: background-color 0.15s; animation: sp-rise 0.4s var(--sp-ease) backwards; }
+.rp-hlist li:hover { background: var(--sp-soft); }
+.rp-hl-n { flex: 1; min-width: 0; display: grid; }
+.rp-hl-n b { font-size: 13px; color: var(--cs-text-primary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rp-hl-n small { font-size: 11.5px; color: var(--cs-text-muted); }
+@media (max-width: 1100px) {
+  .sp-page.rp .rp-board .rp-hist { grid-column: 1; grid-row: auto; }
+  .rp-hbody { grid-template-columns: minmax(0, 1fr); }
+  .rp-hc { height: 200px; }
+  .rp-hlist { max-height: 260px; }
+}
+@media (prefers-reduced-motion: reduce) { .rp-hstack, .rp-hlist li { animation: none; } }
+.rp-hcols { justify-content: space-around; }
+.rp-hcol { flex: 0 1 56px; }
+.rp-hbody > .rp-hc { align-self: stretch; }
+
+/* Softer palette for the history and comparison charts: burgundy for attended / meeting the requirement,
+   dusty rose for missed / critical, warm sand for pending / close to the requirement */
+.sp-page.rp {
+  --rp-good: var(--cs-crimson);
+  --rp-miss: color-mix(in srgb, var(--cs-crimson) 32%, var(--cs-card-bg));
+  --rp-pend: #d9b779;
+}
+.dashboard-root.dark-mode .sp-page.rp {
+  --rp-good: #e07a7d;
+  --rp-miss: color-mix(in srgb, #e07a7d 35%, var(--cs-card-bg));
+  --rp-pend: #b8955a;
+}
+.sp-page.rp .rp-hstack i.p { background: var(--rp-good); }
+.sp-page.rp .rp-hstack i.a { background: var(--rp-miss); }
+.sp-page.rp .rp-hstack i.u { background: var(--rp-pend); }
+.sp-page.rp .rp-hist .rp-key i.ok { background: var(--rp-good); }
+.sp-page.rp .rp-hist .rp-key i.bad { background: var(--rp-miss); }
+.sp-page.rp .rp-hist .rp-key i.warn { background: var(--rp-pend); }
+.sp-page.rp .rp-cmp .rp-track i { background: var(--rp-good); }
+.sp-page.rp .rp-cmp .rp-bar.warn .rp-track i { background: var(--rp-pend); }
+.sp-page.rp .rp-cmp .rp-bar.bad .rp-track i { background: var(--rp-miss); }
+.sp-page.rp .rp-hlist .sp-pill.s-present { background: color-mix(in srgb, var(--rp-good) 12%, var(--cs-card-bg)); color: var(--rp-good); }
+.sp-page.rp .rp-hlist .sp-pill.s-absent { background: var(--sp-soft); color: var(--cs-text-muted); }
+.sp-page.rp .rp-cmp .sp-pill.l-ok { background: color-mix(in srgb, var(--rp-good) 12%, var(--cs-card-bg)); color: var(--rp-good); }
+.sp-page.rp .rp-cmp .sp-pill.l-warn { background: color-mix(in srgb, var(--rp-pend) 22%, var(--cs-card-bg)); color: #8a6420; }
+/* Course detail: attendance, attended and missed on one line */
+.sp-page.rp .rp-cmp .rp-detail dl { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+/* No sideways scrolling in the comparison list: hover highlights without shifting the row */
+.sp-page.rp .rp-cmp > .rp-scroll { overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; }
+.sp-page.rp .rp-cmp .rp-bar:hover { transform: none; }
+.sp-page.rp .rp-cmp .rp-bars { min-width: 0; }

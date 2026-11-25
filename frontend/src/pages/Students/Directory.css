@@ -1,0 +1,1289 @@
+/* src/pages/Students/Directory.css
+   Students page. Values copied from the design handoff (ClassSight-Students-Handoff/reference,
+   view #vt). Tokens are page-local (--st-*) and set on the page root so the View all window,
+   which renders outside <main>, gets them too. */
+
+/* ---------- tokens ---------- */
+.db-page.teacher-ui.st-root {
+  --st-mr: #7b1113;
+  --st-mr5: #fdf2f3;
+  --st-mrt: #7b1113;
+  --st-card: #ffffff;
+  --st-in: #f8fafc;
+  --st-in2: #f4f6f8;
+  --st-bd: #e0ddd9;
+  --st-bd2: #eeece9;
+  --st-bd3: #d6d3cf;
+  --st-bdi: #e5e9ee;
+  --st-tx: #0f172a;
+  --st-tx2: #475569;
+  --st-mu: #64748b;
+  --st-track: #eef0f2;
+  --st-tint: #f6e9ea;
+  --st-tint2: #fbf3f3;
+  --st-tint3: #e3c4c7;
+  --st-ok: #17703a;
+  --st-okb: #e7f3ec;
+  --st-okf: #1f8a4c;
+  --st-okbd: #a7f3d0;
+  --st-wa: #9a4a06;
+  --st-wab: #fbf0e1;
+  --st-waf: #c76a12;
+  --st-wabd: #fde68a;
+  --st-er: #b42318;
+  --st-erb: #fdecea;
+  --st-erf: #c2352a;
+  --st-erbd: #fecaca;
+  --st-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
+  --st-ov: rgba(15, 23, 42, 0.45);
+  --ring-track: var(--st-track);
+  --ring-text: var(--st-tx);
+  --ring-sub: var(--st-mu);
+}
+
+/* Dark: muted on purpose, no neon */
+.db-page.teacher-ui.dark-mode.st-root {
+  --st-mr: #9e3434;
+  --st-mr5: #3a2224;
+  --st-mrt: #e6a3a3;
+  --st-card: #1d1b19;
+  --st-in: #262320;
+  --st-in2: #24211f;
+  --st-bd: #3a3531;
+  --st-bd2: #2c2825;
+  --st-bd3: #4a443f;
+  --st-bdi: #36312d;
+  --st-tx: #f3efeb;
+  --st-tx2: #cbc3bb;
+  --st-mu: #a69d95;
+  --st-track: #34302c;
+  --st-tint: #2e2122;
+  --st-tint2: #251c1c;
+  --st-tint3: #4a2e30;
+  --st-ok: #7fc49a;
+  --st-okb: #1c2a21;
+  --st-okf: #2e8b57;
+  --st-okbd: #2c4434;
+  --st-wa: #ddb06a;
+  --st-wab: #2c2417;
+  --st-waf: #b07a2e;
+  --st-wabd: #4a3a20;
+  --st-er: #e59a92;
+  --st-erb: #2d1d1b;
+  --st-erf: #b04a42;
+  --st-erbd: #4a2a27;
+  --st-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --st-ov: rgba(0, 0, 0, 0.62);
+}
+
+.db-page.teacher-ui.st-root :is(.st-view, .st-modal) {
+  font-size: 14px;
+  color: var(--st-tx);
+}
+
+/* Buttons inherit the font from Dashboard.css (`.db-page.teacher-ui button`); the classes below set size/weight */
+
+/* ---------- page frame ---------- */
+/* Fills the viewport under the 64px top bar and the main padding: no page scroll at >= 900px tall */
+.db-page.teacher-ui .st-view {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  height: calc(100vh - 64px - 2 * clamp(16px, 1.8vw, 32px));
+  min-height: 700px;
+}
+
+.db-page.teacher-ui .st-hd {
+  flex: none;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.db-page.teacher-ui .st-hl {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+
+.db-page.teacher-ui .st-hico {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: var(--st-mr5);
+  color: var(--st-mrt);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+}
+
+.db-page.teacher-ui h1.st-title {
+  margin: 0;
+  color: var(--st-tx);
+}
+
+.db-page.teacher-ui .st-sub {
+  margin: 2px 0 0;
+  font-size: 14px;
+  color: var(--st-mu);
+}
+
+.db-page.teacher-ui .st-exp {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 34px;
+  padding: 0 14px;
+  border: 1px solid var(--st-bd3);
+  border-radius: 10px;
+  background: var(--st-card);
+  color: var(--st-mrt);
+  font-size: 12.5px;
+  font-weight: 700;
+  flex: none;
+  transition: background-color 0.15s, border-color 0.15s;
+}
+
+.db-page.teacher-ui .st-exp:hover {
+  background: var(--st-tint);
+  border-color: var(--st-tint3);
+}
+
+.db-page.teacher-ui .st-hd .st-exp {
+  height: 40px;
+}
+
+.db-page.teacher-ui .st-card {
+  background: var(--st-card);
+  border: 1px solid var(--st-bd);
+  border-radius: 16px;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
+  padding: 20px;
+  min-width: 0;
+}
+
+.db-page.teacher-ui .st-k2 {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--st-mu);
+  margin-bottom: 6px;
+}
+
+.db-page.teacher-ui .st-spill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 22px;
+  padding: 0 9px;
+  border-radius: 99px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.db-page.teacher-ui .st-spill svg {
+  flex: none;
+}
+
+.db-page.teacher-ui .st-spill.ok { background: var(--st-okb); color: var(--st-ok); }
+.db-page.teacher-ui .st-spill.wa { background: var(--st-wab); color: var(--st-wa); }
+.db-page.teacher-ui .st-spill.er { background: var(--st-erb); color: var(--st-er); }
+
+.db-page.teacher-ui .st-lnk {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border: 0;
+  background: none;
+  padding: 4px 0;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--st-mrt);
+  border-radius: 6px;
+  margin-left: auto;
+  white-space: nowrap;
+}
+
+.db-page.teacher-ui .st-lnk:hover {
+  text-decoration: underline;
+}
+
+.db-page.teacher-ui .st-bsel {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 100%;
+  height: 40px;
+  padding: 0 32px 0 12px;
+  border: 1px solid var(--st-bd3);
+  border-radius: 10px;
+  background: var(--st-in)
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%2364748B' stroke-width='2.2' viewBox='0 0 24 24'%3E%3Cpath d='M6 9l6 6 6-6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")
+    no-repeat right 10px center;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--st-tx);
+  cursor: pointer;
+  text-overflow: ellipsis;
+}
+
+.db-page.teacher-ui .st-bsel:hover {
+  border-color: #b8a3a7;
+}
+
+.db-page.teacher-ui .st-lnav {
+  flex: none;
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--st-bd3);
+  border-radius: 10px;
+  background: var(--st-in);
+  color: var(--st-mrt);
+  transition: background-color 0.15s, border-color 0.15s, opacity 0.15s;
+}
+
+.db-page.teacher-ui .st-lnav:hover:not(:disabled) {
+  background: var(--st-tint);
+  border-color: var(--st-tint3);
+}
+
+.db-page.teacher-ui .st-lnav:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+/* Focus rings (2px brand outline) */
+.db-page.teacher-ui.st-root :is(.st-lnk, .st-bsel, .st-lnav, .st-exp, .st-allb, .st-lv, .st-mx):focus-visible {
+  outline: 2px solid var(--st-mr);
+  outline-offset: 1px;
+}
+
+/* ---------- top decks ---------- */
+.db-page.teacher-ui .st-tops {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+  gap: 20px;
+  flex: none;
+}
+
+/* Batch deck */
+.db-page.teacher-ui .st-bdeck {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 22px;
+  align-items: center;
+  padding: 18px 22px;
+}
+
+.db-page.teacher-ui .st-bring {
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+  padding: 0 4px;
+}
+
+.db-page.teacher-ui .st-bring-meta {
+  font-size: 12px;
+  color: var(--st-mu);
+  text-align: center;
+}
+
+.db-page.teacher-ui .st-bmain {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+
+.db-page.teacher-ui .st-bpick {
+  display: flex;
+  gap: 10px;
+  align-items: flex-end;
+}
+
+.db-page.teacher-ui .st-fld {
+  display: grid;
+  min-width: 0;
+}
+
+.db-page.teacher-ui .st-bpick .st-fld:first-child {
+  flex: 1 1 170px;
+  max-width: 240px;
+}
+
+.db-page.teacher-ui .st-bpick .st-fld:nth-child(2) {
+  flex: 0 0 118px;
+}
+
+.db-page.teacher-ui .st-allb {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 40px;
+  padding: 0 12px;
+  border: 1px solid var(--st-bd3);
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  background: var(--st-card);
+  color: var(--st-tx);
+  white-space: nowrap;
+}
+
+.db-page.teacher-ui .st-allb:hover {
+  background: var(--st-tint);
+  border-color: var(--st-tint3);
+  color: var(--st-mrt);
+}
+
+.db-page.teacher-ui .st-allb.on {
+  background: var(--st-mr);
+  border-color: var(--st-mr);
+  color: #fff;
+}
+
+.db-page.teacher-ui .st-mix {
+  display: flex;
+  gap: 3px;
+  height: 10px;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.db-page.teacher-ui .st-mix i {
+  display: block;
+}
+
+.db-page.teacher-ui .st-cnts {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.db-page.teacher-ui .st-cnts > div {
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid transparent;
+}
+
+.db-page.teacher-ui .st-cnts span {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.db-page.teacher-ui .st-cnts em {
+  font-style: normal;
+  font-weight: 600;
+  opacity: 0.8;
+}
+
+.db-page.teacher-ui .st-cnts b {
+  display: block;
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-top: 2px;
+  line-height: 1.1;
+}
+
+.db-page.teacher-ui .st-cnts .cer { background: var(--st-erb); color: var(--st-er); border-color: var(--st-erbd); }
+.db-page.teacher-ui .st-cnts .cwa { background: var(--st-wab); color: var(--st-wa); border-color: var(--st-wabd); }
+.db-page.teacher-ui .st-cnts .cok { background: var(--st-okb); color: var(--st-ok); border-color: var(--st-okbd); }
+
+.db-page.teacher-ui .st-blast {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-top: 10px;
+  border-top: 1px solid var(--st-bd2);
+  font-size: 13px;
+}
+
+.db-page.teacher-ui .st-blast > span:first-child {
+  color: var(--st-mu);
+}
+
+.db-page.teacher-ui .st-blast b {
+  font-weight: 600;
+  color: var(--st-tx);
+  margin-right: 4px;
+}
+
+/* Selected student deck */
+.db-page.teacher-ui .st-sdeck {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 18px 22px;
+  min-width: 0;
+}
+
+.db-page.teacher-ui .st-sid {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: var(--st-in2);
+  border: 1px solid var(--st-bdi);
+}
+
+.db-page.teacher-ui .st-snm {
+  display: block;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--st-tx);
+}
+
+.db-page.teacher-ui .st-srl {
+  display: block;
+  font-size: 12.5px;
+  color: var(--st-mu);
+  font-variant-numeric: tabular-nums;
+  margin-top: 1px;
+}
+
+.db-page.teacher-ui .st-sst {
+  margin-left: auto;
+  flex: none;
+  display: grid;
+  justify-items: end;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--st-mu);
+}
+
+.db-page.teacher-ui .st-sst > span:last-child {
+  white-space: nowrap;
+}
+
+.db-page.teacher-ui .st-dhd {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.db-page.teacher-ui .st-dhd .st-k2 {
+  margin: 0;
+}
+
+.db-page.teacher-ui .st-dnote {
+  font-size: 12px;
+  color: var(--st-mu);
+}
+
+.db-page.teacher-ui .st-drow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.db-page.teacher-ui .st-drow .st-lnav {
+  height: 64px;
+  width: 30px;
+  border-radius: 10px;
+}
+
+.db-page.teacher-ui .st-dcells {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 4px;
+}
+
+.db-page.teacher-ui .st-dc {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  padding: 6px 0;
+  border-radius: 10px;
+  cursor: default;
+}
+
+.db-page.teacher-ui .st-dc.cur {
+  background: var(--st-tint2);
+}
+
+.db-page.teacher-ui .st-dc:focus-visible {
+  outline: 2px solid var(--st-mr);
+  outline-offset: 1px;
+}
+
+.db-page.teacher-ui .st-dw {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--st-mu);
+}
+
+.db-page.teacher-ui .st-dd {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--st-tx);
+  white-space: nowrap;
+}
+
+.db-page.teacher-ui .st-dq {
+  position: relative;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.db-page.teacher-ui .st-dq.p {
+  background: var(--st-mr);
+  color: #fff;
+}
+
+.db-page.teacher-ui .st-dq.a {
+  background: var(--st-erb);
+  border: 1px solid var(--st-erbd);
+  color: var(--st-er);
+}
+
+/* 2+ classes: fills from the bottom by minutes attended */
+.db-page.teacher-ui .st-dq.m {
+  background: var(--st-erb);
+  border: 1px solid var(--st-erbd);
+  overflow: visible;
+}
+
+.db-page.teacher-ui .st-dq.m i {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--st-mr);
+  border-radius: 0 0 7px 7px;
+}
+
+.db-page.teacher-ui .st-dq.m em {
+  position: absolute;
+  top: -6px;
+  right: -7px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: 8px;
+  background: var(--st-tx);
+  color: var(--st-card);
+  font-style: normal;
+  font-size: 9.5px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 0 2px var(--st-card);
+}
+
+.db-page.teacher-ui .st-dq.s {
+  width: 18px;
+  height: 18px;
+  border-radius: 5px;
+}
+
+.db-page.teacher-ui .st-dc.mul:hover .st-dq.m,
+.db-page.teacher-ui .st-dc.mul:focus .st-dq.m {
+  outline: 2px solid var(--st-mr);
+  outline-offset: 2px;
+}
+
+/* Day tooltip (multi-class days only) */
+.db-page.teacher-ui .st-dtip {
+  display: none;
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: 256px;
+  z-index: 20;
+  background: var(--st-card);
+  border: 1px solid var(--st-bd);
+  border-radius: 12px;
+  box-shadow: 0 18px 44px rgba(15, 23, 42, 0.18);
+  padding: 10px 12px;
+  font-size: 12px;
+}
+
+.db-page.teacher-ui .st-dc.mul:hover .st-dtip,
+.db-page.teacher-ui .st-dc.mul:focus .st-dtip,
+.db-page.teacher-ui .st-dc.mul:focus-within .st-dtip {
+  display: block;
+}
+
+.db-page.teacher-ui .st-dtip .th {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 4px;
+  font-size: 12.5px;
+  color: var(--st-tx);
+}
+
+.db-page.teacher-ui .st-dtip .th span {
+  color: var(--st-mu);
+}
+
+.db-page.teacher-ui .st-dtip .tr {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0;
+  border-top: 1px solid var(--st-bd2);
+  color: var(--st-tx);
+}
+
+.db-page.teacher-ui .st-dtip .tr b {
+  font-weight: 600;
+}
+
+.db-page.teacher-ui .st-dtip .tr > span:not(.st-dq) {
+  color: var(--st-mu);
+}
+
+.db-page.teacher-ui .st-dtip .tr em {
+  margin-left: auto;
+  font-style: normal;
+  font-weight: 600;
+}
+
+.db-page.teacher-ui .st-dtip em.ok { color: var(--st-ok); }
+.db-page.teacher-ui .st-dtip em.er { color: var(--st-er); }
+
+.db-page.teacher-ui .st-dtip .tf {
+  margin-top: 6px;
+  padding-top: 8px;
+  border-top: 1px solid var(--st-bd2);
+  font-weight: 700;
+  color: var(--st-wa);
+}
+
+.db-page.teacher-ui .st-snote {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 10px 12px;
+  border-radius: 12px;
+  font-size: 12.5px;
+  line-height: 1.45;
+  font-weight: 500;
+}
+
+.db-page.teacher-ui .st-snote svg {
+  flex: none;
+  margin-top: 1px;
+}
+
+.db-page.teacher-ui .st-snote.wa { background: var(--st-wab); color: var(--st-wa); }
+.db-page.teacher-ui .st-snote.er { background: var(--st-erb); color: var(--st-er); }
+.db-page.teacher-ui .st-snote.ok { background: var(--st-okb); color: var(--st-ok); }
+
+.db-page.teacher-ui .st-sempty {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  text-align: center;
+  color: var(--st-mu);
+  font-size: 13px;
+}
+
+.db-page.teacher-ui .st-sempty b {
+  color: var(--st-tx);
+  font-size: 14px;
+}
+
+/* ---------- status lanes ---------- */
+.db-page.teacher-ui .st-lanes {
+  flex: none;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+  align-items: start;
+}
+
+.db-page.teacher-ui .st-lane {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  background: var(--st-card);
+  border: 1px solid var(--st-bd);
+  border-radius: 16px;
+  box-shadow: var(--st-shadow);
+  overflow: hidden;
+}
+
+.db-page.teacher-ui .st-lane header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--st-bd2);
+}
+
+.db-page.teacher-ui .st-lane .li {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+}
+
+.db-page.teacher-ui .st-lane h4 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--st-tx);
+}
+
+.db-page.teacher-ui .st-lane header p {
+  margin: 1px 0 0;
+  font-size: 12px;
+  color: var(--st-mu);
+}
+
+.db-page.teacher-ui .st-lane .lc {
+  margin-left: auto;
+  min-width: 32px;
+  height: 26px;
+  padding: 0 9px;
+  border-radius: 99px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.db-page.teacher-ui .st-lane.ler :is(.li, .lc) { background: var(--st-erb); color: var(--st-er); }
+.db-page.teacher-ui .st-lane.lwa :is(.li, .lc) { background: var(--st-wab); color: var(--st-wa); }
+.db-page.teacher-ui .st-lane.lok :is(.li, .lc) { background: var(--st-okb); color: var(--st-ok); }
+
+.db-page.teacher-ui .st-lane.ler header { box-shadow: inset 0 3px 0 var(--st-erf); }
+.db-page.teacher-ui .st-lane.lwa header { box-shadow: inset 0 3px 0 var(--st-waf); }
+.db-page.teacher-ui .st-lane.lok header { box-shadow: inset 0 3px 0 var(--st-okf); }
+
+.db-page.teacher-ui.dark-mode .st-lane header { box-shadow: none; }
+.db-page.teacher-ui.dark-mode .st-lane.ler header { border-top: 2px solid #6b302b; }
+.db-page.teacher-ui.dark-mode .st-lane.lwa header { border-top: 2px solid #6a4e22; }
+.db-page.teacher-ui.dark-mode .st-lane.lok header { border-top: 2px solid #2c5a3e; }
+
+/* 5 cards visible at 56px + 6px gap; scrolls inside with a hover-only thin scrollbar */
+.db-page.teacher-ui .st-ll {
+  flex: none;
+  height: clamp(200px, calc(100vh - 640px), 326px);
+  overflow-y: auto;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: var(--st-in);
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+}
+
+.db-page.teacher-ui .st-ll:hover {
+  scrollbar-color: var(--st-bd3) transparent;
+}
+
+.db-page.teacher-ui .st-lempty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 26px 10px;
+  text-align: center;
+  font-size: 12.5px;
+  color: var(--st-mu);
+}
+
+.db-page.teacher-ui .st-lempty b {
+  font-size: 13.5px;
+  color: var(--st-tx);
+}
+
+.db-page.teacher-ui .st-lane footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 16px;
+  border-top: 1px solid var(--st-bd2);
+  font-size: 12.5px;
+  color: var(--st-mu);
+}
+
+.db-page.teacher-ui .st-lv {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 12px;
+  border: 1px solid var(--st-bd3);
+  border-radius: 9px;
+  font-size: 12.5px;
+  font-weight: 600;
+  background: var(--st-card);
+  color: var(--st-tx);
+}
+
+.db-page.teacher-ui .st-lv:hover:not(:disabled) {
+  border-color: var(--st-mr);
+  color: var(--st-mrt);
+}
+
+.db-page.teacher-ui .st-lv:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* Student card */
+.db-page.teacher-ui .st-sc {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 56px;
+  padding: 0 12px;
+  border: 1px solid var(--st-bdi);
+  border-radius: 12px;
+  background: var(--st-card);
+  text-align: left;
+  color: var(--st-tx);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.db-page.teacher-ui .st-sc:hover {
+  border-color: var(--st-bd3);
+  box-shadow: var(--st-shadow);
+}
+
+.db-page.teacher-ui .st-sc:focus-visible {
+  outline: 2px solid var(--st-mr);
+  outline-offset: 2px;
+}
+
+.db-page.teacher-ui :is(.st-sc, .st-anm) .st-av {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--st-tint);
+  color: var(--st-mrt);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  flex: none;
+}
+
+.db-page.teacher-ui .st-sc .stn {
+  flex: 1;
+  min-width: 0;
+}
+
+.db-page.teacher-ui .st-sc .stn b {
+  display: block;
+  font-size: 13.5px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.db-page.teacher-ui .st-sc .stn i {
+  display: block;
+  font-style: normal;
+  font-size: 12px;
+  color: var(--st-mu);
+  font-variant-numeric: tabular-nums;
+}
+
+.db-page.teacher-ui .st-lane.ler .st-sc.on { border-color: var(--st-erf); box-shadow: 0 0 0 3px var(--st-erb); }
+.db-page.teacher-ui .st-lane.lwa .st-sc.on { border-color: var(--st-waf); box-shadow: 0 0 0 3px var(--st-wab); }
+.db-page.teacher-ui .st-lane.lok .st-sc.on { border-color: var(--st-okf); box-shadow: 0 0 0 3px var(--st-okb); }
+.db-page.teacher-ui.dark-mode .st-sc.on { box-shadow: none; }
+
+/* ---------- View all window ---------- */
+.db-page.teacher-ui .st-mdl {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: var(--st-ov);
+  animation: st-mfade 0.18s ease-out;
+}
+
+.db-page.teacher-ui .st-modal {
+  width: min(1000px, 100%);
+  height: min(700px, calc(100vh - 32px));
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--st-card);
+  border: 1px solid var(--st-bd);
+  border-radius: 16px;
+  box-shadow: 0 30px 80px rgba(15, 23, 42, 0.3);
+  animation: st-mpop 0.22s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.db-page.teacher-ui .st-modal:focus {
+  outline: none;
+}
+
+@keyframes st-mfade {
+  from { opacity: 0; }
+}
+
+@keyframes st-mpop {
+  from { opacity: 0; transform: translateY(8px) scale(0.98); }
+}
+
+.db-page.teacher-ui .st-vah {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 18px 22px;
+}
+
+.db-page.teacher-ui .st-vah.er { background: var(--st-erb); }
+.db-page.teacher-ui .st-vah.wa { background: var(--st-wab); }
+.db-page.teacher-ui .st-vah.ok { background: var(--st-okb); }
+
+.db-page.teacher-ui .st-vah .vi {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: var(--st-card);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+}
+
+.db-page.teacher-ui .st-vah h3 {
+  margin: 0;
+  font-size: 19px;
+  font-weight: 700;
+}
+
+.db-page.teacher-ui .st-vah p {
+  margin: 2px 0 0;
+  font-size: 13px;
+  color: var(--st-tx2);
+}
+
+.db-page.teacher-ui .st-vah .st-exp {
+  margin-left: auto;
+  background: var(--st-card);
+}
+
+.db-page.teacher-ui .st-mx {
+  margin-left: auto;
+  flex: none;
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--st-bd3);
+  border-radius: 9px;
+  background: var(--st-in);
+  color: var(--st-tx2);
+}
+
+.db-page.teacher-ui .st-mx:hover {
+  background: var(--st-tint);
+  color: var(--st-mrt);
+}
+
+.db-page.teacher-ui .st-vat {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 22px;
+  border-bottom: 1px solid var(--st-bd2);
+}
+
+.db-page.teacher-ui .st-vseg {
+  display: flex;
+  gap: 2px;
+  padding: 4px;
+  background: var(--st-in2);
+  border: 1px solid var(--st-bdi);
+  border-radius: 12px;
+}
+
+.db-page.teacher-ui .st-vseg button {
+  border: 0;
+  background: none;
+  padding: 7px 14px;
+  border-radius: 9px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--st-mu);
+}
+
+.db-page.teacher-ui .st-vseg button.on {
+  background: var(--st-card);
+  color: var(--st-mrt);
+  box-shadow: var(--st-shadow);
+}
+
+.db-page.teacher-ui .st-vseg button:focus-visible {
+  outline: 2px solid var(--st-mr);
+  outline-offset: 1px;
+}
+
+.db-page.teacher-ui .st-vat .st-bsel {
+  width: 180px;
+  margin-left: auto;
+}
+
+.db-page.teacher-ui .st-vgrid {
+  display: grid;
+  grid-template-columns: minmax(180px, 1.6fr) 90px 70px minmax(150px, 1.5fr) 90px 150px;
+  gap: 14px;
+  align-items: center;
+  padding: 0 22px;
+}
+
+.db-page.teacher-ui .st-vhd {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  height: 38px;
+  background: var(--st-in);
+  border-bottom: 1px solid var(--st-bd2);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--st-mu);
+}
+
+.db-page.teacher-ui .st-vbody {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+}
+
+.db-page.teacher-ui .st-vrow {
+  width: 100%;
+  min-height: 56px;
+  border: 0;
+  border-bottom: 1px solid var(--st-bd2);
+  background: var(--st-card);
+  text-align: left;
+  color: var(--st-tx);
+}
+
+.db-page.teacher-ui .st-vrow:hover {
+  background: var(--st-in);
+}
+
+.db-page.teacher-ui .st-vrow:focus-visible {
+  outline: 2px solid var(--st-mr);
+  outline-offset: -2px;
+}
+
+.db-page.teacher-ui .st-anm {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.db-page.teacher-ui .st-anm b {
+  display: block;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--st-tx);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.db-page.teacher-ui .st-anm i {
+  display: block;
+  font-style: normal;
+  font-size: 12px;
+  color: var(--st-mu);
+  margin-top: 1px;
+}
+
+.db-page.teacher-ui .st-chip {
+  justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  height: 22px;
+  padding: 0 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  background: var(--st-in2);
+  border: 1px solid var(--st-bdi);
+  color: var(--st-tx2);
+  white-space: nowrap;
+}
+
+.db-page.teacher-ui .st-gbar {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 44px;
+  gap: 10px;
+  align-items: center;
+}
+
+.db-page.teacher-ui .st-gbar span {
+  height: 6px;
+  border-radius: 3px;
+  background: var(--st-track);
+  overflow: hidden;
+}
+
+.db-page.teacher-ui .st-gbar span i {
+  display: block;
+  height: 100%;
+  border-radius: 3px;
+}
+
+.db-page.teacher-ui .st-gbar b {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.db-page.teacher-ui .st-tla {
+  font-size: 12.5px;
+  color: var(--st-mu);
+  white-space: nowrap;
+}
+
+.db-page.teacher-ui .st-num {
+  font-variant-numeric: tabular-nums;
+}
+
+.db-page.teacher-ui .st-vrec {
+  font-size: 12.5px;
+  font-weight: 600;
+}
+
+.db-page.teacher-ui .st-aempty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 28px 20px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--st-mu);
+}
+
+.db-page.teacher-ui .st-aempty b {
+  font-size: 14px;
+  color: var(--st-tx);
+}
+
+.db-page.teacher-ui .st-vft {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 22px;
+  border-top: 1px solid var(--st-bd2);
+  font-size: 12.5px;
+  color: var(--st-mu);
+}
+
+/* ---------- responsive ---------- */
+@media (max-width: 1180px) {
+  .db-page.teacher-ui .st-tops { grid-template-columns: 1fr; }
+  .db-page.teacher-ui .st-view { height: auto; min-height: 0; }
+  .db-page.teacher-ui .st-ll { height: 326px; }
+}
+
+@media (max-width: 900px) {
+  .db-page.teacher-ui .st-lanes { grid-template-columns: 1fr; }
+  .db-page.teacher-ui .st-ll { height: auto; max-height: 326px; min-height: 90px; }
+}
+
+@media (max-width: 700px) {
+  .db-page.teacher-ui h1.st-title { font-size: 22px; }
+  .db-page.teacher-ui .st-hico { width: 42px; height: 42px; }
+  .db-page.teacher-ui .st-hd .st-exp { width: 100%; justify-content: center; }
+  .db-page.teacher-ui .st-bdeck { grid-template-columns: 1fr; justify-items: stretch; }
+  .db-page.teacher-ui .st-bring { justify-self: center; }
+  .db-page.teacher-ui .st-bpick { flex-wrap: wrap; }
+  .db-page.teacher-ui .st-bpick .st-fld:first-child { max-width: none; flex-basis: 100%; }
+  .db-page.teacher-ui .st-allb { flex: 1; justify-content: center; }
+  .db-page.teacher-ui .st-blast { flex-wrap: wrap; }
+  .db-page.teacher-ui .st-cnts { gap: 6px; }
+  .db-page.teacher-ui .st-cnts > div { padding: 8px; }
+  .db-page.teacher-ui .st-cnts span { flex-direction: column; }
+  .db-page.teacher-ui .st-sid { flex-wrap: wrap; }
+  .db-page.teacher-ui .st-sst { margin-left: 0; justify-items: start; }
+  .db-page.teacher-ui .st-dnote { display: none; }
+  .db-page.teacher-ui .st-dcells { grid-template-columns: repeat(4, 1fr); }
+  .db-page.teacher-ui .st-dc:nth-child(-n + 2) { display: none; }
+  .db-page.teacher-ui .st-modal { height: calc(100vh - 32px); }
+  .db-page.teacher-ui .st-vah { flex-wrap: wrap; padding: 14px; }
+  .db-page.teacher-ui .st-vah .st-exp { margin-left: 0; }
+  .db-page.teacher-ui .st-vat { flex-wrap: wrap; padding: 10px 14px; }
+  .db-page.teacher-ui .st-vat .st-bsel { margin-left: 0; width: 100%; }
+  .db-page.teacher-ui .st-vgrid { min-width: 760px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .db-page.teacher-ui :is(.st-mdl, .st-modal) { animation: none; }
+  .db-page.teacher-ui :is(.st-sc, .st-exp, .st-lnav) { transition: none; }
+}
+
+
+/* Dashboard-style entrance motion for the Students page and average ring. */
+@keyframes st-page-rise { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+.db-page.teacher-ui.st-root .st-hd,
+.db-page.teacher-ui.st-root .st-tops > *,
+.db-page.teacher-ui.st-root .st-lanes > * { animation: st-page-rise .55s cubic-bezier(.2,.7,.2,1) both; }
+.db-page.teacher-ui.st-root .st-hd { animation-delay: 0ms; }
+.db-page.teacher-ui.st-root .st-tops > :nth-child(1) { animation-delay: 80ms; }
+.db-page.teacher-ui.st-root .st-tops > :nth-child(2) { animation-delay: 150ms; }
+.db-page.teacher-ui.st-root .st-lanes > :nth-child(1) { animation-delay: 210ms; }
+.db-page.teacher-ui.st-root .st-lanes > :nth-child(2) { animation-delay: 270ms; }
+.db-page.teacher-ui.st-root .st-lanes > :nth-child(3) { animation-delay: 330ms; }
+.db-page.teacher-ui.st-root .st-avg-ring .attendance-ring-fill { animation: st-ring-load .9s cubic-bezier(.2,.7,.2,1) both; }
+@keyframes st-ring-load { from { stroke-dasharray: 0 1000; } to { stroke-dasharray: var(--ring-dash); } }
+@media (prefers-reduced-motion: reduce) {
+  .db-page.teacher-ui.st-root .st-hd, .db-page.teacher-ui.st-root .st-tops > *, .db-page.teacher-ui.st-root .st-lanes > *,
+  .db-page.teacher-ui.st-root .st-avg-ring .attendance-ring-fill { animation: none !important; }
+}
+
+/* Keep day detail popovers above the status cards below. */
+.db-page.teacher-ui.st-root .st-tops { position: relative; z-index: 2; }
+.db-page.teacher-ui.st-root .st-sdeck { overflow: visible; }
+.db-page.teacher-ui.st-root .st-lanes { position: relative; z-index: 1; }
+.db-page.teacher-ui.st-root .st-dc.mul:hover,
+.db-page.teacher-ui.st-root .st-dc.mul:focus,
+.db-page.teacher-ui.st-root .st-dc.mul:focus-within { z-index: 5; }
