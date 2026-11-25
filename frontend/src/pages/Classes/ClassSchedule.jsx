@@ -3,7 +3,8 @@ import { useState, useMemo, useEffect } from "react";
 import { Calendar, ChevronLeft, ChevronRight } from "lucide-react";
 import "./ClassSchedule.css";
 import TeacherShell from "../../components/navigation/TeacherShell";
-import { SLOTS, COURSES, DAYS, toMinutes, toClock, endTime } from "../../data/schedule/timetable";
+import { DAYS, DAY_START_MIN, DAY_END_MIN, toMinutes, toClock, endTime } from "../../data/schedule/timetable";
+import { useTimetable } from "../../data/schedule/useTimetable";
 
 // Accent per course (colours live in ClassSchedule.css as .ac-* classes)
 const ACCENTS = ["mr", "blue", "violet", "teal"];
@@ -19,13 +20,14 @@ const accentOf = (slot) => {
 };
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
-const START_MIN = 8 * 60; // grid starts at 08:00
-const PERIOD_MIN = 50;
-const PERIODS = 11;
-const TOTAL_MIN = PERIODS * PERIOD_MIN;
-// Positions are percentages of the day, so the whole grid always fits its box (no scrolling)
-const pct = (min) => `${(min / TOTAL_MIN) * 100}%`;
-const TIME_MARKS = Array.from({ length: PERIODS + 1 }, (_, i) => START_MIN + i * PERIOD_MIN);
+// The grid is always 08:00-20:00, one row per hour; positions are percentages of that day.
+const GRID = {
+  start: DAY_START_MIN,
+  total: DAY_END_MIN - DAY_START_MIN,
+  hours: (DAY_END_MIN - DAY_START_MIN) / 60,
+  marks: Array.from({ length: (DAY_END_MIN - DAY_START_MIN) / 60 + 1 }, (_, i) => DAY_START_MIN + i * 60),
+  pct: (min) => `${(min / (DAY_END_MIN - DAY_START_MIN)) * 100}%`,
+};
 
 function startOfWeek(offset) {
   const d = new Date();
@@ -35,6 +37,8 @@ function startOfWeek(offset) {
 }
 
 function ClassSchedule() {
+  const { slots, courses: baseCourses, loading, error, reload } = useTimetable();
+  const grid = GRID;
   const [weekOffset, setWeekOffset] = useState(0);
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [detail, setDetail] = useState(null); // { slot, x, y }
@@ -71,8 +75,8 @@ function ClassSchedule() {
   };
 
   const courses = useMemo(
-    () => COURSES.map((c, i) => ({ ...c, index: i, slot: SLOTS.find((o) => o.courseIndex === i) })),
-    []
+    () => baseCourses.map((c, i) => ({ ...c, index: i, slot: slots.find((o) => o.courseIndex === i) })),
+    [baseCourses, slots]
   );
 
   const days = useMemo(() => {
@@ -117,6 +121,17 @@ function ClassSchedule() {
             </div>
           </div>
 
+          {(loading || error || slots.length === 0) && (
+            <p className="sc-sub" role={error ? "alert" : "status"} style={{ margin: "0 0 10px" }}>
+              {loading
+                ? "Loading your timetable…"
+                : error || "No lectures are scheduled yet. An admin adds lecture times under Admin."}
+              {error && !loading && (
+                <button type="button" className="sc-today" style={{ marginLeft: 10 }} onClick={reload}>Try again</button>
+              )}
+            </p>
+          )}
+
           <div className="sc-grid">
             <div className="sc-tt" role="region" aria-label="Weekly timetable">
               <div className="sc-tti">
@@ -129,23 +144,23 @@ function ClassSchedule() {
                     </div>
                   ))}
                 </div>
-                <div className="sc-ttb" key={weekOffset}>
+                <div className="sc-ttb" key={weekOffset} style={{ "--sc-hours": grid.hours }}>
                   <div className="sc-tlab">
-                    {TIME_MARKS.map((m) => (
-                      <span key={m} style={{ top: pct(m - START_MIN) }}>{toClock(m)}</span>
+                    {grid.marks.map((m) => (
+                      <span key={m} style={{ top: grid.pct(m - grid.start) }}>{toClock(m)}</span>
                     ))}
                   </div>
                   {days.map(({ name, date }) => (
                     <div key={name} className={`sc-tcol ${isToday(date) ? "td" : ""}`}>
-                      {isToday(date) && nowMin >= START_MIN && nowMin <= START_MIN + PERIODS * PERIOD_MIN && (
-                        <div className="sc-now" style={{ top: pct(nowMin - START_MIN) }} aria-hidden="true" />
+                      {isToday(date) && nowMin >= grid.start && nowMin <= grid.start + grid.total && (
+                        <div className="sc-now" style={{ top: grid.pct(nowMin - grid.start) }} aria-hidden="true" />
                       )}
-                      {SLOTS.filter((o) => o.day === name).map((o) => {
+                      {slots.filter((o) => o.day === name).map((o) => {
                         const state = selectedCourse == null ? "" : selectedCourse === o.courseIndex ? "hi" : "dim";
                         return (
                           <div
                             key={o.id}
-                            className={`sc-blk ac-${accentOf(o)} ${state} ${detail?.slot.id === o.id ? "open" : ""}`}
+                            className={`sc-blk ac-${accentOf(o)} ${o.dur <= 50 ? "short" : ""} ${state} ${detail?.slot.id === o.id ? "open" : ""}`}
                             tabIndex={0}
                             role="button"
                             aria-haspopup="dialog"
@@ -158,8 +173,8 @@ function ClassSchedule() {
                               }
                             }}
                             style={{
-                              top: pct(toMinutes(o.start) - START_MIN),
-                              height: pct(o.dur),
+                              top: grid.pct(toMinutes(o.start) - grid.start),
+                              height: grid.pct(o.dur),
                             }}
                           >
                             <div className="n">{o.name}</div>
@@ -213,11 +228,11 @@ function ClassSchedule() {
               <button type="button" aria-label="Close details" onClick={() => setDetail(null)}>×</button>
             </div>
             <dl>
-              <dt>Batch</dt><dd>{detail.slot.group}{detail.slot.gid ? ` (${detail.slot.gid})` : ""}</dd>
+              <dt>Section</dt><dd>{detail.slot.group}{detail.slot.gid ? ` (${detail.slot.gid})` : ""}</dd>
               <dt>Room</dt><dd>{detail.slot.venue}</dd>
               <dt>Time</dt><dd>{detail.slot.day} · {detail.slot.start}–{endTime(detail.slot)}</dd>
               <dt>Type</dt><dd>{detail.slot.type} · {detail.slot.code}</dd>
-              <dt>Year</dt><dd>{detail.slot.sheet}</dd>
+              <dt>Department</dt><dd>{detail.slot.sheet}</dd>
             </dl>
           </div>
         )}

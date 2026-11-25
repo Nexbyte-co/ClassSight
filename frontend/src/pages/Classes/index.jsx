@@ -21,30 +21,35 @@ import "./Classes.css";
 import Dropdown from "./Dropdown";
 import TeacherShell from "../../components/navigation/TeacherShell";
 import { useDialogA11y } from "../../hooks/useDialogA11y";
-import { SLOTS, COURSES, YEARS, DAYS, HEALTHY_ATTENDANCE, endTime, toMinutes } from "../../data/schedule/timetable";
+import { DAYS, HEALTHY_ATTENDANCE, endTime, toMinutes } from "../../data/schedule/timetable";
+import { useTimetable } from "../../data/schedule/useTimetable";
 
 // Wide screens dock the details panel on the right and lock the page height; narrower ones use a drawer
 const WIDE_QUERY = "(min-width: 1366px) and (min-height: 640px)";
 const SEARCH_DELAY = 200;
 
-const attendanceTone = (att) => (att >= HEALTHY_ATTENDANCE ? "ok" : "warn");
-const toneLabel = (att) => (att >= HEALTHY_ATTENDANCE ? "Healthy" : "Needs attention");
+// att is null until attendance has been saved for the class
+const attendanceTone = (att) => (att == null ? "none" : att >= HEALTHY_ATTENDANCE ? "ok" : "warn");
+const toneLabel = (att) => (att == null ? "No data yet" : att >= HEALTHY_ATTENDANCE ? "Healthy" : "Needs attention");
+const pctText = (att) => (att == null ? "—" : `${att}%`);
 const gapText = (att) => {
+  if (att == null) return "No attendance saved yet";
   const gap = Math.abs(att - HEALTHY_ATTENDANCE);
   return `${gap} pt${gap === 1 ? "" : "s"} ${att >= HEALTHY_ATTENDANCE ? "above" : "below"} the ${HEALTHY_ATTENDANCE}% target`;
 };
 
 const unique = (list) => [...new Set(list)];
-const GROUPS = unique(SLOTS.map((o) => o.group)).sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
-const CODES = unique(SLOTS.map((o) => o.code)).sort();
-const WEEKDAYS = DAYS.filter((d) => SLOTS.some((o) => o.day === d));
-
-const FILTERS = [
-  { key: "year", label: "Year", options: YEARS.filter((y) => y !== "All") },
-  { key: "group", label: "Group", options: GROUPS },
-  { key: "day", label: "Day", options: WEEKDAYS },
-  { key: "code", label: "Course", options: CODES },
-].map((f) => ({ ...f, choices: [{ value: "All", label: "All" }, ...f.options.map((v) => ({ value: v, label: v }))] }));
+const buildFilters = (slots, years) =>
+  [
+    { key: "year", label: "Department", options: years },
+    {
+      key: "group",
+      label: "Section",
+      options: unique(slots.map((o) => o.group)).sort((a, b) => a.localeCompare(b, undefined, { numeric: true })),
+    },
+    { key: "day", label: "Day", options: DAYS.filter((d) => slots.some((o) => o.day === d)) },
+    { key: "code", label: "Course", options: unique(slots.map((o) => o.code).filter(Boolean)).sort() },
+  ].map((f) => ({ ...f, choices: [{ value: "All", label: "All" }, ...f.options.map((v) => ({ value: v, label: v }))] }));
 const NO_FILTERS = { year: "All", group: "All", day: "All", code: "All" };
 const FIELD = { year: "sheet", group: "group", day: "day", code: "code" };
 
@@ -83,7 +88,7 @@ let hasAnimated = false;
 function AttendanceBar({ att }) {
   return (
     <span className={`cx-bar ${attendanceTone(att)}`} aria-hidden="true">
-      <i style={{ width: `${att}%` }} />
+      <i style={{ width: `${att ?? 0}%` }} />
       <s style={{ left: `${HEALTHY_ATTENDANCE}%` }} />
     </span>
   );
@@ -101,7 +106,7 @@ function AttendanceRing({ att }) {
   const [x1, y1] = at(r - STROKE / 2 - 3);
   const [x2, y2] = at(r + STROKE / 2 + 3);
   return (
-    <div className={`cx-ring ${attendanceTone(att)}`} role="img" aria-label={`${att}% average attendance, ${gapText(att)}`}>
+    <div className={`cx-ring ${attendanceTone(att)}`} role="img" aria-label={`${pctText(att)} average attendance, ${gapText(att)}`}>
       <svg viewBox={`0 0 ${RING} ${RING}`} aria-hidden="true">
         <circle className="trk" cx={mid} cy={mid} r={r} strokeWidth={STROKE} />
         <circle
@@ -111,13 +116,13 @@ function AttendanceRing({ att }) {
           r={r}
           strokeWidth={STROKE}
           strokeDasharray={c}
-          strokeDashoffset={c * (1 - att / 100)}
+          strokeDashoffset={c * (1 - (att ?? 0) / 100)}
           transform={`rotate(-90 ${mid} ${mid})`}
         />
         <line className="tgt" x1={x1} y1={y1} x2={x2} y2={y2} />
       </svg>
       <div className="cx-ring-val">
-        <b>{att}%</b>
+        <b>{pctText(att)}</b>
         <span>average</span>
       </div>
     </div>
@@ -125,13 +130,14 @@ function AttendanceRing({ att }) {
 }
 
 /** Term totals: in the empty details panel on wide screens, above the toolbar otherwise. */
-function Overview({ compact = false }) {
-  const avg = Math.round(SLOTS.reduce((sum, o) => sum + o.att, 0) / SLOTS.length);
-  const below = SLOTS.filter((o) => o.att < HEALTHY_ATTENDANCE).length;
+function Overview({ compact = false, slots, courses }) {
+  const withData = slots.filter((o) => o.att != null);
+  const avg = withData.length ? Math.round(withData.reduce((sum, o) => sum + o.att, 0) / withData.length) : null;
+  const below = withData.filter((o) => o.att < HEALTHY_ATTENDANCE).length;
   const items = [
-    { label: "Courses", value: COURSES.length },
-    { label: "Groups", value: SLOTS.length },
-    { label: "Avg. attendance", value: `${avg}%` },
+    { label: "Courses", value: courses.length },
+    { label: "Sections", value: slots.length },
+    { label: "Avg. attendance", value: pctText(avg) },
     { label: `Below ${HEALTHY_ATTENDANCE}%`, value: below, warn: below > 0 },
   ];
   return (
@@ -147,6 +153,8 @@ function Overview({ compact = false }) {
 }
 
 function Classes() {
+  const { slots, courses, years, loading, error, reload } = useTimetable();
+  const FILTERS = useMemo(() => buildFilters(slots, years), [slots, years]);
   const [animate] = useState(() => !hasAnimated);
   useEffect(() => {
     hasAnimated = true;
@@ -181,15 +189,15 @@ function Classes() {
       "name-asc": (a, b) => byName(a, b) || byWeek(a, b),
       "name-desc": (a, b) => byName(b, a) || byWeek(a, b),
       next: (a, b) => nextLecture(a, now).at - nextLecture(b, now).at,
-      "att-desc": (a, b) => b.att - a.att || byName(a, b) || byWeek(a, b),
-      "att-asc": (a, b) => a.att - b.att || byName(a, b) || byWeek(a, b),
+      "att-desc": (a, b) => (b.att ?? -1) - (a.att ?? -1) || byName(a, b) || byWeek(a, b),
+      "att-asc": (a, b) => (a.att ?? 101) - (b.att ?? 101) || byName(a, b) || byWeek(a, b),
     }[sort];
-    return SLOTS.filter(
+    return slots.filter(
       (o) =>
         Object.keys(FIELD).every((k) => filters[k] === "All" || o[FIELD[k]] === filters[k]) &&
         (!q || [o.code, o.name, o.venue, o.group, o.gid, o.sheet, o.day].join(" ").toLowerCase().includes(q))
     ).sort(order);
-  }, [query, filters, sort, now]);
+  }, [slots, query, filters, sort, now]);
 
   const active = [
     ...(query ? [{ key: "search", label: "Search", value: `“${query}”` }] : []),
@@ -215,8 +223,7 @@ function Classes() {
   const dialogRef = useDialogA11y(Boolean(current) && !wide, close);
 
   const detail = (o) => {
-    const course = COURSES[o.courseIndex];
-    const next = nextLecture(o, now);
+        const next = nextLecture(o, now);
     const tone = attendanceTone(o.att);
     return (
       <>
@@ -244,7 +251,9 @@ function Classes() {
               <span className={`cx-pill ${tone}`}>{toneLabel(o.att)}</span>
               <p className="cx-gap">{gapText(o.att)}</p>
               <p className="cx-note">
-                Course average across {course.slots} group{course.slots === 1 ? "" : "s"}
+                {o.sessions > 0
+                  ? `Based on ${o.sessions} saved session${o.sessions === 1 ? "" : "s"}`
+                  : "Attendance appears here once a session is saved"}
               </p>
             </div>
           </section>
@@ -333,7 +342,7 @@ function Classes() {
 
           <div className="cx-layout">
             <div className="cx-left">
-              {!wide && <Overview compact />}
+              {!wide && <Overview compact slots={slots} courses={courses} />}
 
               <div className="cx-tools">
                 <div className="cx-tools-r1">
@@ -374,7 +383,7 @@ function Classes() {
 
               <div className="cx-status">
                 <span role="status" aria-live="polite" className="cx-count">
-                  Showing <b>{rows.length}</b> of {SLOTS.length} classes
+                  Showing <b>{rows.length}</b> of {slots.length} classes
                 </span>
                 {active.length > 0 && (
                   <ul className="cx-active" aria-label="Active filters">
@@ -394,11 +403,19 @@ function Classes() {
               </div>
 
               <div className="cx-scroll">
-                {SLOTS.length === 0 ? (
+                {loading && slots.length === 0 ? (
+                  <div className="cx-empty"><h3>Loading your classes…</h3></div>
+                ) : error ? (
+                  <div className="cx-empty" role="alert">
+                    <h3>Could not load your classes</h3>
+                    <p>{error}</p>
+                    <button type="button" className="cx-btn" onClick={reload}>Try again</button>
+                  </div>
+                ) : slots.length === 0 ? (
                   <div className="cx-empty">
                     <span className="cx-empty-ico"><BookOpen size={22} strokeWidth={1.8} /></span>
-                    <h3>No classes assigned yet</h3>
-                    <p>Classes from your timetable will appear here once they are added.</p>
+                    <h3>No classes scheduled yet</h3>
+                    <p>An admin adds classes and lecture times under Admin; they will appear here.</p>
                   </div>
                 ) : rows.length === 0 ? (
                   <div className="cx-empty">
@@ -420,7 +437,7 @@ function Classes() {
                             className={`cx-card ${on ? "sel" : ""}`}
                             aria-pressed={on}
                             aria-controls={wide && on ? "cx-detail" : undefined}
-                            aria-label={`${o.name}, ${o.code}, group ${o.group}. ${o.att}% attendance, ${toneLabel(o.att).toLowerCase()}. Next lecture ${nextDayText(next)}${next.live ? "" : ` at ${o.start}`}, ${o.venue}`}
+                            aria-label={`${o.name}, ${o.code}, group ${o.group}. ${pctText(o.att)} attendance, ${toneLabel(o.att).toLowerCase()}. Next lecture ${nextDayText(next)}${next.live ? "" : ` at ${o.start}`}, ${o.venue}`}
                             onClick={() => select(o)}
                           >
                             <span className="cx-c-top">
@@ -433,7 +450,7 @@ function Classes() {
                             </span>
                             <span className="cx-c-att">
                               <span className="cx-c-pct">
-                                <b className={tone}>{o.att}%</b>
+                                <b className={tone}>{pctText(o.att)}</b>
                                 <span>avg. attendance</span>
                               </span>
                               <AttendanceBar att={o.att} />
@@ -471,7 +488,7 @@ function Classes() {
                     <p>Choose a class to see its attendance, next lecture and details, and to start a session.</p>
                     <div className="cx-side-ovw">
                       <span className="cx-ovw-k"><Users size={14} strokeWidth={2} />This term</span>
-                      <Overview />
+                      <Overview slots={slots} courses={courses} />
                     </div>
                   </div>
                 )}

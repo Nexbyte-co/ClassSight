@@ -26,6 +26,12 @@ const ATTENDANCE = {
 
 export const HEALTHY_ATTENDANCE = 85;
 
+// Classes only run between 08:00 and 20:00 (the API enforces the same window).
+export const DAY_START_MIN = 8 * 60;
+export const DAY_END_MIN = 20 * 60;
+export const DAY_START = "08:00";
+export const DAY_END = "20:00";
+
 // One entry per course (a course can have several groups / slots)
 export const COURSES = [];
 SLOTS.forEach((slot) => {

@@ -48,11 +48,11 @@
 /* The timetable never scrolls up and down: the whole day is scaled to fit the box. Only a very narrow window scrolls sideways. */
 .db-page.teacher-ui .sc-tt {
   border: 1px solid var(--db-card-line); border-radius: 14px; background: var(--db-card); box-shadow: var(--db-shadow);
-  overflow-x: auto; overflow-y: hidden; min-height: 0; scrollbar-width: thin; scrollbar-color: var(--db-scroll) transparent;
+  overflow-x: auto; overflow-y: auto; min-height: 0; scrollbar-width: thin; scrollbar-color: var(--db-scroll) transparent;
 }
 .db-page.teacher-ui .sc-tt::-webkit-scrollbar { height: 8px; }
 .db-page.teacher-ui .sc-tt::-webkit-scrollbar-thumb { background: var(--db-scroll); border-radius: 8px; border: 2px solid var(--db-card); }
-.db-page.teacher-ui .sc-tti { min-width: 720px; height: 100%; display: flex; flex-direction: column; }
+.db-page.teacher-ui .sc-tti { min-width: 720px; display: flex; flex-direction: column; }
 .db-page.teacher-ui .sc-tth,
 .db-page.teacher-ui .sc-ttb { display: grid; grid-template-columns: 64px repeat(7, minmax(0, 1fr)); }
 .db-page.teacher-ui .sc-tth { position: sticky; top: 0; z-index: 3; background: var(--db-card); border-bottom: 1px solid var(--db-row-line); }
@@ -70,7 +70,7 @@
 .db-page.teacher-ui .sc-tth .td .dn { color: var(--db-mr-text); }
 .db-page.teacher-ui .sc-tth .td b { background: var(--db-mr); color: #fff; }
 
-.db-page.teacher-ui .sc-ttb { flex: 1; min-height: 0; padding: 12px 0; position: relative; animation: sc-fade 0.25s ease; }
+.db-page.teacher-ui .sc-ttb { flex: none; height: calc(var(--sc-hours, 12) * 72px + 24px); padding: 12px 0; position: relative; animation: sc-fade 0.25s ease; }
 .db-page.teacher-ui .sc-tlab { position: relative; min-height: 0; }
 .db-page.teacher-ui .sc-tlab span {
   position: absolute; right: 10px; transform: translateY(-50%); font-size: 11px; font-weight: 500;
@@ -78,9 +78,9 @@
 }
 .db-page.teacher-ui .sc-tcol {
   position: relative; border-left: 1px solid var(--db-row-line); min-height: 0;
-  /* one faint line per 50 min period (11 periods) */
+  /* one faint line per hour (08:00-20:00) */
   background-image: linear-gradient(to bottom, transparent calc(100% - 1px), color-mix(in srgb, var(--db-row-line) 60%, transparent) 0);
-  background-size: 100% calc(100% / 11);
+  background-size: 100% calc(100% / var(--sc-hours, 12));
 }
 .db-page.teacher-ui .sc-tcol.td { background-color: color-mix(in srgb, var(--db-mr) 4%, transparent); }
 

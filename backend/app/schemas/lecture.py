@@ -3,6 +3,11 @@ from datetime import time
 from pydantic import BaseModel, Field, field_validator, model_validator
 
 
+# Classes only run in this window (wall-clock, inclusive); the frontend timetable shows the same range.
+DAY_START = time(8, 0)
+DAY_END = time(20, 0)
+
+
 class LectureCreate(BaseModel):
     weekday: int = Field(ge=0, le=6, description="0 = Monday ... 6 = Sunday")
     start_time: time
@@ -21,6 +26,8 @@ class LectureCreate(BaseModel):
     def end_after_start(self) -> "LectureCreate":
         if self.end_time <= self.start_time:
             raise ValueError("end_time must be after start_time")
+        if self.start_time < DAY_START or self.end_time > DAY_END:
+            raise ValueError("lectures must be between 08:00 and 20:00")
         return self
 
 
