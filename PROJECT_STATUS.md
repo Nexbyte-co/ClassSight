@@ -1,5 +1,7 @@
 # ClassSight — Project Status
 
+> **Update 2026-11-25:** the sections below are the Sept 13 audit and are out of date. Current state: the backend and a deployed EC2 site are live, face recognition works (InsightFace), and the frontend runs on the API. Real pages: login, Dashboard, Attendance (class photo, camera, review, save, record card with CSV download), Verify, admin area, student roster and face enrolment, Classes, Class Schedule, Reports and Report details. Still sample data: All Reports (`/reports/all`) and the student portal. Classes run 08:00 to 20:00 only. 112 backend tests pass. NFC is not built. See `CLAUDE.md` and `Journals/`.
+
 **Audit Date:** September 13, 2026
 **Branch:** `develop` (Commit: `21f97e6`)
 

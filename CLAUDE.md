@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project
 
-AI classroom attendance. Teachers manage classrooms, upload photos, face recognition identifies students. Backend API complete + tested. Frontend: login, Dashboard, Attendance, Verify, roster/enrollment and the admin area are wired to the API; Reports, Classes, Class Schedule and the student pages still show sample data. Deployed to a single EC2 instance for the demo (see Deployment).
+AI classroom attendance. Teachers manage classrooms, upload photos, face recognition identifies students. Backend API complete + tested. Frontend: login, Dashboard, Attendance, Verify, roster/enrollment and the admin area are wired to the API; Classes, Class Schedule, Reports and Report details are wired too; only All Reports and the student pages still show sample data. Lectures must fall between 08:00 and 20:00. Deployed to a single EC2 instance for the demo (see Deployment).
 
 ## Structure
 
@@ -72,7 +72,7 @@ CORS_ALLOWED_ORIGINS=["http://localhost:5173"]
 
 **One-face rule:** enroll and `/verify` use `extract_main_face`: exactly one face, or one whose box area is ≥ `DOMINANT_FACE_AREA_RATIO` (5, untuned) × the next largest; otherwise 422. `/process` (group photos) still uses every face.
 
-**Tests:** model and S3 are faked (`fake_s3` fixture in `conftest.py`); no AWS or model download needed. 107 tests; Postgres must be running.
+**Tests:** model and S3 are faked (`fake_s3` fixture in `conftest.py`); no AWS or model download needed. 112 tests; Postgres must be running.
 
 ## Frontend
 
@@ -93,8 +93,8 @@ npm run lint     # oxlint
 - `src/context/ClassroomContext.jsx` — the user's classes and the selected one; `components/ClassPicker.jsx` switches it
 - `src/context/schedule/ScheduleContext.jsx` — today's lectures from `GET /lectures`; only "started early"/"dismissed" flags stay in the browser
 - `src/context/AdminDataContext.jsx` — admin-wide data loaded once for every admin page
-- **Real pages:** Dashboard (`pages/Dashboard`, with `hooks/useTodayAttendance.js`), Attendance (`pages/AttendanceSession`: `useAttendanceSession.js` runs create session → upload photo → process → review → confirm; "Check by photo" uses `/verify`), `pages/Verify.jsx`, `pages/Roster.jsx` (admin at `/admin/students`: add students, enroll/delete faces, profiles; teacher at `/students`: read-only), the admin area (`pages/AdminPanel`, `pages/Admin.jsx`)
-- **Still sample data:** Reports, Classes, Class Schedule, `pages/Students/*` (the old mock directory and student portal; the student routes redirect because the API has no student accounts), `context/demo-session` (used only by the student pages)
+- **Real pages:** Classes and Class Schedule (`data/schedule/useTimetable.js`: `GET /lectures` + `/attendance/analytics`), Reports and Report details (`pages/Reports/reportData.js`: classes, students and `/attendance/logs`; the old `reportsMock.js` only feeds the student mock), Dashboard (`pages/Dashboard`, with `hooks/useTodayAttendance.js`), Attendance (`pages/AttendanceSession`: `AttendanceRecord.jsx` lists who was present and downloads CSV (this day or all days); `useAttendanceSession.js` runs create session → upload photo → process → review → confirm; "Check by photo" uses `/verify`), `pages/Verify.jsx`, `pages/Roster.jsx` (admin at `/admin/students`: add students, enroll/delete faces, profiles; teacher at `/students`: read-only), the admin area (`pages/AdminPanel`, `pages/Admin.jsx`)
+- **Still sample data:** `pages/Reports/AllReports.jsx`, `pages/Students/*` (the old mock directory and student portal; the student routes redirect because the API has no student accounts), `context/demo-session` (used only by the student pages)
 
 Attendance rows are `st` p/u/a (present / needs review / absent) with `m` ai/man; the API stores only a face-match confidence, so ai vs manual is inferred from it after a reload. NFC is not built.
 
