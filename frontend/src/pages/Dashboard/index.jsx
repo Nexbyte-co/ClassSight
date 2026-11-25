@@ -11,7 +11,8 @@ import {
   Check,
 } from "lucide-react";
 import "../../styles/Dashboard.css";
-import { useAttendance, useAttendanceSession } from "../../context/attendance/AttendanceContext";
+import { useAuth } from "../../context/AuthContext";
+import { useTodayAttendance } from "../../hooks/useTodayAttendance";
 import { useSettings } from "../../context/settings/SettingsContext";
 import { useSchedule } from "../../context/schedule/ScheduleContext";
 import {
@@ -64,6 +65,9 @@ function Dashboard() {
   const {
     scheduleList,
     setScheduleList,
+    scheduleLoading,
+    scheduleError,
+    reloadSchedule,
     manualActiveClassId,
     setManualActiveClassId,
     endedClassIds,
@@ -71,7 +75,12 @@ function Dashboard() {
     todayKey,
     fallbackClassId,
   } = useSchedule();
-  const { getSession, getSessionSummary } = useAttendance();
+  const { session: authSession } = useAuth();
+  // Saved attendance of today's lectures, read from the API
+  const { getSummary, error: attendanceError } = useTodayAttendance(
+    scheduleList.map((c) => c.id),
+    todayKey
+  );
   const { defaultLectureMinutes, defaultDepartment } = useSettings();
 
   // Dynamic status tracking (Instructions 4 & 5)
@@ -151,11 +160,11 @@ function Dashboard() {
   const scanClass =
     currentActiveClass || scheduleList.find((c) => c.id === fallbackClassId) || null;
   const scanSessionId = scanClass ? makeSessionId(scanClass.id, todayKey) : "";
-  const { unverifiedStudents, verifiedStudents, absentStudents, resolveStudent } =
-    useAttendanceSession(scanSessionId, scanClass);
-  const scanRosterSize = verifiedStudents.length + unverifiedStudents.length + absentStudents.length;
+  const scanSummary = getSummary(scanClass?.id);
   const scanMatchRate =
-    scanRosterSize > 0 ? `${((verifiedStudents.length / scanRosterSize) * 100).toFixed(1)}%` : "0.0%";
+    scanSummary.total > 0 ? `${((scanSummary.recognized / scanSummary.total) * 100).toFixed(1)}%` : "0.0%";
+  // NFC card reading is not built yet, so nothing can be recorded from this tab
+  const unverifiedStudents = [];
 
   // Modal: Edit Active Session
   const [isSessionModalOpen, setIsSessionModalOpen] = useState(false);
@@ -207,9 +216,10 @@ function Dashboard() {
   // Dynamic greeting based on current hour
   const getGreeting = () => {
     const hour = new Date().getHours();
-    if (hour < 12) return "Good morning, Professor Jhonsy";
-    if (hour < 17) return "Good afternoon, Professor Jhonsy";
-    return "Good evening, Professor Jhonsy";
+    const who = authSession?.name ? `, ${authSession.name}` : "";
+    if (hour < 12) return `Good morning${who}`;
+    if (hour < 17) return `Good afternoon${who}`;
+    return `Good evening${who}`;
   };
 
   const currentDateString = new Date().toLocaleDateString("en-US", {
@@ -223,8 +233,7 @@ function Dashboard() {
   const handleExportLedger = () => {
     const header = ["Time", "Course", "Code", "Batch", "Venue", "Status", "Present", "Pending", "Absent", "Saved"];
     const rows = finalScheduleList.map((item) => {
-      const sessionId = makeSessionId(item.id, todayKey);
-      const session = getSession(sessionId);
+      const summary = getSummary(item.id);
       return [
         item.timeRange || item.time,
         item.title,
@@ -232,10 +241,10 @@ function Dashboard() {
         item.section,
         item.room,
         item.computedStatus,
-        session.verified.length,
-        session.unverified.length,
-        session.absent.length,
-        getSessionSummary(sessionId).isSaved ? "Yes" : "No",
+        summary.present,
+        summary.unresolved,
+        summary.absent,
+        summary.isSaved ? "Yes" : "No",
       ];
     });
     const csv = [header, ...rows]
@@ -285,7 +294,6 @@ function Dashboard() {
     setNfcState("det");
     nfcTimers.current.push(
       setTimeout(() => {
-        resolveStudent(student.id, "nfc");
         setNfcLast(student);
         setNfcCount((n) => n + 1);
         setNfcState("rec");
@@ -918,7 +926,9 @@ function Dashboard() {
                             Last Batch Scan: {scanClass ? scanClass.section : "—"} ({lastScanTime || scanClass?.time || "—"})
                           </div>
                           <div className="db-sm">
-                            {verifiedStudents.length} faces recognized • {scanMatchRate} match rate
+                            {scanSummary.isSaved
+                              ? `${scanSummary.recognized} faces recognized • ${scanMatchRate} match rate`
+                              : attendanceError || "No attendance saved yet today"}
                           </div>
                         </div>
                       </div>
@@ -953,7 +963,7 @@ function Dashboard() {
                             : nfcState === "rec"
                             ? "Attendance recorded"
                             : unverifiedStudents.length === 0
-                            ? "Reader ready · all students verified"
+                            ? "Reader not connected yet"
                             : "Reader ready · waiting for a card"}
                         </span>
                       </div>
@@ -1048,10 +1058,16 @@ function Dashboard() {
 
               {scheduleList.length === 0 ? (
                 <div className="db-ci db-empty">
-                  <span className="db-sm">No classes scheduled for today.</span>
-                  <button type="button" className="db-b1" onClick={handleOpenAddClass}>
-                    Add Lecture
-                  </button>
+                  <span className="db-sm" role={scheduleError ? "alert" : "status"}>
+                    {scheduleLoading
+                      ? "Loading today's lectures..."
+                      : scheduleError || "No classes scheduled for today. An admin adds lecture times under Admin."}
+                  </span>
+                  {scheduleError && !scheduleLoading && (
+                    <button type="button" className="db-b1" onClick={reloadSchedule}>
+                      Try Again
+                    </button>
+                  )}
                 </div>
               ) : (
                 <div className="db-list" ref={scheduleListRef}>
@@ -1060,9 +1076,8 @@ function Dashboard() {
                     const isActive = currentActiveClass?.id === item.id;
                     const sessionId = makeSessionId(item.id, todayKey);
                     const [clock, period] = (item.time || "").split(" ");
-                    const session = getSession(sessionId);
-                    const enrolled =
-                      session.verified.length + session.unverified.length + session.absent.length;
+                    const summary = getSummary(item.id);
+                    const enrolled = summary.total;
                     return (
                       <div
                         key={item.id}
@@ -1084,8 +1099,8 @@ function Dashboard() {
                             </p>
                             {status === "done" ? (
                               <div className="db-ok">
-                                Attendance: {session.verified.length}/{enrolled} Students (
-                                {enrolled > 0 ? ((session.verified.length / enrolled) * 100).toFixed(1) : "0.0"}%)
+                                Attendance: {summary.present}/{enrolled} Students (
+                                {enrolled > 0 ? ((summary.present / enrolled) * 100).toFixed(1) : "0.0"}%)
                               </div>
                             ) : isActive ? (
                               <div className="db-warn">Pending live class verification</div>

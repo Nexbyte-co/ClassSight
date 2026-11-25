@@ -1,9 +1,8 @@
 // src/pages/AttendanceSession/SessionHeader.jsx — back button, class title and session chips
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Clock, MapPin } from "lucide-react";
-import { SESSION } from "./attendanceMock";
 
-export default function SessionHeader({ state }) {
+export default function SessionHeader({ state, session: SESSION }) {
   const navigate = useNavigate();
   const pill = state === "saved" ? ["ok", "Saved"] : state === "ready" ? ["ok", "Ready to save"] : ["wa", "In review"];
   return (
@@ -17,15 +16,19 @@ export default function SessionHeader({ state }) {
         <div className="as-chips">
           <span className="as-chip">{SESSION.type}</span>
           <span className="as-chip br">{SESSION.group}</span>
-          <span className="as-chip">{SESSION.code}</span>
-          <span className="as-chip ic">
-            <Clock size={12} strokeWidth={2} aria-hidden="true" />
-            {SESSION.start} – {SESSION.end}
-          </span>
-          <span className="as-chip ic">
-            <MapPin size={12} strokeWidth={2} aria-hidden="true" />
-            {SESSION.venue}
-          </span>
+          {SESSION.code && <span className="as-chip">{SESSION.code}</span>}
+          {SESSION.timeRange && (
+            <span className="as-chip ic">
+              <Clock size={12} strokeWidth={2} aria-hidden="true" />
+              {SESSION.timeRange}
+            </span>
+          )}
+          {SESSION.venue && (
+            <span className="as-chip ic">
+              <MapPin size={12} strokeWidth={2} aria-hidden="true" />
+              {SESSION.venue}
+            </span>
+          )}
           <span className={`as-spill ${pill[0]}`} role="status">
             {pill[1]}
           </span>

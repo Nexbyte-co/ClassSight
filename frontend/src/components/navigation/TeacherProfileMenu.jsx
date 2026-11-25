@@ -8,18 +8,18 @@ import { ChevronDown, User, Settings, LogOut } from "lucide-react";
 import { logout } from "../../api/auth";
 import { useAuth } from "../../context/AuthContext";
 
-const TEACHER = {
-  initials: "PJ",
-  name: "Professor Jhonsy",
-  shortName: "Prof. Jhonsy",
-  department: "Dept. of CS & Eng",
-  email: "Jhonsy.Bansal@thapar.edu",
-};
+// The signed-in user, from /auth/me (name and email only; the API has no department field)
+function profileOf(session) {
+  const name = session?.name || "Teacher";
+  const initials = name.split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0].toUpperCase()).join("") || "T";
+  return { initials, name, shortName: name.split(/\s+/)[0], department: "Teacher", email: session?.email || "" };
+}
 
 // variant "stacked" shows the short name over the department (Dashboard header)
 function TeacherProfileMenu({ open: controlledOpen, onOpenChange, variant }) {
   const navigate = useNavigate();
-  const { signOut } = useAuth();
+  const { session, signOut } = useAuth();
+  const TEACHER = profileOf(session);
   const [internalOpen, setInternalOpen] = useState(false);
   const isControlled = controlledOpen !== undefined;
   const open = isControlled ? controlledOpen : internalOpen;

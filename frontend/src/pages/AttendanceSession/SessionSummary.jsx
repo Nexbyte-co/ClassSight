@@ -1,7 +1,7 @@
 // src/pages/AttendanceSession/SessionSummary.jsx — "This session": segmented ring, count tiles,
 // how present students were verified, and Save record / Edit
 import { useEffect, useRef, useState } from "react";
-import { Camera, Check, Nfc, Pencil, RotateCcw, Save, UserCheck } from "lucide-react";
+import { Camera, Check, Pencil, RotateCcw, Save, UserCheck } from "lucide-react";
 
 const reducedMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -131,11 +131,10 @@ function CountTiles({ counts, onReplay }) {
 
 const METHODS = [
   ["ai", "Face photo", Camera],
-  ["nfc", "NFC card", Nfc],
   ["man", "Manual", UserCheck],
 ];
 
-export default function SessionSummary({ list, saved, savedAt, onSave, onEdit, onReset }) {
+export default function SessionSummary({ list, saved, savedAt, dateLabel, saving, onSave, onEdit, onReset }) {
   const counts = { p: 0, u: 0, a: 0 };
   list.forEach((r) => (counts[r.st] += 1));
   const by = (m) => list.filter((r) => r.st === "p" && r.m === m).length;
@@ -163,14 +162,14 @@ export default function SessionSummary({ list, saved, savedAt, onSave, onEdit, o
           </span>
           <div>
             <h4>This session</h4>
-            <div className="as-rs">Live now · started 09:40</div>
+            <div className="as-rs">{dateLabel}</div>
           </div>
         </div>
         <div className="as-ahd2">
           <span className="as-chip sm">{list.length} enrolled</span>
           <button type="button" className="as-lnk" onClick={onReset}>
             <RotateCcw size={14} strokeWidth={2} aria-hidden="true" />
-            Reset demo
+            Reload
           </button>
         </div>
       </div>
@@ -203,9 +202,9 @@ export default function SessionSummary({ list, saved, savedAt, onSave, onEdit, o
               </button>
             </>
           ) : (
-            <button type="button" className="as-pbtn" title={hint} onClick={onSave}>
+            <button type="button" className="as-pbtn" title={hint} disabled={saving || list.length === 0} onClick={onSave}>
               <Save size={15} strokeWidth={2} aria-hidden="true" />
-              <span>Save record</span>
+              <span>{saving ? "Saving…" : "Save record"}</span>
             </button>
           )}
         </div>

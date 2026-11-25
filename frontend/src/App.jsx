@@ -7,12 +7,13 @@ import Classrooms from "./pages/Classes/Classrooms";
 import Classes from "./pages/Classes";
 import ClassSchedule from "./pages/Classes/ClassSchedule";
 import Attendance from "./pages/AttendanceSession/Attendance";
-import Students from "./pages/Students";
+import Roster from "./pages/Roster";
 import Reports from "./pages/Reports";
 import AllReports from "./pages/Reports/AllReports";
 import ReportDetails from "./pages/Reports/ReportDetails";
 import Settings from "./pages/Settings";
 import Admin from "./pages/Admin";
+import Verify from "./pages/Verify";
 import AdminLayout from "./components/admin/AdminLayout";
 import AdminDashboard from "./pages/AdminPanel/AdminDashboard";
 import AdminUsers from "./pages/AdminPanel/AdminUsers";
@@ -43,35 +44,35 @@ import StudentDashboard from "./pages/Students/StudentDashboard";
 // Teacher interface design system (scoped to .teacher-ui; imported last so it layers over page styles)
 import "./styles/teacher.css";
 import StudentOverview from "./pages/Students/StudentOverview";
-import UnverifiedStudents from "./pages/AttendanceSession/UnverifiedStudents";
-import VerifiedStudents from "./pages/AttendanceSession/VerifiedStudents";
 
 function App() {
   return (
     <ThemeProvider>
       <SettingsProvider>
       <AttendanceProvider>
-        <ScheduleProvider>
         <DemoSessionProvider>
         <AuthProvider>
+        <ScheduleProvider>
         <ClassroomProvider>
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
-            {/* Teacher area (mock role check: signed-out -> "/", demo student -> /student) */}
+            {/* Teacher area: needs a valid API login (signed-out -> "/", admins -> /admin) */}
             <Route element={<TeacherArea />}>
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/classrooms" element={<Classrooms />} />
               <Route path="/classes" element={<Classes />} />
               <Route path="/classes/schedule" element={<ClassSchedule />} />
               <Route path="/attendance" element={<Attendance />} />
-              <Route path="/attendance/unverified" element={<UnverifiedStudents />} />
-              <Route path="/attendance/verified" element={<VerifiedStudents />} />
+              {/* The old demo review pages are retired: send those URLs to the real page */}
+              <Route path="/attendance/unverified" element={<Navigate to="/attendance" replace />} />
+              <Route path="/attendance/verified" element={<Navigate to="/attendance" replace />} />
               <Route path="/attendance/:sessionId" element={<Attendance />} />
-              <Route path="/attendance/:sessionId/unverified" element={<UnverifiedStudents />} />
-              <Route path="/attendance/:sessionId/verified" element={<VerifiedStudents />} />
-              <Route path="/students" element={<Students />} />
+              <Route path="/attendance/:sessionId/unverified" element={<Navigate to="/attendance" replace />} />
+              <Route path="/attendance/:sessionId/verified" element={<Navigate to="/attendance" replace />} />
+              <Route path="/students" element={<Roster />} />
+              <Route path="/verify" element={<Verify />} />
               <Route path="/reports" element={<Reports />} />
               <Route path="/Reports" element={<Reports />} />
               <Route path="/reports/all" element={<AllReports />} />
@@ -81,13 +82,13 @@ function App() {
               <Route path="/student/preview" element={<StudentOverview />} />
               <Route path="/student/preview/:studentId" element={<StudentOverview />} />
             </Route>
-            {/* Student portal (mock role check: signed-out -> "/", teacher -> /dashboard) */}
             {/* Admin area: its own layout and navigation, separate from the teacher panel */}
             <Route element={<AdminArea />}>
               <Route path="/admin" element={<AdminLayout />}>
                 <Route index element={<AdminDashboard />} />
                 <Route path="users" element={<AdminUsers />} />
                 <Route path="classes" element={<AdminClasses />} />
+                <Route path="students" element={<Roster />} />
                 <Route path="setup" element={<Admin />} />
                 <Route path="attendance" element={<AdminAttendance />} />
                 <Route path="analytics" element={<AdminAnalytics />} />
@@ -96,6 +97,7 @@ function App() {
               </Route>
             </Route>
 
+            {/* Student portal: the API has no student accounts yet, so StudentArea redirects */}
             <Route element={<StudentArea />}>
               <Route path="/student" element={<StudentPortalLayout />}>
                 <Route index element={<StudentDashboard />} />
@@ -113,9 +115,9 @@ function App() {
           </Routes>
         </BrowserRouter>
         </ClassroomProvider>
+        </ScheduleProvider>
         </AuthProvider>
         </DemoSessionProvider>
-        </ScheduleProvider>
       </AttendanceProvider>
       </SettingsProvider>
     </ThemeProvider>

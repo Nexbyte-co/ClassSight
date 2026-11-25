@@ -173,8 +173,15 @@
   border: 1px solid var(--cs-border);
 }
 
+/* The modal card already pads its content; the body only adds space below the header divider. */
 .mg-modal-body {
-  padding: 4px 24px 22px;
+  padding: 16px 0 0;
+}
+
+.mg-modal-body p.mg-hint {
+  margin: 0 0 14px;
+  font-size: 13px;
+  color: var(--cs-text-secondary);
 }
 
 .mg-modal-body h2 {

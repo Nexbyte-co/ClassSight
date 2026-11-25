@@ -32,7 +32,6 @@ The API functions for all of the above still exist in `src/api/`, but nothing ca
 - **Dashboard, today's lectures**: was `GET /lectures` for today; now built from the hardcoded timetable in `data/schedule/timetable.js`. The loading, error and retry states were removed.
 - **Dashboard, attendance counts**: was today's saved attendance logs; now the local demo attendance state.
 - **Dashboard, greeting**: was the signed-in user's name; now the fixed text "Professor Jhonsy".
-- **"Add Lecture" on the dashboard**: changes the list in the browser only; nothing is saved to the backend.
 
 ## 4. What still works on the real backend
 

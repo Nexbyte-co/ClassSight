@@ -1,9 +1,8 @@
-// src/pages/AttendanceSession/UpNextCard.jsx — the next class today and how long until it starts
-import { Clock, MapPin, User } from "lucide-react";
-import { UP_NEXT } from "./attendanceMock";
+// src/pages/AttendanceSession/UpNextCard.jsx — the next class on today's schedule
+import { Clock, MapPin } from "lucide-react";
+import { Link } from "react-router-dom";
 
-export default function UpNextCard({ onStartEarly }) {
-  const n = UP_NEXT;
+export default function UpNextCard({ next, to }) {
   return (
     <section className="as-card as-next db-rise" aria-label="Up next">
       <div className="as-anh">
@@ -12,58 +11,38 @@ export default function UpNextCard({ onStartEarly }) {
         </span>
         <div style={{ minWidth: 0, flex: 1 }}>
           <h4>Up next</h4>
-          <div className="as-rs">After this lab</div>
-        </div>
-        <span className="as-spill ne">{n.type}</span>
-      </div>
-      <div className="as-anbody">
-        <b className="as-ant">{n.name}</b>
-        <div className="as-anm">
-          <span className="as-chip br">{n.group}</span>
-          <span className="as-chip">{n.code}</span>
-        </div>
-        <div className="as-anrows">
-          <span>
-            <Clock size={14} strokeWidth={2} aria-hidden="true" />
-            {n.time}
-          </span>
-          <span>
-            <MapPin size={14} strokeWidth={2} aria-hidden="true" />
-            Room {n.venue}
-          </span>
-          <span>
-            <User size={14} strokeWidth={2} aria-hidden="true" />
-            {n.students} students
-          </span>
+          <div className="as-rs">After this class</div>
         </div>
       </div>
-      {/* Shown only when there's room: tall screens, or the 2-column layout */}
-      <div className="as-anlater">
-        <span className="as-k2">Later today</span>
-        {n.later.map((c) => (
-          <div key={c.time} className="as-anli">
-            <b>{c.time}</b>
-            <div style={{ minWidth: 0, flex: 1 }}>
-              <span>{c.name}</span>
-              <i>{c.meta}</i>
+      {next ? (
+        <>
+          <div className="as-anbody">
+            <b className="as-ant">{next.title}</b>
+            <div className="as-anm">
+              <span className="as-chip br">{next.section}</span>
+              {next.code && <span className="as-chip">{next.code}</span>}
+            </div>
+            <div className="as-anrows">
+              <span>
+                <Clock size={14} strokeWidth={2} aria-hidden="true" />
+                {next.timeRange || next.time}
+              </span>
+              <span>
+                <MapPin size={14} strokeWidth={2} aria-hidden="true" />
+                Room {next.room}
+              </span>
             </div>
           </div>
-        ))}
-        <div className="as-anli done">
-          <b>{n.dayEnd.time}</b>
-          <div style={{ flex: 1 }}>
-            <span>No more classes</span>
-            <i>{n.dayEnd.meta}</i>
-          </div>
+          <Link to={to} className="as-b1 as-anb" style={{ textAlign: "center" }}>
+            Open attendance
+          </Link>
+        </>
+      ) : (
+        <div className="as-lempty fill">
+          <b>No more classes</b>
+          Nothing else is scheduled today.
         </div>
-      </div>
-      <div className="as-ancd">
-        <span className="as-k2">Starts in</span>
-        <b>{n.startsIn}</b>
-      </div>
-      <button type="button" className="as-b1 as-anb" onClick={onStartEarly}>
-        Start attendance early
-      </button>
+      )}
     </section>
   );
 }

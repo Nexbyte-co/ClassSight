@@ -1,27 +1,26 @@
 // src/pages/AttendanceSession/ResolveCard.jsx — confirm the selected student: NFC card, retake photo,
 // mark present or keep absent, with their recent labs for context.
 // Nav arrows are now tall side-panels on the left/right edges of the card.
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import {
   Camera, Check, ChevronLeft, ChevronRight,
-  CircleAlert, CircleMinus, Hand, Nfc, X,
+  CircleAlert, CircleMinus, Hand, X,
 } from "lucide-react";
 import { useSettings } from "../../context/settings/SettingsContext";
-import { BAND_LABEL, bandOf, initials, labDate, shortDate } from "../Students/studentsMock";
-import { BATCH_INDEX, OVERALL, SESSION } from "./attendanceMock";
+import { BAND_LABEL, bandOf, initials, shortDate } from "../Students/studentsMock";
 
 const WINDOW = 4; // labs visible at once
-const reducedMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const NO_HISTORY = { pres: [], held: 0, pct: 0, last: null };
+const day = (key) => shortDate(new Date(`${key}T12:00:00`)); // "YYYY-MM-DD" -> "12 Nov"
 
 const ACTIONS = [
-  ["nfc",  "NFC card",     Nfc,         "nfc"],
-  ["ai",   "Retake photo", Camera,      "info"],
+  ["ai",   "Check by photo", Camera,    "info"],
   ["man",  "Mark present", Hand,        "br"],
   ["abs",  "Keep absent",  CircleMinus, "ne"],
 ];
 
 /* ---------- Recent Labs widget ---------- */
-function RecentLabs({ pres, offset, onPage }) {
+function RecentLabs({ pres, dates, offset, onPage }) {
   const N = pres.length;
   const [slide, setSlide] = useState("");
   const o = Math.max(0, Math.min(N - WINDOW, offset ?? N - WINDOW));
@@ -35,7 +34,7 @@ function RecentLabs({ pres, offset, onPage }) {
       <div className="as-rlh">
         <span className="as-k2">Recent labs</span>
         <span className="as-dnote">
-          {shortDate(labDate(BATCH_INDEX, o))} – {shortDate(labDate(BATCH_INDEX, o + WINDOW - 1))}
+          {day(dates[o])} – {day(dates[Math.min(N - 1, o + WINDOW - 1)])}
         </span>
       </div>
 
@@ -57,13 +56,13 @@ function RecentLabs({ pres, offset, onPage }) {
         >
           {pres.slice(o, o + WINDOW).map((present, k) => {
             const w = o + k;
-            const d = labDate(BATCH_INDEX, w);
+            const d = day(dates[w]);
             const isCurrent = w === N - 1;
             return (
               <div
                 key={w}
                 className={`as-rlc ${isCurrent ? "cur" : ""}`}
-                title={`${shortDate(d)} · ${SESSION.start} · ${present ? "Present" : "Absent"}`}
+                title={`${d} · ${present ? "Present" : "Absent"}`}
               >
                 {/* Status icon */}
                 <span className={`as-rlq ${present ? "p" : "a"}`}>
@@ -74,10 +73,7 @@ function RecentLabs({ pres, offset, onPage }) {
                 </span>
 
                 {/* Date label – day + short month */}
-                <b>{shortDate(d)}</b>
-
-                {/* Session start time */}
-                <i>{SESSION.start}</i>
+                <b>{d}</b>
 
                 {isCurrent && (
                   <span className="as-rlc-now" aria-label="Today's session">Now</span>
@@ -111,13 +107,11 @@ function RecentLabs({ pres, offset, onPage }) {
 /* ---------- Main ResolveCard ---------- */
 export default function ResolveCard({
   row, left, saved, labOffset, onLabs,
-  onResolve, onKeepAbsent,
+  onResolve, onKeepAbsent, onRetake,
+  overall = [], labDates = [], group = "",
   reviewRows = [], onSelectStudent,
 }) {
   const { attendanceThreshold: thr } = useSettings();
-  const [busy, setBusy] = useState(null);
-  const timer = useRef(null);
-  useEffect(() => () => window.clearTimeout(timer.current), []);
 
   /* ---- Empty / saved state ---- */
   if (!row) {
@@ -140,7 +134,7 @@ export default function ResolveCard({
     );
   }
 
-  const o = OVERALL[row.j];
+  const o = overall[row.j] || NO_HISTORY;
   const band = bandOf(o.pct, thr);
   const studentIndex = reviewRows.findIndex((s) => s.j === row.j);
 
@@ -150,12 +144,7 @@ export default function ResolveCard({
   const act = (k) => {
     if (k === "abs") return onKeepAbsent(row);
     if (k === "man") return onResolve(row, "man");
-    // NFC and Retake photo wait for the reader / the new photo (900ms in the demo)
-    setBusy(k);
-    timer.current = window.setTimeout(() => {
-      setBusy(null);
-      onResolve(row, k);
-    }, reducedMotion() ? 0 : 900);
+    return onRetake(row); // photo check of this one student
   };
 
   return (
@@ -185,11 +174,13 @@ export default function ResolveCard({
           </span>
           <div style={{ minWidth: 0 }}>
             <h4>{row.name}</h4>
-            <div className="as-rs">{row.roll} · {SESSION.group}</div>
+            <div className="as-rs">{row.roll} · {group}</div>
           </div>
-          <span className={`as-spill ${band}`} title="Overall attendance">
-            {o.pct}%&thinsp;·&thinsp;{BAND_LABEL[band]}
-          </span>
+          {o.held > 0 && (
+            <span className={`as-spill ${band}`} title="Overall attendance">
+              {o.pct}%&thinsp;·&thinsp;{BAND_LABEL[band]}
+            </span>
+          )}
           {/* Position indicator */}
           <span className="as-res-pos" aria-label={`Student ${studentIndex + 1} of ${reviewRows.length}`}>
             {studentIndex + 1}/{reviewRows.length}
@@ -204,37 +195,29 @@ export default function ResolveCard({
 
         {/* Action buttons */}
         <div className="as-ropts">
-          {busy ? (
-            <div className="as-busy" role="status">
-              <span className="as-spin" aria-hidden="true" />
-              {busy === "nfc"
-                ? `Waiting for ${row.name.split(" ")[0]}'s card…`
-                : "Matching the new photo…"}
-            </div>
-          ) : (
-            ACTIONS.map(([k, label, Icon, tone]) => (
-              <button
-                key={k}
-                type="button"
-                className="as-ro"
-                disabled={saved}
-                onClick={() => act(k)}
-              >
-                <span className={`as-ati ${tone}`}>
-                  <Icon size={15} strokeWidth={2} aria-hidden="true" />
-                </span>
-                {label}
-              </button>
-            ))
-          )}
+          {ACTIONS.map(([k, label, Icon, tone]) => (
+            <button
+              key={k}
+              type="button"
+              className="as-ro"
+              disabled={saved || (k === "ai" && row.noFace)}
+              title={k === "ai" && row.noFace ? "This student has no enrolled face" : undefined}
+              onClick={() => act(k)}
+            >
+              <span className={`as-ati ${tone}`}>
+                <Icon size={15} strokeWidth={2} aria-hidden="true" />
+              </span>
+              {label}
+            </button>
+          ))}
         </div>
 
-        {/* Recent labs */}
-        <RecentLabs pres={o.pres} offset={labOffset} onPage={onLabs} />
+        {/* Recent labs: earlier saved classes, then today */}
+        <RecentLabs pres={[...o.pres, row.st === "p"]} dates={labDates} offset={labOffset} onPage={onLabs} />
 
         {/* Footer */}
         <div className="as-rft">
-          <span>{o.last ? `Last attended ${shortDate(o.last)}` : "No attendance yet"}</span>
+          <span>{o.last ? `Last attended ${day(o.last)}` : "No attendance yet"}</span>
           <span>{left} left to review</span>
         </div>
       </div>
