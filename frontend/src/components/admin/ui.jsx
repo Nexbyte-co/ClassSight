@@ -1,11 +1,28 @@
 // Building blocks for the admin pages (header, stat tiles, cards, states, charts).
 import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 import { AlertCircle, CheckCircle2, Loader2, RefreshCw } from "lucide-react";
 import { useAdminData } from "../../context/AdminDataContext";
 import { pct, shortDate } from "./format";
 
-export function AdminPageHeader({ title, lead, actions }) {
+export function RefreshButton({ className = "" }) {
   const { loading, loadedAt, refresh } = useAdminData();
+  return (
+    <button
+      type="button"
+      className={`db-btn adm-refresh ${className}`}
+      onClick={refresh}
+      disabled={loading}
+      title={loadedAt ? `Last updated ${loadedAt.toLocaleTimeString()}` : "Refresh"}
+    >
+      <RefreshCw size={15} strokeWidth={2} className={loading ? "adm-spin" : ""} aria-hidden="true" />
+      <span>{loading ? "Loading…" : "Refresh"}</span>
+    </button>
+  );
+}
+
+// `refresh={false}` leaves the Refresh button out (a page can place its own RefreshButton).
+export function AdminPageHeader({ title, lead, actions, refresh = true }) {
   return (
     <div className="db-hd adm-hd db-rise">
       <div>
@@ -14,16 +31,7 @@ export function AdminPageHeader({ title, lead, actions }) {
       </div>
       <div className="db-row db-wrap adm-hd-actions">
         {actions}
-        <button
-          type="button"
-          className="db-btn adm-refresh"
-          onClick={refresh}
-          disabled={loading}
-          title={loadedAt ? `Last updated ${loadedAt.toLocaleTimeString()}` : "Refresh"}
-        >
-          <RefreshCw size={15} strokeWidth={2} className={loading ? "adm-spin" : ""} aria-hidden="true" />
-          <span>{loading ? "Loading…" : "Refresh"}</span>
-        </button>
+        {refresh && <RefreshButton />}
       </div>
     </div>
   );
@@ -54,9 +62,10 @@ export function AdminLoadState() {
   return null;
 }
 
-export function StatTile({ icon: Icon, label, value, sub, tone }) {
+export function StatTile({ icon: Icon, label, value, sub, tone, to, onClick, active }) {
+  const Wrap = to ? Link : onClick ? "button" : "div";
   return (
-    <div className={`adm-stat ${tone ? `adm-tone-${tone}` : ""}`}>
+    <Wrap {...(to ? { to } : onClick ? { type: "button", onClick, "aria-expanded": Boolean(active) } : {})} className={`adm-stat ${tone ? `adm-tone-${tone}` : ""} ${to || onClick ? "adm-stat-link" : ""} ${active ? "adm-stat-active" : ""}`}>
       <div className="adm-stat-top">
         <span className="adm-stat-label">{label}</span>
         {Icon && (
@@ -67,7 +76,7 @@ export function StatTile({ icon: Icon, label, value, sub, tone }) {
       </div>
       <div className="adm-stat-value">{value}</div>
       {sub && <div className="adm-stat-sub">{sub}</div>}
-    </div>
+    </Wrap>
   );
 }
 

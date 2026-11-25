@@ -1,92 +1,80 @@
-// src/pages/AttendanceSession/FaceCheckCard.jsx — compare the enrolled photo with today's face
-import { Ban, Camera, Check, CircleAlert, X } from "lucide-react";
-import { FACE_THRESHOLD, faceScore } from "./attendanceMock";
+// src/pages/AttendanceSession/FaceCheckCard.jsx — the two photo boxes inside the "Student under review"
+// card: the face cut out of today's class photo (when the scan thought it might be this student) and the
+// student's enrolled photo. Both boxes always show; an empty one says why.
+import { useEffect, useState } from "react";
+import { Check, ImageOff, UserRound, X } from "lucide-react";
+import { getStudentPhoto } from "../../api/classrooms";
 
-function Face({ label, tone }) {
+export default function StudentPhotos({ row, classroomId, saved, locked, onYes }) {
+  const [state, setState] = useState({ key: null, url: "", error: "" });
+  const [dismissed, setDismissed] = useState(null); // student whose "is this …?" was answered No
+  const key = `${classroomId}:${row.j}`;
+
+  useEffect(() => {
+    if (!row.faceEnrolled) return undefined;
+    let live = true;
+    getStudentPhoto(classroomId, row.j)
+      .then((r) => live && setState({ key, url: r.url, error: "" }))
+      .catch((err) => live && setState({ key, url: "", error: err.message || "Could not load the photo." }));
+    return () => {
+      live = false;
+    };
+  }, [row.j, row.faceEnrolled, classroomId, key]);
+
+  const first = row.name.split(" ")[0];
+  const mine = state.key === key;
+  const enrolledUrl = row.faceEnrolled && mine ? state.url : "";
+  const asking = Boolean(row.suggest) && dismissed !== row.j;
+  const notes = [];
+  if (!row.suggest) notes.push("No face in today's class photo was close enough to suggest for this student.");
+  if (!row.faceEnrolled) notes.push("No enrolled photo yet. Ask an admin to enroll this student, or mark them manually.");
+  else if (mine && state.error) notes.push(state.error);
+
   return (
-    <div className="as-fcc">
-      <div className={`as-fci ${tone}`} aria-hidden="true">
-        <i />
-        <b />
-      </div>
-      <span>{label}</span>
-    </div>
-  );
-}
-
-export default function FaceCheckCard({ row, saved, onConfirm, onReject }) {
-  const header = (
-    <div className="as-ash">
-      <div className="as-rt">
-        <span className="as-ri2">
-          <Camera size={16} strokeWidth={2} aria-hidden="true" />
-        </span>
-        <div>
-          <h4>Face check</h4>
-          <div className="as-rs">{row ? `Is this really ${row.name.split(" ")[0]}?` : "Compare faces before you decide"}</div>
-        </div>
-      </div>
-    </div>
-  );
-
-  if (!row) {
-    return (
-      <section className="as-card as-face db-rise" aria-live="polite" aria-label="Face check">
-        {header}
-        <div className="as-lempty fill">
-          <b>No student selected</b>
-          Pick someone from Needs review.
-        </div>
-      </section>
-    );
-  }
-
-  const notFound = /Not found/.test(row.why);
-  const score = faceScore(row.j);
-  return (
-    <section className="as-card as-face db-rise" aria-live="polite" aria-label="Face check">
-      {header}
-      <div className="as-fcr">
-        <Face label="Enrolled photo" tone="e" />
-        {notFound ? (
-          <div className="as-fcc">
-            <div className="as-fci none">
-              <Ban size={22} strokeWidth={2} aria-hidden="true" />
-              <em>No face detected</em>
+    <div className="as-sp">
+      <div className="as-sp-boxes">
+        <figure>
+          {row.suggest ? (
+            <img src={row.suggest.crop} alt={`Face from the class photo that may be ${row.name}`} />
+          ) : (
+            <div className="as-sp-empty" aria-hidden="true"><ImageOff size={26} strokeWidth={1.6} /></div>
+          )}
+          <figcaption>
+            <b>Live</b>
+            <span>Cropped from today&apos;s class photo</span>
+            {row.suggest && <em>{Math.round(row.suggest.confidence * 100)}% similar</em>}
+          </figcaption>
+        </figure>
+        <figure>
+          {enrolledUrl ? (
+            <img src={enrolledUrl} alt={`${row.name}, enrolled photo`} />
+          ) : (
+            <div className="as-sp-empty" aria-hidden="true">
+              {row.faceEnrolled && !(mine && state.error) ? <span className="as-spin" /> : <UserRound size={26} strokeWidth={1.6} />}
             </div>
-            <span>From today’s photo</span>
-          </div>
-        ) : (
-          <Face label="From today’s photo" tone="t" />
-        )}
+          )}
+          <figcaption>
+            <b>Enrolled</b>
+            <span>Saved by an admin</span>
+          </figcaption>
+        </figure>
       </div>
-      {notFound ? (
-        <div className="as-fcm ne">
-          <CircleAlert size={14} strokeWidth={2} aria-hidden="true" />
-          <span>The photo didn’t pick up this student. Use NFC or Retake photo.</span>
-        </div>
-      ) : (
-        <div className="as-fcm wa">
-          <CircleAlert size={14} strokeWidth={2} aria-hidden="true" />
-          <span>
-            Match <b>{score}%</b> · needs {FACE_THRESHOLD}% to auto-mark
-          </span>
-          <div className="as-fbar" aria-hidden="true">
-            <i style={{ width: `${score}%` }} />
-            <s style={{ left: `${FACE_THRESHOLD}%` }} />
-          </div>
+      {asking && (
+        <div className="as-ask-btns">
+          <span className="as-ask-q">Is this {first}?</span>
+          <button type="button" className="as-b1 yes" disabled={saved || locked} onClick={() => onYes(row, row.suggest.confidence)}>
+            <Check size={15} strokeWidth={2.6} aria-hidden="true" />
+            Yes
+          </button>
+          <button type="button" className="as-b1" onClick={() => setDismissed(row.j)}>
+            <X size={15} strokeWidth={2.6} aria-hidden="true" />
+            No
+          </button>
         </div>
       )}
-      <div className="as-fcb">
-        <button type="button" className="as-b1 yes" disabled={notFound || saved} onClick={() => onConfirm(row)}>
-          <Check size={14} strokeWidth={2.6} aria-hidden="true" />
-          It’s them
-        </button>
-        <button type="button" className="as-b1" disabled={notFound || saved} onClick={() => onReject(row)}>
-          <X size={14} strokeWidth={2.4} aria-hidden="true" />
-          Not them
-        </button>
-      </div>
-    </section>
+      {notes.map((n) => (
+        <p key={n} className="as-sp-note">{n}</p>
+      ))}
+    </div>
   );
 }

@@ -1353,3 +1353,10 @@ html .teacher-ui.dark-mode {
     animation: none !important;
   }
 }
+
+/* Bell: link to the Requests tab under the list */
+.teacher-ui .teacher-notification-more {
+  display: block; margin-top: 4px; padding: 10px 12px; border-top: 1px solid var(--cs-border-subtle);
+  font-size: 13px; font-weight: 600; color: var(--cs-crimson); text-decoration: none; text-align: center;
+}
+.teacher-ui .teacher-notification-more:hover { background: var(--cs-crimson-light); }

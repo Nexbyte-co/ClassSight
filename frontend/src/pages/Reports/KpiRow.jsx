@@ -1,5 +1,5 @@
 import { Icon } from "./icons";
-import { KPIS } from "./reportsMock";
+import { useReports } from "./useReports";
 
 function Half({ icon, label, value }) {
   return (
@@ -14,6 +14,7 @@ function Half({ icon, label, value }) {
 }
 
 function KpiRow() {
+  const { KPIS } = useReports();
   return (
     <div className="rp-kpis">
       <div className="rp-kpi rp-kpi-wide">

@@ -1,16 +1,9 @@
-// src/pages/Students/BatchDeck.jsx — average ring, Subject / Batch pickers, band mix and counts,
-// and the last lab (one batch) or the weakest batch (several batches)
+// src/pages/Students/BatchDeck.jsx — average ring, Subject / Class pickers, band mix and counts,
+// and the last session (one class) or the weakest class (several classes)
 import { ArrowDown, ArrowUp, ChevronRight, Users } from "lucide-react";
 import AttendanceRing from "../../components/attendance/AttendanceRing";
-import {
-  BAND_LABEL,
-  BAND_ORDER,
-  BATCHES,
-  SUBJECTS,
-  bandOf,
-  bandRangeShort,
-  dayLabel,
-} from "./studentsMock";
+import { BAND_LABEL, BAND_ORDER, bandOf, bandRangeShort, dayLabel } from "./studentData";
+import Dropdown from "../Classes/Dropdown";
 
 export default function BatchDeck({
   thr,
@@ -19,6 +12,8 @@ export default function BatchDeck({
   meta,
   subject,
   batch,
+  subjects,
+  batches,
   allActive,
   counts,
   total,
@@ -30,9 +25,9 @@ export default function BatchDeck({
   onOpenRecord,
   onShowBatch,
 }) {
-  const batchOptions = BATCHES.filter((b) => subject === "all" || b.courseIndex === +subject);
+  const batchOptions = batches.filter((b) => subject === "all" || b.courseKey === subject);
   return (
-    <section className="st-card st-bdeck" aria-label="Batch overview">
+    <section className="st-card st-bdeck" aria-label="Class overview">
       <div className="st-bring">
         <AttendanceRing className="st-avg-ring" pct={avg} size={128} stroke={11} fontSize={28} label="AVG" color={`var(--st-${bandOf(avg, thr)}f)`} />
         {delta != null && (
@@ -50,28 +45,27 @@ export default function BatchDeck({
 
       <div className="st-bmain">
         <div className="st-bpick">
-          <label className="st-fld">
-            <span className="st-k2">Subject</span>
-            <select className="st-bsel" value={subject} onChange={(e) => onSubject(e.target.value)}>
-              <option value="all">All subjects</option>
-              {SUBJECTS.map((s, i) => (
-                <option key={s.code} value={String(i)}>
-                  {s.name}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label className="st-fld">
-            <span className="st-k2">Batch</span>
-            <select className="st-bsel" value={batch} onChange={(e) => onBatch(e.target.value)}>
-              <option value="all">All batches</option>
-              {batchOptions.map((b) => (
-                <option key={b.index} value={String(b.index)}>
-                  {b.group}
-                </option>
-              ))}
-            </select>
-          </label>
+          <div className="st-fld">
+            <span className="st-k2" aria-hidden="true">Subject</span>
+            <Dropdown
+              ariaLabel="Subject"
+              value={subject}
+              onChange={onSubject}
+              options={[{ value: "all", label: "All subjects" }, ...subjects.map((s) => ({ value: s.key, label: s.name }))]}
+            />
+          </div>
+          <div className="st-fld">
+            <span className="st-k2" aria-hidden="true">Class</span>
+            <Dropdown
+              ariaLabel="Class"
+              value={batch}
+              onChange={onBatch}
+              options={[
+                { value: "all", label: "All classes" },
+                ...batchOptions.map((b) => ({ value: String(b.index), label: `${b.group}${subject === "all" ? ` · ${b.code || b.name}` : ""}` })),
+              ]}
+            />
+          </div>
           <button type="button" className={`st-allb ${allActive ? "on" : ""}`} aria-pressed={allActive} onClick={onAll}>
             <Users size={15} strokeWidth={2} aria-hidden="true" />
             All students
@@ -101,27 +95,36 @@ export default function BatchDeck({
         <div className="st-blast">
           {last ? (
             <>
-              <span>Last lab</span>
+              <span>Last session</span>
               <b>{dayLabel(last.date)}</b>
               <span className="st-spill ok">{last.present} present</span>
               <span className="st-spill er">{last.absent} absent</span>
               <button type="button" className="st-lnk" onClick={onOpenRecord}>
-                Open record
+                Take attendance
+                <ChevronRight size={14} strokeWidth={2.4} aria-hidden="true" />
+              </button>
+            </>
+          ) : weakest && weakest.group ? (
+            <>
+              <span>Weakest class</span>
+              <b>{weakest.group}</b>
+              <span className={`st-spill ${bandOf(weakest.avg, thr)}`}>{weakest.avg}% avg</span>
+              <button type="button" className="st-lnk" onClick={() => onShowBatch(weakest.index)}>
+                Show class
                 <ChevronRight size={14} strokeWidth={2.4} aria-hidden="true" />
               </button>
             </>
           ) : (
-            weakest && (
-              <>
-                <span>Weakest batch</span>
-                <b>{weakest.group}</b>
-                <span className={`st-spill ${bandOf(weakest.avg, thr)}`}>{weakest.avg}% avg</span>
-                <button type="button" className="st-lnk" onClick={() => onShowBatch(weakest.index)}>
-                  Show batch
+            <>
+              <span>Last session</span>
+              <b>No attendance saved yet</b>
+              {batch !== "all" && (
+                <button type="button" className="st-lnk" onClick={onOpenRecord}>
+                  Take attendance
                   <ChevronRight size={14} strokeWidth={2.4} aria-hidden="true" />
                 </button>
-              </>
-            )
+              )}
+            </>
           )}
         </div>
       </div>

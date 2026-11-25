@@ -19,6 +19,19 @@ export function getToken() {
   return safeGet(localStorage) || safeGet(sessionStorage);
 }
 
+// The role the server put in the token ("admin" | "teacher" | "student"). Only used to pick which
+// "who am I" call to make; the server still checks the token on every request.
+export function getTokenRole() {
+  try {
+    const part = (getToken() || "").split(".")[1];
+    if (!part) return null;
+    const json = atob(part.replace(/-/g, "+").replace(/_/g, "/"));
+    return JSON.parse(json).role ?? null;
+  } catch {
+    return null;
+  }
+}
+
 export function setToken(token, { remember = true } = {}) {
   clearToken();
   try {
@@ -111,5 +124,19 @@ async function request(path, { method = "GET", body, params, isFormData = false 
 export const api = {
   get: (path, params) => request(path, { method: "GET", params }),
   post: (path, body, options) => request(path, { method: "POST", body, ...options }),
+  put: (path, body) => request(path, { method: "PUT", body }),
+  patch: (path, body) => request(path, { method: "PATCH", body }),
   delete: (path) => request(path, { method: "DELETE" }),
 };
+
+// An authenticated image (or any file) as a blob; null when there is none (404).
+export async function fetchBlob(path) {
+  const token = getToken();
+  let response;
+  try {
+    response = await fetch(new URL(path, API_BASE_URL), { headers: token ? { Authorization: `Bearer ${token}` } : {} });
+  } catch {
+    return null;
+  }
+  return response.ok ? response.blob() : null;
+}

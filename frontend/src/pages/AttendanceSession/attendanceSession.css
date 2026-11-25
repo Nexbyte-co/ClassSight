@@ -879,3 +879,312 @@
 
 @media (min-height: 1000px) { .as-anlater { display: flex; } }
 @media (max-height:  999px) { .as-anlater { display: none;  } }
+
+/* ── 16. Real-data additions: class photo card, present lane, notices ───────── */
+.as-lane.lok { border-top: 3px solid var(--as-okf); }
+.as-lane.lok .li { color: var(--as-ok); }
+.acol.c1 > .as-photo { flex: none; }
+.acol.c2 > .as-lane { flex: 1 1 0; min-height: 160px; }
+.as-photo-acts { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.as-photo-acts .as-pbtn, .as-photo-acts .as-b1 { flex: 1 1 auto; justify-content: center; }
+.as-file { position: relative; overflow: hidden; cursor: pointer; }
+.as-file input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+.as-file.off { opacity: .65; pointer-events: none; }
+.as-cam { margin-top: 12px; }
+.as-cam video, .as-cam img { width: 100%; border-radius: 12px; background: #000; display: block; }
+.as-cam .mg-modal-foot { display: flex; gap: 8px; margin-top: 10px; }
+.as-cam .mg-btn { display: inline-flex; align-items: center; gap: 6px; border-radius: 10px; padding: 8px 14px; font-size: 13px; font-weight: 600; cursor: pointer; border: 1px solid var(--as-mrbrd, transparent); background: var(--as-mr, #7B1113); color: #fff; }
+.as-cam .mg-btn.secondary { background: transparent; color: var(--as-tx); border-color: var(--as-bd); }
+.as-cam .mg-btn:disabled { opacity: .6; cursor: default; }
+.as-cam .mg-alert { padding: 10px 12px; border-radius: 10px; font-size: 13px; background: rgba(199,106,18,.1); color: var(--as-wa); }
+.as-notice { padding: 14px 18px; font-size: 14px; color: var(--as-tx); }
+.as-notice b { margin-right: 4px; }
+.as-notice.er { border-left: 4px solid var(--as-fa); color: var(--as-wa); }
+.as-notice .as-b1 { margin-left: 8px; }
+.as-notice a { color: var(--as-mrt); font-weight: 600; }
+.as-chips .class-picker { border: 1px solid var(--as-bd); background: transparent; color: var(--as-tx); border-radius: 999px; padding: 4px 10px; font-size: 12px; font-weight: 600; }
+a.as-anb { text-decoration: none; display: inline-flex; justify-content: center; }
+
+/* ── 17. Layout fixes: padded class-photo card, header across all three columns, no bleed past the right edge ── */
+.as-photo { padding: 16px 18px; }
+.as-photo-acts { margin-top: 12px; }
+.atopg { grid-template-areas: "hd hd hd" "c1 c2 c3"; }
+@container av (min-width: 1061px) {
+  .atopg { margin-right: 0; }
+}
+@container av (max-width: 1060px) {
+  .atopg { grid-template-areas: "hd hd" "c1 c2" "c3 c3"; }
+}
+@container av (max-width: 700px) {
+  .atopg { grid-template-areas: "hd" "c1" "c2" "c3"; }
+}
+
+/* ── 18. Combined cards: class photo + session in one card; present | absent side by side in one card ── */
+.as-combo { flex: none; display: flex; flex-direction: column; background: var(--as-card); border: 1px solid var(--as-bd); border-radius: 16px; box-shadow: var(--as-shadow); overflow: hidden; }
+.as-combo > .as-card { border: 0; border-radius: 0; box-shadow: none; flex: none; }
+.as-combo > .as-card + .as-card { border-top: 1px solid var(--as-bd); }
+.acol.c1 > .as-res { flex: 1 1 auto; min-height: 0; }
+.acol.c2 > .as-lane { flex: 1 1 0; min-height: 0; }
+.acol.c3 > .as-face { flex: 0 0 auto; min-height: 0; }
+.as-pa { flex: 1 1 0; min-height: 300px; display: grid; grid-template-columns: 1fr 1fr; background: var(--as-card); border: 1px solid var(--as-bd); border-radius: 16px; box-shadow: var(--as-shadow); overflow: hidden; }
+.as-pa > .as-lane { border: 0; border-radius: 0; box-shadow: none; min-height: 0; display: flex; flex-direction: column; }
+.as-pa > .as-lane + .as-lane { border-left: 1px solid var(--as-bd); }
+@container av (max-width: 1060px) {
+  .acol.c3 { display: flex; flex-direction: column; }
+  .as-pa { min-height: 320px; }
+}
+@container av (max-width: 520px) { .as-pa { grid-template-columns: 1fr; } .as-pa > .as-lane + .as-lane { border-left: 0; border-top: 1px solid var(--as-bd); } }
+.as-pa > .as-lane p { display: none; }
+@container av (max-width: 1060px) {
+  .acol.c2 > .as-lane { flex: 1 1 auto; max-height: none; min-height: 308px; }
+}
+
+/* ── 19. Method bar under the session numbers; Needs review over Present | Absent; Face check full height ── */
+.as-photo { padding: 12px 18px 16px; }
+.as-methods { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 4px; border-radius: 12px; background: var(--as-bg); }
+.as-method { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 40px; border: 0; border-radius: 9px; background: transparent; color: var(--as-mu); font-size: 13.5px; font-weight: 600; cursor: pointer; transition: background-color .2s, color .2s, box-shadow .2s; }
+.as-method:hover:not(:disabled) { background: var(--as-card); color: var(--as-tx); }
+.as-method.on, .as-method:first-child:not(:disabled) { background: var(--as-mr, #7B1113); color: #fff; box-shadow: 0 4px 12px rgba(123,17,19,.25); }
+.as-method:disabled { opacity: .55; cursor: not-allowed; }
+.as-upload { margin-top: 10px; width: 100%; justify-content: center; }
+.acol.c2 > .as-lane { flex: 0 1 auto; max-height: 42%; min-height: 150px; }
+.acol.c2 > .as-pa { flex: 1 1 0; min-height: 280px; }
+.acol.c3 > .as-face { flex: 1 1 auto; }
+@container av (max-width: 1060px) {
+  .acol.c2 > .as-lane { flex: none; max-height: 300px; min-height: 150px; }
+  .acol.c2 > .as-pa { min-height: 360px; }
+}
+.as-lastscan { margin: 8px 2px 0; }
+
+/* ── 20. Two shared rows: [session | needs review] on top, [present | absent] below, same heights.
+   Resolve + Face check stack in the right column. ── */
+.atopg { grid-template-rows: auto auto minmax(0, 1fr); grid-template-areas: "hd hd hd" "c1 c2 c3" "c1 c2 c3"; }
+.acol.c1, .acol.c2 { display: grid; grid-row: 2 / 4; grid-template-rows: subgrid; gap: 16px; contain: none; }
+.acol.c3 { grid-row: 2 / 4; }
+.acol.c1 > .as-combo, .acol.c2 > .as-lane:first-child { min-height: 0; }
+.acol.c2 > .as-lane { max-height: none; }
+.acol.c1 > .as-lane, .acol.c2 > .as-lane + .as-lane { min-height: 300px; max-height: none; flex: none; }
+.acol.c3 > .as-res { flex: 0 0 auto; }
+.acol.c3 > .as-face { flex: 1 1 auto; }
+@container av (max-width: 1060px) {
+  .atopg { grid-template-rows: auto auto auto auto; grid-template-areas: "hd hd" "c1 c2" "c1 c2" "c3 c3"; }
+  .acol.c1, .acol.c2 { grid-row: 2 / 4; }
+  .acol.c3 { grid-row: 4; }
+  .acol.c1 > .as-lane, .acol.c2 > .as-lane + .as-lane { height: 340px; }
+}
+@container av (max-width: 700px) {
+  .atopg { grid-template-areas: "hd" "c1" "c1" "c2" "c2" "c3"; grid-template-rows: auto; }
+  .acol.c1 { grid-row: 2 / 4; } .acol.c2 { grid-row: 4 / 6; } .acol.c3 { grid-row: 6; }
+}
+
+/* This session: a larger card title */
+.as-sess .as-rt h4 { font-size: 20px; }
+
+/* NFC note; method tabs: only the active one is filled */
+.as-method:first-child:not(:disabled):not(.on) { background: transparent; color: var(--as-mu); box-shadow: none; }
+.as-nfc { display: flex; gap: 10px; align-items: flex-start; margin-top: 10px; padding: 10px 12px; border-radius: 10px; background: var(--as-in); color: var(--as-mu); font-size: 12.5px; line-height: 1.45; }
+.as-nfc b { color: var(--as-tx); }
+.as-nfc svg { flex: none; margin-top: 2px; color: var(--as-mrt); }
+
+/* ── 21. Page fits the window: no page scroll; Present and Absent scroll inside ── */
+@container av (min-width: 1061px) {
+  .atopg { height: calc(100vh - 112px); min-height: 560px; }
+  .acol.c1 > .as-lane, .acol.c2 > .as-lane + .as-lane { min-height: 0; height: auto; display: flex; flex-direction: column; overflow: hidden; }
+  .acol.c1 > .as-lane .as-ll, .acol.c2 > .as-lane .as-ll { flex: 1 1 0; min-height: 0; overflow-y: auto; }
+  .acol.c3 { min-height: 0; overflow: hidden; }
+}
+@media (min-width: 1101px) and (min-height: 700px) {
+  .attendance-session-shell { height: 100vh; overflow: hidden; }
+  .attendance-session-shell .db-body { min-height: 0; overflow: hidden; }
+  .attendance-session-shell .attendance-session-content { overflow: hidden; }
+}
+
+/* Method slider (same sliding pill as the dashboard) + the two ways to scan */
+.as-methods { position: relative; display: flex; padding: 4px; gap: 0; border-radius: 12px; background: var(--as-in); }
+.as-mpill { position: absolute; left: 4px; top: 4px; bottom: 4px; width: calc(50% - 4px); border-radius: 9px; background: var(--as-mr, #7B1113); box-shadow: 0 4px 12px rgba(123,17,19,.25); transition: transform .38s cubic-bezier(.4,0,.2,1); }
+.as-mpill.right { transform: translateX(100%); }
+.as-methods .as-method, .as-methods .as-method.on, .as-methods .as-method:first-child:not(:disabled), .as-methods .as-method:first-child:not(:disabled):not(.on) { position: relative; z-index: 1; flex: 1; background: transparent; box-shadow: none; color: var(--as-mu); transition: color .3s; }
+.as-methods .as-method.on, .as-methods .as-method.on:first-child:not(:disabled) { color: #fff; }
+.as-methods .as-method:hover:not(.on) { background: transparent; color: var(--as-tx); }
+.as-pick { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
+.as-pickb { position: relative; display: flex; align-items: center; gap: 10px; padding: 10px 12px; border: 1px solid var(--as-bd); border-radius: 12px; background: var(--as-card); color: var(--as-tx); text-align: left; cursor: pointer; overflow: hidden; transition: border-color .2s, background-color .2s, transform .15s; }
+.as-pickb:hover:not(:disabled) { border-color: var(--as-mr, #7B1113); background: var(--as-mrlt); transform: translateY(-1px); }
+.as-pickb.on { border-color: var(--as-mr, #7B1113); background: var(--as-mrlt); }
+.as-pickb svg { flex: none; color: var(--as-mrt); }
+.as-pickb span { display: grid; min-width: 0; }
+.as-pickb b { font-size: 13.5px; font-weight: 700; }
+.as-pickb small { font-size: 11.5px; color: var(--as-mu); }
+.as-pickb.off, .as-pickb:disabled { opacity: .55; pointer-events: none; }
+.as-pickb input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+
+/* Resolve + Face check share one card */
+.as-resface { flex: 1 1 auto; min-height: 0; }
+.as-resface > .as-res { flex: 0 0 auto; }
+.as-resface > .as-face { flex: 1 1 auto; min-height: 0; overflow: auto; }
+.acol.c3 > .as-resface { overflow: hidden; }
+
+/* Student photo (was Face check): a large enrolled photo to recognise the student by */
+.as-sphoto { margin: 12px 0 0; flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; gap: 10px; }
+.as-sphoto img, .as-sphoto-load { width: 100%; flex: 1 1 auto; min-height: 160px; max-height: 360px; object-fit: cover; object-position: top center; border-radius: 14px; background: var(--as-in); }
+.as-sphoto-load { display: grid; place-items: center; color: var(--as-mu); font-size: 13px; }
+.as-sphoto figcaption { display: grid; text-align: center; }
+.as-sphoto figcaption b { font-size: 15px; }
+.as-sphoto figcaption span { font-size: 12.5px; color: var(--as-mu); }
+.as-face { padding: 16px 18px; }
+
+/* "Is this them?": the face cut out of the class photo next to the enrolled photo */
+.as-ask { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+.as-ask figure { margin: 0; display: grid; gap: 6px; text-align: center; min-width: 0; }
+.as-ask img, .as-ask .as-sphoto-load { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 14px; background: var(--as-in); }
+.as-ask figcaption { font-size: 12px; color: var(--as-mu); }
+.as-ask figcaption b { color: var(--as-tx); }
+.as-ask-btns { display: flex; gap: 8px; margin-top: 12px; }
+.as-ask-btns .as-b1 { flex: 1; justify-content: center; }
+.as-ask-btns .as-b1.yes { background: var(--as-ok, #15803d); color: #fff; border-color: transparent; }
+
+/* ── 22. Wider right column that starts at the page title; one "Student under review" card ── */
+@container av (min-width: 1061px) {
+  .atopg {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.3fr);
+    grid-template-areas: "hd hd c3" "c1 c2 c3" "c1 c2 c3";
+  }
+  .acol.c3 { grid-row: 1 / 4; }
+  .acol.c3 > .as-res { flex: 1 1 auto; min-height: 0; overflow-y: auto; }
+}
+.as-res-title { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding-bottom: 10px; margin-bottom: 4px; border-bottom: 1px solid var(--as-bd); }
+.as-res-title h4 { margin: 0; font-size: 17px; font-weight: 700; }
+.as-sp { display: grid; gap: 10px; }
+.as-sp-boxes { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.as-sp-boxes figure { margin: 0; display: grid; gap: 6px; min-width: 0; }
+.as-sp-boxes img, .as-sp-empty { width: 100%; aspect-ratio: 1; border-radius: 14px; object-fit: cover; object-position: top center; background: var(--as-in); border: 1px dashed var(--as-bd); }
+.as-sp-boxes img { border-style: solid; }
+.as-sp-empty { display: grid; place-items: center; color: var(--as-mu); }
+.as-sp-boxes figcaption { display: grid; gap: 1px; text-align: center; font-size: 12px; color: var(--as-mu); }
+.as-sp-boxes figcaption b { color: var(--as-tx); }
+.as-sp-boxes figcaption em { font-style: normal; font-weight: 700; color: var(--as-mrt); }
+.as-sp-note { margin: 0; padding: 8px 10px; border-radius: 10px; background: var(--as-in); color: var(--as-mu); font-size: 12px; line-height: 1.45; }
+.as-ask-q { flex: 1; align-self: center; font-weight: 700; font-size: 14px; }
+.as-ask-btns .as-b1 { flex: none; }
+.as-sp-boxes { max-width: 420px; margin: 0 auto; width: 100%; }
+@container av (min-width: 1061px) {
+  .as-sess .as-cq i { display: none; }
+  .as-sess .as-cq span { font-size: 11.5px; }
+  .as-sess .as-cq { padding: 9px 8px; }
+  .as-sess .as-ring { width: clamp(80px, 22cqw, 120px); }
+  .as-pickb small { display: none; }
+}
+@container av (max-width: 1060px) {
+  .atopg { grid-template-rows: auto minmax(0, max-content) 380px auto; }
+  .acol.c2 > .as-lane:first-child { max-height: 560px; min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+  .acol.c1 > .as-lane, .acol.c2 > .as-lane + .as-lane { height: auto; min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+  .acol.c2 > .as-lane .as-ll, .acol.c1 > .as-lane .as-ll { flex: 1 1 0; min-height: 0; overflow-y: auto; }
+}
+
+/* Student under review: only as tall as its content; smaller Mark present / Keep absent buttons */
+@container av (min-width: 1061px) {
+  .acol.c3 { align-content: start; justify-content: flex-start; }
+  .acol.c3 > .as-res { flex: 0 0 auto; overflow: visible; }
+}
+.as-res .as-ropts { grid-template-columns: 1fr 1fr; gap: 8px; }
+.as-res .as-ro { padding: 7px 10px; font-size: 12px; gap: 7px; }
+.as-res .as-ro .as-ati { width: 26px; height: 26px; }
+.as-scanbox .as-pick { margin-top: 0; }
+.as-scanbox .as-pickb small { display: block; }
+.as-scanhint { display: flex; align-items: center; gap: 8px; margin: 12px 2px 0; padding: 11px 12px; min-height: 66px; border: 1px dashed var(--as-bd); border-radius: 12px; color: var(--as-mu); font-size: 12.5px; line-height: 1.4; }
+.as-scanhint svg { flex: none; color: var(--as-mrt); }
+.as-scanhint b { color: var(--as-tx); }
+.as-nfc { min-height: 66px; align-items: center; }
+
+/* Cancel / Edit details / Save record card */
+.as-actions { flex: none; display: flex; flex-wrap: wrap; gap: 10px; justify-content: flex-end; align-items: center; padding: 14px 18px; }
+.as-actions .as-b1, .as-actions .as-pbtn { justify-content: center; }
+.as-actions .as-pbtn { margin-left: auto; }
+@container av (min-width: 1061px) { .acol.c3 { gap: 16px; } }
+
+/* Right column: the leftover height is shared equally by the student card and the actions card */
+@container av (min-width: 1061px) {
+  .acol.c3 { display: flex; flex-direction: column; min-height: 0; }
+  .acol.c3 > .as-res { flex: 1 1 auto; min-height: 0; overflow-y: auto; }
+  .acol.c3 > .as-actions { flex: 1 1 auto; align-content: center; align-items: center; justify-content: center; gap: 14px; }
+  .acol.c3 > .as-actions .as-pbtn { margin-left: 0; }
+}
+.as-res-title h4 { font-size: 25.5px; }
+
+/* Actions card: three equal, roomy buttons spread across the whole card */
+.as-actions { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; padding: 18px 22px; }
+.as-actions .as-b1, .as-actions .as-pbtn { width: 100%; height: 48px; font-size: 14px; }
+.acol.c3 > .as-actions { align-content: center; justify-content: stretch; gap: 16px; }
+@container av (max-width: 520px) { .as-actions { grid-template-columns: 1fr; } }
+.as-actions svg { flex: none; }
+
+/* Verified by: label on the left, the three method counts spread across the rest */
+.as-asf { display: block; }
+.as-mth { display: grid; grid-template-columns: auto repeat(3, minmax(0, 1fr)); align-items: center; gap: 10px; width: 100%; }
+.as-mth .as-mc { justify-content: center; gap: 8px; padding: 6px 10px; }
+
+/* Verified by: compact pills with room between them */
+.as-mth { display: flex; align-items: center; justify-content: flex-start; flex-wrap: wrap; gap: 22px; width: 100%; }
+.as-mth .as-mth-l { margin-right: 4px; }
+.as-mth .as-mc { flex: none; justify-content: center; gap: 7px; padding: 6px 12px; min-width: 0; width: auto; }
+
+/* Lane "open larger" button (top-right of Present, Absent, Needs review) */
+.as-lexp { flex: none; width: 28px; height: 28px; display: grid; place-items: center; border: 1px solid var(--as-bd); border-radius: 8px; background: var(--as-card); color: var(--as-mu); cursor: pointer; transition: color .2s, border-color .2s, background-color .2s; }
+.as-lexp:hover { color: var(--as-mrt); border-color: var(--as-mr, #7B1113); background: var(--as-mrlt); }
+
+/* The large lane window */
+.as-lanewin { width: min(920px, 100%); height: min(720px, calc(100vh - 32px)); display: flex; flex-direction: column; gap: 14px; }
+.as-lanewin-hd { display: flex; align-items: center; gap: 12px; }
+.as-lanewin-hd > div { flex: 1; min-width: 0; }
+.as-lanewin-hd h2 { margin: 0; font-size: 20px; display: flex; align-items: center; gap: 8px; }
+.as-lanewin-hd p { margin: 2px 0 0; color: var(--as-mu); font-size: 13px; }
+.as-lanewin .li { width: 38px; height: 38px; display: grid; place-items: center; border-radius: 11px; background: var(--as-wab); color: var(--as-wa); flex: none; }
+.as-lanewin.lok .li { background: var(--as-okb); color: var(--as-ok); }
+.as-lanewin.lne .li { background: var(--as-neb); color: var(--as-ne); }
+.as-lanewin .lc { padding: 3px 9px; border-radius: 99px; background: var(--as-wab); color: var(--as-wa); font-size: 12px; font-weight: 700; }
+.as-lanewin.lok .lc { background: var(--as-okb); color: var(--as-ok); }
+.as-lanewin.lne .lc { background: var(--as-neb); color: var(--as-ne); }
+.as-lanewin-search { display: flex; align-items: center; gap: 8px; padding: 0 12px; height: 42px; border: 1px solid var(--as-bd); border-radius: 12px; color: var(--as-mu); }
+.as-lanewin-search:focus-within { border-color: var(--as-mr, #7B1113); box-shadow: 0 0 0 3px var(--as-mrlt); }
+.as-lanewin-search input { flex: 1; border: 0; outline: 0; background: transparent; color: var(--as-tx); font-size: 14px; }
+.as-lanewin-grid { flex: 1 1 auto; min-height: 0; overflow-y: auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); align-content: start; gap: 10px; padding: 2px; }
+.as-lanewin-card { display: flex; align-items: center; gap: 10px; padding: 12px; border: 1px solid var(--as-bd); border-radius: 12px; background: var(--as-card); min-width: 0; }
+.as-lanewin-card .as-stn { flex: 1; min-width: 0; }
+.as-lanewin-card.click { cursor: pointer; transition: border-color .2s, transform .15s; }
+.as-lanewin-card.click:hover { border-color: var(--as-mr, #7B1113); transform: translateY(-1px); }
+.as-lanewin-empty { grid-column: 1 / -1; text-align: center; color: var(--as-mu); padding: 30px 0; }
+.as-lanewin-ft { display: flex; align-items: center; justify-content: flex-end; gap: 10px; padding-top: 12px; border-top: 1px solid var(--as-bd); }
+.as-lanewin-q { margin-right: auto; font-weight: 700; font-size: 14px; }
+.as-lanewin-search, .as-lanewin-hd, .as-lanewin-ft { flex: none; }
+
+/* Right column: same layout whether a student is open or not.
+   The actions card keeps its own height; the student card takes the rest, so nothing jumps
+   between "editing" and "saved". The empty card uses the same header as the open one. */
+.as-res.as-res-empty { padding: 0 28px; }
+.as-res.as-res-empty .as-res-inner { flex: 1 1 auto; min-height: 0; }
+.as-res-none { gap: 6px; font-size: 12.5px; }
+.as-res-none .as-ri2 { width: 40px; height: 40px; margin-bottom: 4px; }
+.as-res-none b { font-size: 15px; }
+@container av (min-width: 1061px) {
+  .acol.c3 > .as-res { flex: 1 1 auto; min-height: 0; }
+  .acol.c3 > .as-actions { flex: 0 0 auto; }
+}
+
+/* NFC Library Card: tap ID cards on the teacher's phone (Web NFC) */
+.as-nfcp { display: grid; gap: 10px; margin-top: 10px; }
+.as-nfcp-start { justify-content: center; width: 100%; }
+.as-nfcp-hint { margin: 0; padding: 10px 12px; border-radius: 10px; background: var(--as-in); color: var(--as-mu); font-size: 12.5px; }
+.as-nfcp-live { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 10px; background: var(--as-okb); }
+.as-nfcp-live > span:nth-child(2) { flex: 1; display: grid; min-width: 0; font-size: 12.5px; color: var(--as-mu); }
+.as-nfcp-live b { color: var(--as-ok); font-size: 13.5px; }
+.as-nfcp-live .as-b1 { display: inline-flex; align-items: center; gap: 6px; }
+.as-nfcp-pulse { position: relative; display: grid; place-items: center; width: 34px; height: 34px; flex: none; border-radius: 50%; background: var(--as-ok); color: #fff; }
+.as-nfcp-pulse::after { content: ""; position: absolute; inset: 0; border-radius: 50%; border: 2px solid var(--as-ok); animation: as-nfc-ping 1.6s ease-out infinite; }
+@keyframes as-nfc-ping { from { transform: scale(1); opacity: 0.8; } to { transform: scale(1.8); opacity: 0; } }
+.as-nfcp-log { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+.as-nfcp-log li { display: flex; align-items: flex-start; gap: 8px; padding: 6px 10px; border-radius: 8px; font-size: 12.5px; line-height: 1.4; animation: as-nfc-in 0.25s ease-out; }
+.as-nfcp-log li svg { flex: none; margin-top: 2px; }
+.as-nfcp-log li.ok { background: var(--as-okb); color: var(--as-ok); font-weight: 600; }
+.as-nfcp-log li.info { background: var(--as-in); color: var(--as-mu); }
+.as-nfcp-log li.er { background: var(--as-erb); color: var(--as-er); }
+@keyframes as-nfc-in { from { opacity: 0; transform: translateY(-4px); } }
+@media (prefers-reduced-motion: reduce) { .as-nfcp-pulse::after, .as-nfcp-log li { animation: none; } }

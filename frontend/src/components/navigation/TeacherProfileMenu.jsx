@@ -1,25 +1,30 @@
 // src/components/navigation/TeacherProfileMenu.jsx
-// Shared teacher profile control: PJ avatar + full name + chevron, with an accessible
+// Shared teacher profile control: avatar + full name + chevron, with an accessible
 // dropdown (keyboard, Escape, outside click). Pass `open`/`onOpenChange` to coordinate
-// with other header menus; otherwise it manages its own state.
+// with other header menus; otherwise it manages its own state. Identity comes from /auth/me.
 import { useEffect, useId, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ChevronDown, User, Settings, LogOut } from "lucide-react";
+import { ChevronDown, Settings, LogOut } from "lucide-react";
 import { logout } from "../../api/auth";
 import { useAuth } from "../../context/AuthContext";
+import { initials } from "../../utils/initials";
 
-const TEACHER = {
-  initials: "PJ",
-  name: "Professor Jhonsy",
-  shortName: "Prof. Jhonsy",
-  department: "Dept. of CS & Eng",
-  email: "Jhonsy.Bansal@thapar.edu",
-};
+// "Parv Rawat" -> "P. Rawat" for the compact header variant
+function shortName(name) {
+  const parts = String(name || "").trim().split(/\s+/);
+  return parts.length > 1 ? `${parts[0][0]}. ${parts[parts.length - 1]}` : parts[0] || "";
+}
 
 // variant "stacked" shows the short name over the department (Dashboard header)
 function TeacherProfileMenu({ open: controlledOpen, onOpenChange, variant }) {
   const navigate = useNavigate();
-  const { signOut } = useAuth();
+  const { session, signOut } = useAuth();
+  const teacher = {
+    name: session?.name || "Teacher",
+    email: session?.email || "",
+    initials: initials(session?.name || session?.email || "T") || "T",
+    role: session?.apiRole === "admin" ? "Administrator" : "Teacher",
+  };
   const [internalOpen, setInternalOpen] = useState(false);
   const isControlled = controlledOpen !== undefined;
   const open = isControlled ? controlledOpen : internalOpen;
@@ -87,7 +92,7 @@ function TeacherProfileMenu({ open: controlledOpen, onOpenChange, variant }) {
         aria-haspopup="menu"
         aria-expanded={open}
         aria-controls={open ? menuId : undefined}
-        aria-label={`${TEACHER.name} — account menu`}
+        aria-label={`${teacher.name} — account menu`}
         onClick={(e) => {
           // keyboard activation (Enter/Space) moves focus into the menu
           focusFirstOnOpen.current = !open && e.detail === 0;
@@ -102,15 +107,15 @@ function TeacherProfileMenu({ open: controlledOpen, onOpenChange, variant }) {
         }}
       >
         <span className="profile-avatar" aria-hidden="true">
-          {TEACHER.initials}
+          {teacher.initials}
         </span>
         {variant === "stacked" ? (
           <span className="profile-stack">
-            <span className="profile-stack-name">{TEACHER.shortName}</span>
-            <span className="profile-stack-dept">{TEACHER.department}</span>
+            <span className="profile-stack-name">{shortName(teacher.name)}</span>
+            <span className="profile-stack-dept">{teacher.role}</span>
           </span>
         ) : (
-          <span className="profile-name">{TEACHER.name}</span>
+          <span className="profile-name">{teacher.name}</span>
         )}
         <ChevronDown size={16} strokeWidth={2} className={`profile-chevron ${open ? "open" : ""}`} aria-hidden="true" />
       </button>
@@ -118,13 +123,9 @@ function TeacherProfileMenu({ open: controlledOpen, onOpenChange, variant }) {
       {open && (
         <div className="dropdown-menu" id={menuId} role="menu" aria-label="Account" ref={menuRef} onKeyDown={handleMenuKeyDown}>
           <div className="dropdown-user-header">
-            <div className="dropdown-user-name">{TEACHER.name}</div>
-            <div className="dropdown-user-email">{TEACHER.email}</div>
+            <div className="dropdown-user-name">{teacher.name}</div>
+            <div className="dropdown-user-email">{teacher.email}</div>
           </div>
-          <Link to="/settings" role="menuitem" className="dropdown-item" onClick={() => setOpen(false)}>
-            <User size={16} strokeWidth={1.8} aria-hidden="true" />
-            <span>Profile Overview</span>
-          </Link>
           <Link to="/settings" role="menuitem" className="dropdown-item" onClick={() => setOpen(false)}>
             <Settings size={16} strokeWidth={1.8} aria-hidden="true" />
             <span>Account Settings</span>

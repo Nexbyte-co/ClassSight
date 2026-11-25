@@ -1,32 +1,20 @@
 // src/pages/Settings/settingsUi.jsx
 // Building blocks for the teacher Settings tabs: cards, labelled rows and controls.
-import { Lock } from "lucide-react";
 
-// A titled card. `local`: settings saved in this browser; `server`: settings that need the
-// ClassSight server (not connected) and are shown disabled. Neither: informational card.
-export function SettingsCard({ title, desc, local = false, server = false, children, footer = null }) {
+// A titled card. `local`: settings saved in this browser.
+export function SettingsCard({ title, desc, local = false, children, footer = null }) {
   return (
-    <section className={`ts-card ${server ? "is-server" : ""}`}>
+    <section className="ts-card">
       <header className="ts-card-head">
         <div>
           <h3 className="ts-card-title">{title}</h3>
           {desc && <p className="ts-card-desc">{desc}</p>}
         </div>
-        {server && <ServerBadge />}
         {local && <span className="ts-badge ts-badge-local">Saved in this browser</span>}
       </header>
       <div className="ts-card-body">{children}</div>
       {footer}
     </section>
-  );
-}
-
-export function ServerBadge() {
-  return (
-    <span className="ts-badge ts-badge-server">
-      <Lock size={12} strokeWidth={2.2} aria-hidden="true" />
-      Needs server
-    </span>
   );
 }
 
@@ -103,16 +91,6 @@ export function Select({ id, value, options, onChange, disabled = false }) {
         </option>
       ))}
     </select>
-  );
-}
-
-// Banner at the top of a tab whose settings can't be changed yet
-export function ServerNote({ children }) {
-  return (
-    <div className="ts-note" role="note">
-      <Lock size={16} strokeWidth={2} aria-hidden="true" />
-      <p>{children}</p>
-    </div>
   );
 }
 

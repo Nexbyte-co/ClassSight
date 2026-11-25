@@ -1,7 +1,8 @@
 // src/pages/Reports/WeeklyBreakdownCard.jsx — week-wise attendance, change from the previous week,
 // and lectures / labs held, for the selected batch (or all batches) and date range
 import { Icon } from "./icons";
-import { BATCHES, formatRange, weeklyBreakdown } from "./reportsMock";
+import { formatRange } from "./reportsUtil";
+import { useReports } from "./useReports";
 
 function Change({ value }) {
   if (value === null) return <span className="rp-wchg">–</span>;
@@ -17,6 +18,7 @@ function Change({ value }) {
 }
 
 function WeeklyBreakdownCard({ batchIndex, allMode, from, to }) {
+  const { BATCHES, weeklyBreakdown } = useReports();
   const rows = weeklyBreakdown(batchIndex, allMode, from, to);
   const scope = allMode ? "All batches" : BATCHES[batchIndex].group;
 

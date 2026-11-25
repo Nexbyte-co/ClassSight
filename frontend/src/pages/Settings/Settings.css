@@ -717,3 +717,102 @@
     flex: 1;
   }
 }
+
+/* ---- Requests to admin ---- */
+.teacher-ui .ts-req-form { display: grid; gap: 16px; }
+.teacher-ui .ts-req-kinds { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; border: 0; }
+.teacher-ui .ts-req-kinds legend { margin-bottom: 8px; }
+.teacher-ui .ts-req-kind {
+  height: 34px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--cs-border);
+  background: var(--cs-card-bg); color: var(--cs-text-secondary); font: inherit; font-size: 13px; font-weight: 600;
+  cursor: pointer; transition: background-color 0.15s, border-color 0.15s, color 0.15s;
+}
+.teacher-ui .ts-req-kind:hover { border-color: var(--cs-crimson); color: var(--cs-text-primary); }
+.teacher-ui .ts-req-kind.on { background: var(--cs-crimson); border-color: var(--cs-crimson); color: #fff; }
+.teacher-ui .ts-req-field { display: grid; gap: 6px; }
+.teacher-ui .ts-req-field .ts-input { width: 100%; min-width: 0; }
+.teacher-ui .ts-req-text { height: auto; padding: 10px 12px; resize: vertical; line-height: 1.5; }
+.teacher-ui .ts-req-send { display: inline-flex; align-items: center; gap: 8px; }
+.teacher-ui .ts-req-msg { margin: 0; font-size: 13px; font-weight: 600; }
+.teacher-ui .ts-req-msg.is-ok { color: var(--cs-success); }
+.teacher-ui .ts-req-msg.is-error { color: var(--cs-danger); }
+.teacher-ui .ts-spin { animation: ts-req-spin 0.9s linear infinite; }
+@keyframes ts-req-spin { to { transform: rotate(360deg); } }
+.teacher-ui .ts-req-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.teacher-ui .ts-req-item { display: grid; gap: 6px; padding: 12px 14px; border: 1px solid var(--cs-border-subtle); border-left: 3px solid var(--cs-warning); border-radius: 10px; background: var(--cs-card-bg); }
+.teacher-ui .ts-req-item.is-in_progress { border-left-color: var(--cs-crimson); }
+.teacher-ui .ts-req-item.is-fixed { border-left-color: var(--cs-success); opacity: 0.85; }
+.teacher-ui .ts-req-top { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.teacher-ui .ts-req-top strong { font-size: 14px; color: var(--cs-text-primary); }
+.teacher-ui .ts-req-about { font-size: 12.5px; color: var(--cs-text-muted); }
+.teacher-ui .ts-req-chip { margin-left: auto; display: inline-flex; align-items: center; gap: 5px; height: 24px; padding: 0 10px; border-radius: 999px; font-size: 12px; font-weight: 600; white-space: nowrap; }
+.teacher-ui .ts-req-chip.is-open { background: var(--cs-warning-bg); color: var(--cs-warning); }
+.teacher-ui .ts-req-chip.is-doing { background: var(--cs-crimson-light); color: var(--cs-crimson); }
+.teacher-ui .ts-req-chip.is-fixed { background: var(--cs-success-bg); color: var(--cs-success); }
+.teacher-ui .ts-req-details { margin: 0; font-size: 13.5px; line-height: 1.5; color: var(--cs-text-secondary); white-space: pre-wrap; overflow-wrap: anywhere; }
+.teacher-ui .ts-req-foot { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 12px; color: var(--cs-text-muted); }
+.teacher-ui .ts-req-foot .ts-link { display: inline-flex; align-items: center; gap: 4px; }
+
+/* Two cards side by side (Attendance, Security tabs) so the tab fits the screen without scrolling */
+.teacher-ui .ts-split {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  align-items: start;
+}
+.teacher-ui .ts-split-even { align-items: stretch; }
+.teacher-ui .ts-split-even > .ts-card { display: flex; flex-direction: column; }
+.teacher-ui .ts-split-even > .ts-card > .ts-card-body { flex: 1; display: flex; flex-direction: column; }
+.teacher-ui .ts-split-even > .ts-card > .ts-card-body > .ts-card-actions { margin-top: auto; padding-top: 16px; }
+@media (max-width: 1100px) {
+  .teacher-ui .ts-split { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* Short laptop screens: tighter spacing so short tabs still fit without scrolling */
+@media (min-width: 1101px) and (max-height: 860px) {
+  .teacher-ui .ts-tabs { margin: 0 0 14px; }
+  .teacher-ui .ts-panel { gap: 12px; }
+  .teacher-ui .ts-split { gap: 12px; }
+  .teacher-ui .ts-card-head { padding: 14px 20px 2px; }
+  .teacher-ui .ts-card-body { padding: 4px 20px 14px; }
+  .teacher-ui .ts-row { padding: 10px 0; }
+  .teacher-ui .ts-card-foot { padding: 8px 20px; }
+  .teacher-ui .ts-card-actions { margin-top: 10px; }
+  .teacher-ui .ts-savebar-spacer { margin-top: 8px; }
+  .teacher-ui .ts-note { padding-top: 8px; padding-bottom: 8px; }
+}
+
+/* The shared 760px body floor made Settings scroll on 768px-high screens even when the tab fits */
+.db-page.teacher-ui.settings-root .db-body { min-height: calc(100vh - 64px); }
+
+/* ---- Security: password + recent sign-ins (shared by teacher and student Settings) ---- */
+.teacher-ui .ts-pw-actions { justify-content: space-between; align-items: center; gap: 12px; }
+.teacher-ui .ts-pw-actions .ts-req-msg { flex: 1; min-width: 0; }
+.teacher-ui .ts-logins { list-style: none; margin: 0; padding: 0; display: grid; max-height: 186px; overflow-y: auto; }
+.teacher-ui .ts-logins li { display: grid; grid-template-columns: 18px minmax(0, 1fr) auto auto; align-items: center; gap: 12px; padding: 8px 2px; border-bottom: 1px solid var(--cs-border-subtle); font-size: 13px; color: var(--cs-text-secondary); }
+.teacher-ui .ts-logins li:last-child { border-bottom: 0; }
+.teacher-ui .ts-logins svg { color: var(--cs-text-muted); }
+.teacher-ui .ts-logins-dev { font-weight: 600; color: var(--cs-text-primary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.teacher-ui .ts-logins-dev em { margin-left: 8px; padding: 1px 8px; border-radius: 999px; background: var(--cs-success-bg); color: var(--cs-success); font-style: normal; font-size: 11px; font-weight: 700; }
+.teacher-ui .ts-logins-ip { font-variant-numeric: tabular-nums; color: var(--cs-text-muted); }
+.teacher-ui .ts-logins time { font-variant-numeric: tabular-nums; white-space: nowrap; }
+@media (max-width: 640px) {
+  .teacher-ui .ts-logins li { grid-template-columns: 18px minmax(0, 1fr) auto; }
+  .teacher-ui .ts-logins-ip { display: none; }
+}
+
+/* ---- One scrolling page: a heading per section, sticky jump bar ---- */
+.teacher-ui .ts-jump {
+  position: sticky; top: 64px; z-index: 6; margin: 0 0 8px;
+  background: var(--db-bg); /* the page colour, light and dark */
+}
+.teacher-ui .ts-sections { display: grid; gap: 40px; }
+.teacher-ui .ts-sec { scroll-margin-top: calc(64px + 56px); }
+.teacher-ui .ts-sec-title {
+  display: flex; align-items: center; gap: 10px; margin: 0 0 14px;
+  font-size: 20px; font-weight: 700; letter-spacing: -0.2px; color: var(--cs-text-primary);
+}
+.teacher-ui .ts-sec-icon {
+  width: 34px; height: 34px; flex: none; display: grid; place-items: center; border-radius: 10px;
+  background: var(--cs-crimson-light); color: var(--cs-crimson);
+}

@@ -29,6 +29,9 @@ class Settings(BaseSettings):
     # Address browsers use for presigned photo links, when it differs from the one the
     # backend uses (e.g. local S3 is "s3:8333" inside Docker but "localhost:8333" outside).
     s3_public_endpoint_url: str | None = None
+    # Keys for that local store only (real AWS uses the instance role or the standard AWS_* variables).
+    local_s3_access_key: str | None = None
+    local_s3_secret_key: str | None = None
 
     # Also embed flipped/brighter/darker copies of each enrollment photo.
     enroll_augment: bool = False
@@ -36,7 +39,7 @@ class Settings(BaseSettings):
 
     cors_allowed_origins: list[str] = ["http://localhost:5173"]
 
-    @field_validator("s3_endpoint_url", "s3_public_endpoint_url", mode="before")
+    @field_validator("s3_endpoint_url", "s3_public_endpoint_url", "local_s3_access_key", "local_s3_secret_key", mode="before")
     @classmethod
     def _empty_means_unset(cls, value: str | None) -> str | None:
         # docker compose passes unset variables as "", which must mean "use AWS S3".

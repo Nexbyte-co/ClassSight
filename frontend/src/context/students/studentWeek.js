@@ -1,14 +1,9 @@
 // src/context/students/studentWeek.js
 // Pure helpers for the student portal Dashboard: greeting, Sunday–Saturday week,
-// class occurrences (recorded ClassSight sessions or labelled demo data), weekly
+// class occurrences (saved ClassSight sessions), weekly
 // chart data, subject-wise summary and recent history. All dates are local.
 
-import {
-  getLocalDateKey,
-  isValidDateKey,
-  parseSessionId,
-  parseTimeSlotMinutes,
-} from "../schedule/scheduleStatus";
+import { getLocalDateKey } from "../schedule/scheduleStatus";
 import { getAtRiskFloor } from "../settings/settingsStore";
 
 export const WEEKDAY_LABELS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -41,112 +36,6 @@ export function getWeekDateKeys(date = new Date()) {
   return WEEKDAY_LABELS.map((_, i) => getLocalDateKey(addDays(start, i)));
 }
 
-function minutesOfDay(date) {
-  return date.getHours() * 60 + date.getMinutes();
-}
-
-// Small deterministic hash so demo statuses are stable across reloads
-function hashString(text) {
-  let h = 2166136261;
-  for (let i = 0; i < text.length; i++) {
-    h ^= text.charCodeAt(i);
-    h = Math.imul(h, 16777619);
-  }
-  return h >>> 0;
-}
-
-// DEMO occurrences from the demo timetable, from `weeks` weeks ago to the end of this week.
-// Classes after `now` are "upcoming" (never absent). Recent demo classes may be unverified.
-export function buildDemoOccurrences(timetable, subjects, now = new Date(), weeks = 4) {
-  const byCode = new Map(subjects.map((s) => [s.code, s]));
-  const todayKey = getLocalDateKey(now);
-  const yesterdayKey = getLocalDateKey(addDays(now, -1));
-  const nowMinutes = minutesOfDay(now);
-  const firstSunday = addDays(getWeekStart(now), -7 * (weeks - 1));
-  const occurrences = [];
-  const held = new Map(); // per course: classes held so far, so absences can be spread evenly
-
-  for (let i = 0; i < weeks * 7; i++) {
-    const date = addDays(firstSunday, i);
-    const dateKey = getLocalDateKey(date);
-    timetable
-      .filter((t) => t.day === date.getDay() && byCode.has(t.code))
-      .forEach((t) => {
-        const subject = byCode.get(t.code);
-        const startMinutes = parseTimeSlotMinutes(t.start)?.startMinutes ?? 0;
-        const isFuture = dateKey > todayKey || (dateKey === todayKey && startMinutes > nowMinutes);
-        let status = STATUS.upcoming;
-        if (!isFuture) {
-          const h = hashString(`${dateKey}|${t.code}|${startMinutes}`);
-          if (dateKey >= yesterdayKey && h % 4 === 0) status = STATUS.unverified;
-          else if (subject.absentRate !== undefined) {
-            // Fixed share of absences spread evenly over the term, so each course keeps its own level
-            const n = held.get(t.code) ?? 0;
-            held.set(t.code, n + 1);
-            status = Math.floor((n + 1) * subject.absentRate) > Math.floor(n * subject.absentRate) ? STATUS.absent : STATUS.present;
-          } else status = h % 10 < 8 ? STATUS.present : STATUS.absent;
-        }
-        occurrences.push({
-          key: `demo-${dateKey}-${t.code}-${startMinutes}`,
-          dateKey,
-          startMinutes,
-          code: subject.code,
-          subject: subject.name,
-          status,
-          source: "demo",
-        });
-      });
-  }
-  return occurrences;
-}
-
-// Occurrences from sessions recorded in ClassSight where the student's roll number appears.
-// One occurrence per session id; the session's own date is used.
-export function getRecordedOccurrences(roll, sessions, scheduleList) {
-  if (!roll || !sessions || typeof sessions !== "object") return [];
-  const scheduleById = new Map((scheduleList || []).map((c) => [c.id, c]));
-  const occurrences = [];
-  Object.entries(sessions).forEach(([sessionId, session]) => {
-    const { classId, dateKey } = parseSessionId(sessionId);
-    if (!classId || !isValidDateKey(dateKey) || !session) return;
-    const inList = (list) => Array.isArray(list) && list.some((s) => s.roll === roll);
-    const status = inList(session.verified)
-      ? STATUS.present
-      : inList(session.absent)
-      ? STATUS.absent
-      : inList(session.unverified)
-      ? STATUS.unverified
-      : null;
-    if (!status) return;
-    const info = session.classInfo || scheduleById.get(classId) || null;
-    // How the teacher's session recorded this student as present (photo, NFC card or manual), when known
-    const method = status === STATUS.present ? session.verified.find((s) => s.roll === roll)?.method ?? null : null;
-    occurrences.push({
-      key: `session-${sessionId}`,
-      dateKey,
-      startMinutes: parseTimeSlotMinutes(info?.timeRange || info?.time)?.startMinutes ?? 0,
-      code: info?.code || classId,
-      subject: info?.title || "Removed lecture",
-      status,
-      method,
-      source: "recorded",
-    });
-  });
-  return occurrences;
-}
-
-// Recorded occurrences win over demo ones for the same subject and date; no key is counted twice
-export function mergeOccurrences(recorded, demo) {
-  const seen = new Set();
-  const recordedSlots = new Set(recorded.map((o) => `${o.dateKey}|${o.code}`));
-  const merged = [];
-  [...recorded, ...demo.filter((o) => !recordedSlots.has(`${o.dateKey}|${o.code}`))].forEach((o) => {
-    if (seen.has(o.key)) return;
-    seen.add(o.key);
-    merged.push(o);
-  });
-  return merged;
-}
 
 // One entry per day Sun–Sat. `total` counts every class occurrence that day (including
 // upcoming ones); `held` excludes upcoming classes and is used for the attended/held label.

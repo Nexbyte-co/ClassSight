@@ -1,9 +1,9 @@
 // src/pages/AttendanceSession/ReviewLane.jsx — students the group photo couldn't match.
 // Click (or Enter / Space) a row to load it into the Resolve card.
-import { CircleAlert } from "lucide-react";
-import { initials } from "../Students/studentsMock";
+import { CircleAlert, Maximize2 } from "lucide-react";
+import { initials } from "../../utils/initials";
 
-export default function ReviewLane({ rows, focus, resolved, total, onSelect }) {
+export default function ReviewLane({ rows, focus, resolved, total, onSelect, onExpand }) {
   const key = (e, j) => {
     if (e.key === "Enter" || e.key === " ") {
       e.preventDefault();
@@ -21,6 +21,11 @@ export default function ReviewLane({ rows, focus, resolved, total, onSelect }) {
           <p>The photo couldn’t match them</p>
         </div>
         <span className="lc">{rows.length}</span>
+        {onExpand && (
+          <button type="button" className="as-lexp" aria-label="Open Needs review in a larger window" title="Open in a larger window" onClick={onExpand}>
+            <Maximize2 size={14} strokeWidth={2.2} aria-hidden="true" />
+          </button>
+        )}
       </header>
       <div
         className="as-nrbar"
@@ -30,7 +35,7 @@ export default function ReviewLane({ rows, focus, resolved, total, onSelect }) {
         aria-valuemax={total}
         aria-valuenow={resolved}
       >
-        <i style={{ width: `${(resolved / total) * 100}%` }} />
+        <i style={{ width: `${total ? (resolved / total) * 100 : 0}%` }} />
         <span>
           {resolved} of {total} resolved
         </span>

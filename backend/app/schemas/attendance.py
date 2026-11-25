@@ -32,10 +32,22 @@ class RecognizedStudent(BaseModel):
     confidence: float = Field(ge=0, le=1)
 
 
+class FaceSuggestion(BaseModel):
+    """A face the model could not accept but thinks may be this student: "is this <name>?"."""
+
+    student_id: int
+    roll_number: str
+    name: str
+    confidence: float = Field(ge=0, le=1)  # how similar the face is to the student's enrolled face
+    box: list[float] = Field(min_length=4, max_length=4)  # x1, y1, x2, y2 as fractions of the photo
+    reason: str  # below_threshold | ambiguous
+
+
 class AttendanceProcessOut(BaseModel):
     session_id: int
     recognized_students: list[RecognizedStudent]
     unrecognized_face_count: int
+    suggestions: list[FaceSuggestion] = []
 
 
 class AttendanceRecordIn(BaseModel):
@@ -63,11 +75,10 @@ class AttendanceLogOut(BaseModel):
     records: list[AttendanceRecordOut]
 
 
-class ClassroomAnalyticsOut(BaseModel):
-    classroom_id: int
-    total_sessions: int
-    total_students: int
-    average_attendance_rate: float
-    present_count: int
-    absent_count: int
-    excused_count: int
+class NfcTapOut(BaseModel):
+    """The student a tapped NFC card belongs to."""
+
+    student_id: int
+    roll_number: str
+    name: str
+

@@ -24,6 +24,9 @@ logger = logging.getLogger(__name__)
 
 MATCH_THRESHOLD = 0.5
 AMBIGUITY_MARGIN = 0.05
+# A face that misses the threshold is still offered to the teacher as "is this <student>?" when its
+# closest student scores at least this much (untuned). Below it, the face is too unlike anyone to suggest.
+SUGGEST_MIN = 0.3
 EMBEDDING_DIM = 512
 
 # Decision reasons, shared by group matching and single-face verification.
@@ -50,6 +53,10 @@ class FaceDecision:
     student_id: int | None
     confidence: float | None  # best score clamped to [0, 1]; None if no candidate was left
     reason: str
+    # The closest student even when the face was not accepted, and where the face is in the photo
+    # (x1, y1, x2, y2 as fractions of the image width and height). Both may be None.
+    candidate_id: int | None = None
+    box: tuple[float, float, float, float] | None = None
 
 
 @dataclass
@@ -59,6 +66,18 @@ class RecognitionResult:
     @property
     def matches(self) -> list[FaceDecision]:
         return [d for d in self.decisions if d.reason == MATCHED]
+
+    @property
+    def suggestions(self) -> list[FaceDecision]:
+        """Faces not accepted but close enough to one student to ask the teacher about."""
+        return [
+            d
+            for d in self.decisions
+            if d.reason in (BELOW_THRESHOLD, AMBIGUOUS)
+            and d.candidate_id is not None
+            and d.confidence is not None
+            and d.confidence >= SUGGEST_MIN
+        ]
 
     @property
     def unrecognized_face_count(self) -> int:
@@ -104,6 +123,7 @@ def match_embeddings(
     candidates: list[tuple[int, np.ndarray]],
     threshold: float = MATCH_THRESHOLD,
     margin: float = AMBIGUITY_MARGIN,
+    boxes: list[tuple[float, float, float, float]] | None = None,
 ) -> RecognitionResult:
     """Decide every detected face (F x d) against candidate students, one face per student.
 
@@ -112,7 +132,13 @@ def match_embeddings(
     """
     face_count = len(face_embeddings)
     decisions = [
-        FaceDecision(face_index=i, student_id=None, confidence=None, reason=UNASSIGNED)
+        FaceDecision(
+            face_index=i,
+            student_id=None,
+            confidence=None,
+            reason=UNASSIGNED,
+            box=boxes[i] if boxes is not None and i < len(boxes) else None,
+        )
         for i in range(face_count)
     ]
     if face_count == 0 or not candidates:
@@ -141,6 +167,8 @@ def match_embeddings(
             student_id=candidates[cand_idx][0] if reason == MATCHED else None,
             confidence=_confidence(score),
             reason=reason,
+            candidate_id=candidates[cand_idx][0],
+            box=boxes[face_idx] if boxes is not None and face_idx < len(boxes) else None,
         )
 
     result = RecognitionResult(decisions=decisions)
@@ -184,6 +212,22 @@ def _detect(image: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
         [(f.bbox[2] - f.bbox[0]) * (f.bbox[3] - f.bbox[1]) for f in faces], dtype=np.float32
     )
     return embeddings, areas
+
+
+def extract_faces(image_bytes: bytes) -> tuple[np.ndarray, list[tuple[float, float, float, float]]]:
+    """Detect every face in an image: their embeddings (F x 512) and boxes as fractions of the image."""
+    image = decode_image(image_bytes)
+    height, width = image.shape[:2]
+    faces = _get_model().get(image)
+    if not faces:
+        return np.empty((0, EMBEDDING_DIM), dtype=np.float32), []
+    embeddings = np.stack([face.normed_embedding for face in faces]).astype(np.float32)
+    clamp = lambda v: float(min(max(v, 0.0), 1.0))  # noqa: E731
+    boxes = [
+        (clamp(f.bbox[0] / width), clamp(f.bbox[1] / height), clamp(f.bbox[2] / width), clamp(f.bbox[3] / height))
+        for f in faces
+    ]
+    return embeddings, boxes
 
 
 def embed_image(image: np.ndarray) -> np.ndarray:
@@ -281,4 +325,5 @@ def recognize_faces(
 ) -> RecognitionResult:
     """`candidates` is [(student_id, stored embedding bytes)] for enrolled students."""
     decoded = [(sid, embedding_from_bytes(data)) for sid, data in candidates]
-    return match_embeddings(extract_face_embeddings(image_bytes), decoded)
+    embeddings, boxes = extract_faces(image_bytes)
+    return match_embeddings(embeddings, decoded, boxes=boxes)

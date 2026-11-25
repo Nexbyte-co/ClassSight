@@ -1,8 +1,12 @@
 import { useState } from "react";
-import { Building2, CalendarRange, KeyRound, Moon, Server, ShieldCheck, Sun, UserCog } from "lucide-react";
+import { Building2, CalendarRange, KeyRound, Moon, Server, ShieldCheck, Sun, UserCog, UserPlus, LogOut } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import { useTheme } from "../../context/theme/ThemeContext";
 import { getCurrentUser } from "../../api/auth";
+import { createUser } from "../../api/users";
+import { changePassword, signOutOtherDevices } from "../../api/account";
+import { useAdminData } from "../../context/AdminDataContext";
+import PasswordGen from "../../components/admin/PasswordGen";
 import { AdminPageHeader, Card, FormMessage, Tabs } from "../../components/admin/ui";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
@@ -95,6 +99,166 @@ function SchoolForm({ fields }) {
   );
 }
 
+// The signed-in admin's own password. The server ends their other sessions and hands this one a fresh token.
+const MIN_PASSWORD = 8;
+function MyAccountPanel() {
+  const [fields, setFields] = useState({ current: "", next: "", confirm: "" });
+  const [busy, setBusy] = useState(false);
+  const [msg, setMsg] = useState(null);
+  const [others, setOthers] = useState({ busy: false, msg: null });
+  const set = (key) => (e) => {
+    setFields((f) => ({ ...f, [key]: e.target.value }));
+    setMsg(null);
+  };
+  const submit = async (e) => {
+    e.preventDefault();
+    if (!fields.current) return setMsg({ kind: "error", text: "Enter your current password." });
+    if (fields.next.length < MIN_PASSWORD) return setMsg({ kind: "error", text: `The new password needs at least ${MIN_PASSWORD} characters.` });
+    if (fields.next !== fields.confirm) return setMsg({ kind: "error", text: "The two new passwords don't match." });
+    setBusy(true);
+    try {
+      await changePassword({ currentPassword: fields.current, newPassword: fields.next });
+      setFields({ current: "", next: "", confirm: "" });
+      setMsg({ kind: "ok", text: "Password changed. Your other devices were signed out." });
+    } catch (err) {
+      setMsg({ kind: "error", text: err.message || "Could not change the password." });
+    } finally {
+      setBusy(false);
+    }
+  };
+  const signOutOthers = async () => {
+    setOthers({ busy: true, msg: null });
+    try {
+      await signOutOtherDevices();
+      setOthers({ busy: false, msg: { kind: "ok", text: "Signed out everywhere else. This device stays signed in." } });
+    } catch (err) {
+      setOthers({ busy: false, msg: { kind: "error", text: err.message || "Could not sign out the other devices." } });
+    }
+  };
+  return (
+    <>
+      <h3 className="adm-h3">
+        <KeyRound size={17} aria-hidden="true" /> Change your password
+      </h3>
+      <form className="adm-form adm-form-grid" onSubmit={submit} noValidate>
+        <div className="adm-field">
+          <label htmlFor="me-current">Current password</label>
+          <input id="me-current" type="password" value={fields.current} onChange={set("current")} disabled={busy} autoComplete="current-password" />
+        </div>
+        <div className="adm-field">
+          <label htmlFor="me-next">New password</label>
+          <input id="me-next" type="password" value={fields.next} onChange={set("next")} disabled={busy} autoComplete="new-password" />
+        </div>
+        <div className="adm-field">
+          <label htmlFor="me-confirm">Confirm new password</label>
+          <input id="me-confirm" type="password" value={fields.confirm} onChange={set("confirm")} disabled={busy} autoComplete="new-password" />
+        </div>
+        <div className="adm-form-foot">
+          <FormMessage msg={msg} />
+          <button type="submit" className="db-btn adm-primary" disabled={busy}>
+            <KeyRound size={15} aria-hidden="true" /> {busy ? "Saving…" : "Update password"}
+          </button>
+        </div>
+      </form>
+      <div className="adm-settings-list">
+        <div className="adm-setting">
+          <div>
+            <b>Other devices</b>
+            <span className="db-sm">Sign out every other browser or device that is signed in as you. This one stays signed in.</span>
+            <FormMessage msg={others.msg} />
+          </div>
+          <button type="button" className="db-btn" onClick={signOutOthers} disabled={others.busy}>
+            <LogOut size={15} aria-hidden="true" /> {others.busy ? "Working…" : "Sign out other devices"}
+          </button>
+        </div>
+      </div>
+    </>
+  );
+}
+
+// Add another administrator: they get the same full access, so the form says so and shows who already has it.
+function AdminsPanel() {
+  const { admins, refresh } = useAdminData();
+  const { session } = useAuth();
+  const [form, setForm] = useState({ name: "", email: "", password: "" });
+  const [busy, setBusy] = useState(false);
+  const [msg, setMsg] = useState(null);
+  const set = (key) => (e) => {
+    setForm((f) => ({ ...f, [key]: e.target.value }));
+    setMsg(null);
+  };
+  const submit = async (e) => {
+    e.preventDefault();
+    const name = form.name.trim();
+    const email = form.email.trim();
+    if (!name || !email) return setMsg({ kind: "error", text: "Enter the administrator's name and email." });
+    if (form.password.length < 8) return setMsg({ kind: "error", text: "The password needs at least 8 characters." });
+    setBusy(true);
+    try {
+      await createUser({ name, email, password: form.password, role: "admin" });
+      await refresh();
+      setForm({ name: "", email: "", password: "" });
+      setMsg({ kind: "ok", text: `${name} can now sign in as an administrator. Share the password with them securely.` });
+    } catch (err) {
+      setMsg({ kind: "error", text: err.message || "Could not add the administrator." });
+    } finally {
+      setBusy(false);
+    }
+  };
+  return (
+    <>
+      <h3 className="adm-h3">
+        <UserPlus size={17} aria-hidden="true" /> Add an administrator
+      </h3>
+      <form className="adm-form adm-form-grid" onSubmit={submit} noValidate>
+        <div className="adm-field">
+          <label htmlFor="adm-new-name">Full name</label>
+          <input id="adm-new-name" value={form.name} onChange={set("name")} disabled={busy} autoComplete="off" />
+        </div>
+        <div className="adm-field">
+          <label htmlFor="adm-new-email">Email address</label>
+          <input id="adm-new-email" type="email" value={form.email} onChange={set("email")} disabled={busy} autoComplete="off" />
+        </div>
+        <PasswordGen
+          id="adm-new-pass"
+          label="Password"
+          value={form.password}
+          onChange={(v) => {
+            setForm((f) => ({ ...f, password: v }));
+            setMsg(null);
+          }}
+          disabled={busy}
+          hint="At least 8 characters."
+        />
+        <div className="adm-form-foot">
+          <FormMessage msg={msg} />
+          <button type="submit" className="db-btn adm-primary" disabled={busy}>
+            <UserPlus size={15} aria-hidden="true" /> {busy ? "Adding…" : "Add administrator"}
+          </button>
+        </div>
+      </form>
+      <p className="adm-note">
+        <ShieldCheck size={15} aria-hidden="true" /> Administrators have full access: accounts, classes, students and
+        every report. Only add people you trust.
+      </p>
+      <h3 className="adm-h3">Current administrators ({admins.length})</h3>
+      <div className="adm-settings-list">
+        {admins.map((a) => (
+          <div className="adm-setting" key={a.id}>
+            <div>
+              <b>
+                {a.name}
+                {a.id === session?.id ? " (you)" : ""}
+              </b>
+              <span className="db-sm">{a.email}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+    </>
+  );
+}
+
 function SystemPanel() {
   const { session } = useAuth();
   const { isDarkMode, toggleDarkMode } = useTheme();
@@ -168,6 +332,8 @@ function AdminSettings() {
   const tabs = [
     { key: "school", label: "School profile" },
     { key: "roles", label: "Roles & permissions" },
+    { key: "admins", label: "Administrators" },
+    { key: "account", label: "My account" },
     { key: "year", label: "Academic year" },
     { key: "system", label: "System" },
   ];
@@ -233,6 +399,10 @@ function AdminSettings() {
             </p>
           </>
         )}
+
+        {tab === "admins" && <AdminsPanel />}
+
+        {tab === "account" && <MyAccountPanel />}
 
         {tab === "system" && <SystemPanel />}
       </Card>

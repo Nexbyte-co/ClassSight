@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 
 from app.core.security import decode_access_token
 from app.db.session import get_db
-from app.models import Classroom, User, UserRole
+from app.models import Classroom, Student, User, UserRole
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
@@ -29,9 +29,34 @@ def get_current_user(
         raise credentials_error
 
     user = db.get(User, user_id)
-    if user is None:
+    # A token from before "sign out of other devices" or a password change no longer works.
+    if user is None or payload.get("tv", 0) != user.token_version:
         raise credentials_error
     return user
+
+
+def get_current_student(
+    token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)
+) -> Student:
+    """The signed-in student. Only tokens issued to students (subject "s:<id>") work here."""
+    credentials_error = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    payload = decode_access_token(token)
+    subject = str(payload.get("sub", "")) if payload else ""
+    if payload is None or payload.get("role") != "student" or not subject.startswith("s:"):
+        raise credentials_error
+    try:
+        student_id = int(subject[2:])
+    except ValueError:
+        raise credentials_error
+    student = db.get(Student, student_id)
+    # A student whose email/password was removed can no longer use an old token.
+    if student is None or student.password_hash is None or payload.get("tv", 0) != student.token_version:
+        raise credentials_error
+    return student
 
 
 def require_roles(*roles: UserRole) -> Generator:

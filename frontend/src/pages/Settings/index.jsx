@@ -1,7 +1,7 @@
 // src/pages/Settings/index.jsx
-// Teacher settings, split into tabs. Only settings the app can act on are editable; they are
-// stored in this browser. Account, notifications, security and other server-backed settings are
-// shown in a disabled "Needs server" state instead of pretending to save.
+// Teacher settings on one scrolling page: every section has its own heading and cards; the sticky
+// bar at the top jumps to a section (?tab=<id> links land on it too). Account details, password,
+// sign-ins and requests come from the API; the remaining preferences are stored in this browser.
 import { useState, useEffect, useRef } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import {
@@ -9,12 +9,11 @@ import {
   AlertTriangle,
   UserRound,
   Bell,
-  ClipboardCheck,
-  CalendarDays,
   BarChart3,
   Palette,
   ShieldCheck,
   LifeBuoy,
+  Send,
 } from "lucide-react";
 import "../../styles/Dashboard.css";
 import "../../styles/Reports.css";
@@ -22,23 +21,21 @@ import "./Settings.css";
 import TeacherShell from "../../components/navigation/TeacherShell";
 import { useSettings } from "../../context/settings/SettingsContext";
 import { useDialogA11y } from "../../hooks/useDialogA11y";
-import { validateThreshold, validateLectureMinutes, validateDepartment } from "../../context/settings/settingsStore";
+import { validateThreshold, validateLectureMinutes } from "../../context/settings/settingsStore";
 import {
   AccountTab,
   NotificationsTab,
-  AttendanceTab,
-  ScheduleTab,
   ReportsTab,
   AppearanceTab,
   SecurityTab,
   HelpTab,
 } from "./SettingsTabs";
+import { RequestsTab } from "./RequestsTab";
 
-const TABS = [
+const SECTIONS = [
   { id: "account", label: "Account & Profile", Icon: UserRound, Panel: AccountTab },
+  { id: "requests", label: "Requests", Icon: Send, Panel: RequestsTab },
   { id: "notifications", label: "Notifications", Icon: Bell, Panel: NotificationsTab },
-  { id: "attendance", label: "Attendance", Icon: ClipboardCheck, Panel: AttendanceTab },
-  { id: "schedule", label: "Class & Schedule", Icon: CalendarDays, Panel: ScheduleTab },
   { id: "reports", label: "Reports & Analytics", Icon: BarChart3, Panel: ReportsTab },
   { id: "appearance", label: "Appearance", Icon: Palette, Panel: AppearanceTab },
   { id: "security", label: "Security & Privacy", Icon: ShieldCheck, Panel: SecurityTab },
@@ -49,7 +46,6 @@ const TABS = [
 const toDraft = (s) => ({
   attendanceThreshold: String(s.attendanceThreshold),
   defaultLectureMinutes: String(s.defaultLectureMinutes),
-  defaultDepartment: s.defaultDepartment,
 });
 
 function useSettingsDraft() {
@@ -60,7 +56,6 @@ function useSettingsDraft() {
   const errors = {
     attendanceThreshold: validateThreshold(draft.attendanceThreshold),
     defaultLectureMinutes: validateLectureMinutes(draft.defaultLectureMinutes),
-    defaultDepartment: validateDepartment(draft.defaultDepartment),
   };
   const hasErrors = Object.values(errors).some(Boolean);
   const changed = Object.keys(saved).filter((k) => draft[k].trim() !== saved[k]);
@@ -77,7 +72,6 @@ function useSettingsDraft() {
       const next = {
         attendanceThreshold: Number(draft.attendanceThreshold),
         defaultLectureMinutes: Number(draft.defaultLectureMinutes),
-        defaultDepartment: draft.defaultDepartment.trim(),
       };
       settings.updateSettings(next);
       setDraft(toDraft(next));
@@ -205,10 +199,9 @@ function SaveBar({ form, savedFlash, onSave }) {
 }
 
 function Settings() {
-  const [params, setParams] = useSearchParams();
-  const activeId = TABS.some((t) => t.id === params.get("tab")) ? params.get("tab") : "account";
-  const active = TABS.find((t) => t.id === activeId);
-  const tabRefs = useRef({});
+  const [params] = useSearchParams();
+  const sectionRefs = useRef({});
+  const [activeId, setActiveId] = useState(SECTIONS[0].id);
 
   const form = useSettingsDraft();
   const guard = useUnsavedChangesGuard(form.isDirty);
@@ -220,21 +213,34 @@ function Settings() {
     return () => clearTimeout(t);
   }, [savedFlash]);
 
-  const selectTab = (id, focus = false) => {
-    setParams(id === "account" ? {} : { tab: id }, { replace: true });
-    if (focus) tabRefs.current[id]?.focus();
+  const goTo = (id, smooth = true) => {
+    const el = sectionRefs.current[id];
+    if (!el) return;
+    setActiveId(id);
+    el.scrollIntoView({ behavior: smooth ? "smooth" : "auto", block: "start" });
   };
 
-  // Arrow keys move between tabs (WAI-ARIA tabs pattern)
-  const onTabKey = (e) => {
-    const i = TABS.findIndex((t) => t.id === activeId);
-    const next = { ArrowRight: i + 1, ArrowLeft: i - 1, Home: 0, End: TABS.length - 1 }[e.key];
-    if (next === undefined) return;
-    e.preventDefault();
-    selectTab(TABS[(next + TABS.length) % TABS.length].id, true);
-  };
+  // ?tab=<id> (links from the bell, dashboard, Help) opens the page at that section
+  const target = params.get("tab");
+  useEffect(() => {
+    if (target && SECTIONS.some((x) => x.id === target)) requestAnimationFrame(() => goTo(target, false));
+  }, [target]);
 
-  const { Panel } = active;
+  // Highlight the section being read: the last one whose heading has passed under the bars
+  useEffect(() => {
+    const onScroll = () => {
+      const line = 64 + 60; // top bar + jump bar
+      let current = SECTIONS[0].id;
+      for (const { id } of SECTIONS) {
+        const el = sectionRefs.current[id];
+        if (el && el.getBoundingClientRect().top - line <= 8) current = id;
+      }
+      const atBottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4;
+      setActiveId(atBottom ? SECTIONS[SECTIONS.length - 1].id : current);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   return (
     <TeacherShell active="settings" rootClassName="reports-root settings-root">
@@ -245,40 +251,46 @@ function Settings() {
             <span>Settings</span>
           </h1>
           <p className="reports-subtitle">
-            Manage your preferences. Settings marked <strong>Needs server</strong> become available once your
-            account is connected to the ClassSight server.
+            Your account, password, requests to the admin and preferences.
           </p>
         </div>
 
-        <div className="cs-tabs ts-tabs" role="tablist" aria-label="Settings sections" onKeyDown={onTabKey}>
-          {TABS.map(({ id, label, Icon }) => (
+        <nav className="cs-tabs ts-tabs ts-jump" aria-label="Settings sections">
+          {SECTIONS.map(({ id, label, Icon }) => (
             <button
               key={id}
-              ref={(el) => (tabRefs.current[id] = el)}
-              id={`ts-tab-${id}`}
               type="button"
-              role="tab"
-              aria-selected={id === activeId}
-              aria-controls={`ts-panel-${id}`}
-              tabIndex={id === activeId ? 0 : -1}
+              aria-current={id === activeId ? "true" : undefined}
               className={`cs-tab ${id === activeId ? "on" : ""}`}
-              onClick={() => selectTab(id)}
+              onClick={() => goTo(id)}
             >
               <Icon size={16} strokeWidth={1.8} aria-hidden="true" />
               {label}
               {id === activeId && <span className="cs-tab-ink" aria-hidden="true" />}
             </button>
           ))}
-        </div>
+        </nav>
 
-        <div
-          className="ts-panel"
-          role="tabpanel"
-          id={`ts-panel-${activeId}`}
-          aria-labelledby={`ts-tab-${activeId}`}
-          tabIndex={0}
-        >
-          <Panel form={form} goToTab={selectTab} />
+        <div className="ts-sections">
+          {SECTIONS.map(({ id, label, Icon, Panel }) => (
+            <section
+              key={id}
+              id={`ts-sec-${id}`}
+              ref={(el) => (sectionRefs.current[id] = el)}
+              className="ts-sec"
+              aria-labelledby={`ts-sec-${id}-title`}
+            >
+              <h2 className="ts-sec-title" id={`ts-sec-${id}-title`}>
+                <span className="ts-sec-icon" aria-hidden="true">
+                  <Icon size={18} strokeWidth={2} />
+                </span>
+                {label}
+              </h2>
+              <div className="ts-panel">
+                <Panel form={form} goToTab={goTo} />
+              </div>
+            </section>
+          ))}
         </div>
 
         <SaveBar

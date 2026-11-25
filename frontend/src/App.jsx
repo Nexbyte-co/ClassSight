@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useParams } from "react-router-dom";
 
 import Home from "./pages/Home";
 import Login from "./pages/Login";
@@ -6,19 +6,26 @@ import Dashboard from "./pages/Dashboard";
 import Classrooms from "./pages/Classes/Classrooms";
 import Classes from "./pages/Classes";
 import ClassSchedule from "./pages/Classes/ClassSchedule";
-import Attendance from "./pages/AttendanceSession/Attendance";
+import AdminTeacherSchedule from "./pages/AdminPanel/AdminTeacherSchedule";
+import Attendance from "./pages/AttendanceSession";
 import Students from "./pages/Students";
 import Reports from "./pages/Reports";
 import AllReports from "./pages/Reports/AllReports";
 import ReportDetails from "./pages/Reports/ReportDetails";
 import Settings from "./pages/Settings";
-import Admin from "./pages/Admin";
 import AdminLayout from "./components/admin/AdminLayout";
 import AdminDashboard from "./pages/AdminPanel/AdminDashboard";
-import AdminUsers from "./pages/AdminPanel/AdminUsers";
-import AdminClasses from "./pages/AdminPanel/AdminClasses";
-import AdminAttendance from "./pages/AdminPanel/AdminAttendance";
-import AdminAnalytics from "./pages/AdminPanel/AdminAnalytics";
+import AdminTeachers from "./pages/AdminPanel/AdminTeachers";
+import AdminTeacherDetail from "./pages/AdminPanel/AdminTeacherDetail";
+import AdminBatches from "./pages/AdminPanel/AdminBatches";
+import AdminSubjects from "./pages/AdminPanel/AdminSubjects";
+import AdminStudents from "./pages/AdminPanel/AdminStudents";
+import AdminStudentPage from "./pages/AdminPanel/AdminStudentPage";
+import AdminBatchPage from "./pages/AdminPanel/AdminBatchPage";
+import AdminTeacherAdd from "./pages/AdminPanel/AdminTeacherAdd";
+import AdminSubbatches from "./pages/AdminPanel/AdminSubbatches";
+import AdminSubjectPage from "./pages/AdminPanel/AdminSubjectPage";
+import AdminDepartments from "./pages/AdminPanel/AdminDepartments";
 import AdminSettings from "./pages/AdminPanel/AdminSettings";
 import {
   AdminArea,
@@ -27,13 +34,13 @@ import {
   StudentArea,
   TeacherArea,
 } from "./context/AuthContext";
+import { TeacherDataProvider } from "./context/TeacherDataContext";
+import { ReportsProvider } from "./pages/Reports/useReports";
 import { ClassroomProvider } from "./context/ClassroomContext";
 
 import { ThemeProvider } from "./context/theme/ThemeContext";
-import { AttendanceProvider } from "./context/attendance/AttendanceContext";
 import { ScheduleProvider } from "./context/schedule/ScheduleContext";
 import { SettingsProvider } from "./context/settings/SettingsContext";
-import { DemoSessionProvider } from "./context/demo-session/DemoSessionContext";
 import { StudentPortalLayout } from "./pages/Students/StudentPortal";
 import StudentTimetable from "./pages/Students/StudentTimetable";
 import StudentCourses from "./pages/Students/StudentCourses";
@@ -42,60 +49,102 @@ import StudentSettings from "./pages/Students/StudentSettings";
 import StudentDashboard from "./pages/Students/StudentDashboard";
 // Teacher interface design system (scoped to .teacher-ui; imported last so it layers over page styles)
 import "./styles/teacher.css";
-import StudentOverview from "./pages/Students/StudentOverview";
-import UnverifiedStudents from "./pages/AttendanceSession/UnverifiedStudents";
-import VerifiedStudents from "./pages/AttendanceSession/VerifiedStudents";
+
+function StudentRedirect() {
+  const { studentId } = useParams();
+  return <Navigate to={`/admin/students/${studentId}/edit-details`} replace />;
+}
+
+function BatchRedirect() {
+  const { sectionId } = useParams();
+  return <Navigate to={`/admin/batches/${sectionId}/edit-details`} replace />;
+}
+
+function TeacherRedirect() {
+  const { userId } = useParams();
+  return <Navigate to={`/admin/teachers/${userId}/edit-details`} replace />;
+}
+
+function SubjectRedirect() {
+  const { subjectKey } = useParams();
+  return <Navigate to={`/admin/subjects/${subjectKey}/edit-details`} replace />;
+}
+
+function LegacyTeacherRedirect() {
+  const { userId } = useParams();
+  return <Navigate to={`/admin/teachers/${userId}/edit-details`} replace />;
+}
 
 function App() {
   return (
     <ThemeProvider>
       <SettingsProvider>
-      <AttendanceProvider>
-        <ScheduleProvider>
-        <DemoSessionProvider>
         <AuthProvider>
+        {/* ScheduleProvider reads today's lectures from the API for the signed-in user */}
+        <ScheduleProvider>
         <ClassroomProvider>
+        <TeacherDataProvider>
+        <ReportsProvider>
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
-            {/* Teacher area (mock role check: signed-out -> "/", demo student -> /student) */}
+            {/* Teacher area: needs a valid API login (signed-out -> /login, admins -> /admin) */}
             <Route element={<TeacherArea />}>
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/classrooms" element={<Classrooms />} />
               <Route path="/classes" element={<Classes />} />
               <Route path="/classes/schedule" element={<ClassSchedule />} />
               <Route path="/attendance" element={<Attendance />} />
-              <Route path="/attendance/unverified" element={<UnverifiedStudents />} />
-              <Route path="/attendance/verified" element={<VerifiedStudents />} />
+              {/* The old demo review pages are retired: send those URLs to the real page */}
+              <Route path="/attendance/unverified" element={<Navigate to="/attendance" replace />} />
+              <Route path="/attendance/verified" element={<Navigate to="/attendance" replace />} />
+              {/* /attendance/<class-N_YYYY-MM-DD> opens the real attendance page for that class */}
               <Route path="/attendance/:sessionId" element={<Attendance />} />
-              <Route path="/attendance/:sessionId/unverified" element={<UnverifiedStudents />} />
-              <Route path="/attendance/:sessionId/verified" element={<VerifiedStudents />} />
+              <Route path="/attendance/:sessionId/unverified" element={<Navigate to="/attendance" replace />} />
+              <Route path="/attendance/:sessionId/verified" element={<Navigate to="/attendance" replace />} />
               <Route path="/students" element={<Students />} />
               <Route path="/reports" element={<Reports />} />
               <Route path="/Reports" element={<Reports />} />
               <Route path="/reports/all" element={<AllReports />} />
               <Route path="/reports/details" element={<ReportDetails />} />
               <Route path="/settings" element={<Settings />} />
-              {/* Teacher's preview of the student view (demo students) */}
-              <Route path="/student/preview" element={<StudentOverview />} />
-              <Route path="/student/preview/:studentId" element={<StudentOverview />} />
             </Route>
-            {/* Student portal (mock role check: signed-out -> "/", teacher -> /dashboard) */}
             {/* Admin area: its own layout and navigation, separate from the teacher panel */}
             <Route element={<AdminArea />}>
               <Route path="/admin" element={<AdminLayout />}>
                 <Route index element={<AdminDashboard />} />
-                <Route path="users" element={<AdminUsers />} />
-                <Route path="classes" element={<AdminClasses />} />
-                <Route path="setup" element={<Admin />} />
-                <Route path="attendance" element={<AdminAttendance />} />
-                <Route path="analytics" element={<AdminAnalytics />} />
+                <Route path="teachers" element={<AdminTeachers />} />
+                <Route path="teachers/new" element={<AdminTeacherAdd />} />
+                <Route path="teachers/:userId/schedule" element={<AdminTeacherSchedule />} />
+                <Route path="teachers/:userId/edit-details" element={<AdminTeacherAdd />} />
+                <Route path="teachers/:userId" element={<TeacherRedirect />} />
+                <Route path="batches" element={<AdminBatches />} />
+                <Route path="batches/new" element={<AdminBatchPage />} />
+                <Route path="batches/:sectionId/edit-details" element={<AdminBatchPage />} />
+                <Route path="batches/:sectionId" element={<BatchRedirect />} />
+                <Route path="batches/:sectionId/subbatches" element={<AdminSubbatches />} />
+                <Route path="subjects" element={<AdminSubjects />} />
+                <Route path="subjects/new" element={<AdminSubjectPage />} />
+                <Route path="subjects/:subjectKey/edit-details" element={<AdminSubjectPage />} />
+                <Route path="subjects/:subjectKey" element={<SubjectRedirect />} />
+                <Route path="class-setup" element={<Navigate to="/admin/batches/new" replace />} />
+                {/* old addresses, kept so bookmarks still work */}
+                <Route path="users" element={<Navigate to="/admin/teachers" replace />} />
+                <Route path="users/:userId" element={<LegacyTeacherRedirect />} />
+                <Route path="classes" element={<Navigate to="/admin/batches" replace />} />
+                <Route path="setup" element={<Navigate to="/admin/batches/new" replace />} />
+                <Route path="students" element={<AdminStudents />} />
+                <Route path="students/new" element={<AdminStudentPage />} />
+                <Route path="students/:studentId/edit-details" element={<AdminStudentPage />} />
+                <Route path="students/:studentId" element={<StudentRedirect />} />
+                <Route path="departments" element={<AdminDepartments />} />
                 <Route path="settings" element={<AdminSettings />} />
                 <Route path="*" element={<Navigate to="/admin" replace />} />
               </Route>
             </Route>
 
+            {/* Student portal: no student accounts in the backend yet, so this redirects */}
             <Route element={<StudentArea />}>
               <Route path="/student" element={<StudentPortalLayout />}>
                 <Route index element={<StudentDashboard />} />
@@ -112,11 +161,11 @@ function App() {
             <Route path="/student/:studentId" element={<LegacyStudentRedirect />} />
           </Routes>
         </BrowserRouter>
+        </ReportsProvider>
+        </TeacherDataProvider>
         </ClassroomProvider>
-        </AuthProvider>
-        </DemoSessionProvider>
         </ScheduleProvider>
-      </AttendanceProvider>
+        </AuthProvider>
       </SettingsProvider>
     </ThemeProvider>
   );

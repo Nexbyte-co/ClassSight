@@ -1,16 +1,19 @@
 // src/pages/Students/settings/StudentSettingsTabs.jsx
 // One component per student Settings tab. `m` is the student model from the portal layout.
-// A student can only change how ClassSight looks and notifies them; their records, the attendance
-// requirement and their face data are managed by the college, so those are shown read-only or as "Needs server".
+// A student changes how ClassSight looks and notifies them, and their own password; their records,
+// the attendance requirement and their face data are managed by the college and shown read-only.
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Sun, Moon, Monitor, Camera, ChevronDown, FileChartColumn, LogOut } from "lucide-react";
+import { Sun, Moon, Monitor, ChevronDown, FileChartColumn, LogOut } from "lucide-react";
 import pkg from "../../../../package.json";
 import { termLabel } from "../../../utils/termLabel";
 import { useTheme } from "../../../context/theme/ThemeContext";
 import { getAtRiskFloor } from "../../../context/settings/settingsStore";
 import { CLASS_WEIGHT } from "../../../context/students/studentCourses";
-import { SettingsCard, SettingRow, Toggle, Segmented, ServerNote } from "../../Settings/settingsUi";
+import { useMyPhoto } from "../../../context/students/useMyPhoto";
+import { useAuth } from "../../../context/AuthContext";
+import { SettingsCard, SettingRow, Toggle, Segmented } from "../../Settings/settingsUi";
+import { PasswordCard, SignInsCard } from "../../Settings/AccountSecurity";
 
 const initials = (name) =>
   name
@@ -37,26 +40,20 @@ function Details({ items }) {
 /* ---------------------------------------------------------------- Profile */
 
 export function ProfileTab({ m, session, goToTab }) {
+  const photo = useMyPhoto(session);
   const batches = [...new Set(m.courses.map((c) => c.group))].join(", ") || "—";
   return (
     <>
-      <SettingsCard title="Profile" desc="How you appear to your teachers" server>
+      <SettingsCard title="Profile" desc="How you appear to your teachers">
         <div className="ts-profile">
           <div className="ts-avatar" aria-hidden="true">
-            {initials(session.name)}
+            {photo ? <img src={photo} alt="" className="ts-avatar-img" /> : initials(session.name)}
           </div>
           <div className="ts-profile-text">
             <strong>{session.name}</strong>
             <span>{session.email}</span>
           </div>
-          <button type="button" className="btn-modal-cancel" disabled>
-            <Camera size={15} strokeWidth={2} aria-hidden="true" />
-            Change photo
-          </button>
         </div>
-        <SettingRow id="ss-phone" label="Contact number" desc="Lets your teachers reach you about classes." disabled>
-          <input id="ss-phone" className="ts-input" type="tel" placeholder="Not set" disabled />
-        </SettingRow>
         <SettingRow id="ss-face-link" label="Face data" desc="See how ClassSight recognises you in class photos.">
           <button id="ss-face-link" type="button" className="btn-modal-cancel" onClick={() => goToTab("face")}>
             Go to Face data
@@ -108,20 +105,6 @@ export function NotificationsTab({ m }) {
         </p>
       </SettingsCard>
 
-      <SettingsCard title="Email and reminders" desc="Sent by the ClassSight server" server>
-        <SettingRow id="ss-email-low" label="Email me about low attendance" desc="A message to your college email when a course falls below the requirement." disabled>
-          <Toggle id="ss-email-low" checked disabled label="Email me about low attendance" />
-        </SettingRow>
-        <SettingRow id="ss-remind" label="Class reminders" desc="A reminder a few minutes before each class starts." disabled>
-          <Toggle id="ss-remind" checked={false} disabled label="Class reminders" />
-        </SettingRow>
-        <SettingRow id="ss-changes" label="Timetable changes" desc="When a class is moved, cancelled or changes room." disabled>
-          <Toggle id="ss-changes" checked disabled label="Timetable changes" />
-        </SettingRow>
-        <SettingRow id="ss-weekly" label="Weekly summary" desc="Your attendance for the week, every Sunday." disabled>
-          <Toggle id="ss-weekly" checked={false} disabled label="Weekly summary" />
-        </SettingRow>
-      </SettingsCard>
     </>
   );
 }
@@ -172,18 +155,6 @@ export function AttendanceTab({ m }) {
         />
       </SettingsCard>
 
-      <SettingsCard title="Corrections" desc="Ask for a record to be checked" server>
-        <SettingRow
-          id="ss-dispute"
-          label="Report a wrong record"
-          desc="Marked absent for a class you attended? Send it to your teacher to review."
-          disabled
-        >
-          <button id="ss-dispute" type="button" className="btn-modal-cancel" disabled>
-            Request review
-          </button>
-        </SettingRow>
-      </SettingsCard>
     </>
   );
 }
@@ -198,29 +169,28 @@ const FACE_FACTS = [
 ];
 
 export function FaceTab() {
+  const { session } = useAuth();
+  const photo = useMyPhoto(session);
   return (
     <>
-      <ServerNote>
-        Your teacher or administrator enrols your face from 1–5 clear photos of only you. Your enrolment status and
-        requests need the ClassSight server, which isn&apos;t connected yet.
-      </ServerNote>
-      <SettingsCard title="Enrolment" desc="Whether ClassSight can recognise you" server>
-        <p className="ts-empty">Your enrolment status will appear here once the server is connected.</p>
-        <SettingRow id="ss-reenrol" label="Ask to re-enrol" desc="Your look changed, or you keep showing as awaiting review." disabled>
-          <button id="ss-reenrol" type="button" className="btn-modal-cancel" disabled>
-            Request re-enrolment
-          </button>
-        </SettingRow>
-        <SettingRow
-          id="ss-face-delete"
-          label="Remove my face data"
-          desc="Ask for your photos and face signature to be deleted. Your teacher will then mark you by ID card or by hand."
-          disabled
-        >
-          <button id="ss-face-delete" type="button" className="btn-modal-cancel" disabled>
-            Request removal
-          </button>
-        </SettingRow>
+      <SettingsCard title="Enrolment" desc="Whether ClassSight can recognise you">
+        <div className="ts-enrol">
+          <div className="ts-enrol-pic" aria-hidden="true">
+            {photo ? <img src={photo} alt="" /> : <span>{initials(session.name)}</span>}
+          </div>
+          <div className="ts-enrol-text">
+            <strong>{session.faceEnrolled ? "Your face is enrolled" : "Your face is not enrolled yet"}</strong>
+            <span>
+              {session.faceEnrolled
+                ? "ClassSight can find you in the class photos your teacher takes. This is the photo your administrator set; it is also your profile picture."
+                : "Your teacher or administrator enrols your face from 1–5 clear photos of only you. Until then your teacher marks you by hand."}
+            </span>
+          </div>
+        </div>
+        <p className="ts-hint">
+          Not being recognised, or want your face data removed? Tell your teacher. They pass it on to the administrator,
+          who can enrol your face again or delete it.
+        </p>
       </SettingsCard>
       <SettingsCard title="How your face data is used" desc="What ClassSight keeps and why">
         <Details items={FACE_FACTS} />
@@ -276,37 +246,10 @@ export function SecurityTab({ m, session }) {
             Log out
           </button>
         </SettingRow>
-        <p className="ts-hint">There is no password yet. You can only ever see your own attendance.</p>
+        <p className="ts-hint">You can only ever see your own attendance.</p>
       </SettingsCard>
-      <SettingsCard title="Change password" desc="Use at least 8 characters" server>
-        <div className="ts-pw-grid">
-          {[
-            ["ss-pw-current", "Current password"],
-            ["ss-pw-new", "New password"],
-            ["ss-pw-confirm", "Confirm new password"],
-          ].map(([id, label]) => (
-            <div key={id}>
-              <label htmlFor={id} className="ts-row-label">
-                {label}
-              </label>
-              <input id={id} className="ts-input" type="password" autoComplete="off" disabled />
-            </div>
-          ))}
-        </div>
-        <div className="ts-card-actions">
-          <button type="button" className="btn-modal-submit" disabled>
-            Update password
-          </button>
-        </div>
-      </SettingsCard>
-      <SettingsCard title="Active sessions" desc="Devices signed in to your account" server>
-        <p className="ts-empty">Your other devices will appear here once the server is connected.</p>
-        <div className="ts-card-actions">
-          <button type="button" className="btn-modal-cancel" disabled>
-            Sign out of other devices
-          </button>
-        </div>
-      </SettingsCard>
+      <PasswordCard student />
+      <SignInsCard student />
     </>
   );
 }
@@ -341,7 +284,7 @@ export function HelpTab({ m }) {
     ],
     [
       "Where are my settings saved?",
-      "Settings marked “Saved in this browser” stay on this device only. Settings marked “Needs server” will follow your account once the server is connected.",
+      "Settings marked “Saved in this browser” stay on this device only. Your password and sign-ins are kept by the ClassSight server.",
     ],
   ];
   return (
@@ -368,13 +311,6 @@ export function HelpTab({ m }) {
             </div>
           ))}
         </div>
-      </SettingsCard>
-      <SettingsCard title="Get help" desc="Report a problem with the app" server>
-        <SettingRow id="ss-report" label="Report an issue" desc="Send a description and screenshot to the ClassSight team." disabled>
-          <button id="ss-report" type="button" className="btn-modal-cancel" disabled>
-            Report issue
-          </button>
-        </SettingRow>
       </SettingsCard>
       <SettingsCard title="About" desc="This copy of ClassSight">
         <Details items={[["Application version", `${pkg.version}${import.meta.env.DEV ? " (development)" : ""}`]]} />

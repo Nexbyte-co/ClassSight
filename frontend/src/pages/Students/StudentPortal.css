@@ -62,3 +62,14 @@
 @media (max-width: 480px) {
   .db-page.teacher-ui .sp-badge { display: none; }
 }
+
+/* Student photo as the avatar */
+.profile-avatar { overflow: hidden; }
+.profile-avatar-img, .ts-avatar-img { width: 100%; height: 100%; object-fit: cover; object-position: top center; display: block; }
+.ts-avatar { overflow: hidden; }
+.ts-enrol { display: flex; gap: 16px; align-items: center; padding: 6px 2px 14px; }
+.ts-enrol-pic { flex: none; width: 76px; height: 76px; border-radius: 50%; overflow: hidden; display: grid; place-items: center; background: var(--db-badge-bg, #f6e9ea); color: var(--db-mr-text, #7b1113); font-weight: 800; font-size: 24px; }
+.ts-enrol-pic img { width: 100%; height: 100%; object-fit: cover; object-position: top center; }
+.ts-enrol-text { display: grid; gap: 4px; min-width: 0; }
+.ts-enrol-text strong { font-size: 15px; }
+.ts-enrol-text span { font-size: 13px; color: var(--db-muted); line-height: 1.5; }

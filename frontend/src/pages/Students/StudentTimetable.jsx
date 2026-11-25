@@ -9,7 +9,7 @@ import "./StudentDashboard.css";
 import { useTheme } from "../../context/theme/ThemeContext";
 import { useStudentModel } from "../../context/students/useStudentModel";
 import { getLocalDateKey } from "../../context/schedule/scheduleStatus";
-import { DAYS, toClock } from "../../data/schedule/timetable";
+import { DAYS, toClock } from "../../data/schedule/timeUtils";
 import { STATUS_LABEL } from "./studentUiHelpers";
 
 // Accent per course (colours live in ClassSchedule.css as .ac-* classes)

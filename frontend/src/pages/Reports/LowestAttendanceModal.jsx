@@ -3,7 +3,9 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useDialogA11y } from "../../hooks/useDialogA11y";
 import { Icon } from "./icons";
-import { BATCHES, LOW_ATTENDANCE_PCT, formatRange } from "./reportsMock";
+import { LOW_ATTENDANCE_PCT, formatRange } from "./reportsUtil";
+import { useReports } from "./useReports";
+import Dropdown from "../Classes/Dropdown";
 
 const SORTS = {
   lo: (a, b) => a.pct - b.pct || a.name.localeCompare(b.name),
@@ -25,6 +27,7 @@ const initials = (name) =>
     .join("");
 
 export default function LowestAttendanceModal({ students, batchIndex, allMode, from, to, onExport, onClose }) {
+  const { BATCHES } = useReports();
   const [query, setQuery] = useState("");
   const [sort, setSort] = useState("lo");
   const dialogRef = useDialogA11y(true, onClose);
@@ -85,12 +88,7 @@ export default function LowestAttendanceModal({ students, batchIndex, allMode, f
               onChange={(e) => setQuery(e.target.value)}
             />
           </label>
-          <select className="rp-vsel" aria-label="Sort" value={sort} onChange={(e) => setSort(e.target.value)}>
-            <option value="lo">Lowest first</option>
-            <option value="hi">Highest first</option>
-            <option value="az">Name A–Z</option>
-            <option value="roll">Roll number</option>
-          </select>
+          <Dropdown className="rp-vsel-dd" ariaLabel="Sort" label="Sort" align="right" value={sort} onChange={setSort} options={[{ value: "lo", label: "Lowest first" }, { value: "hi", label: "Highest first" }, { value: "az", label: "Name A–Z" }, { value: "roll", label: "Roll number" }]} />
         </div>
 
         {/* Header and rows share one scroll box so they stay aligned when the table scrolls sideways */}

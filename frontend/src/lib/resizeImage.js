@@ -47,3 +47,28 @@ export async function resizeImage(file, maxSide = ENROLL_MAX_SIDE, quality = 0.8
     return file;
   }
 }
+
+// Cuts one face out of a photo: `box` is [x1, y1, x2, y2] as fractions of the image. A margin is added
+// around it so the head is not clipped. Returns a JPEG data URL, or "" if the photo can't be decoded.
+export async function cropFace(file, box, margin = 0.35, maxSide = 360) {
+  try {
+    const bitmap = await loadBitmap(file);
+    const w = bitmap.width;
+    const h = bitmap.height;
+    const bw = (box[2] - box[0]) * w;
+    const bh = (box[3] - box[1]) * h;
+    const x = Math.max(0, box[0] * w - bw * margin);
+    const y = Math.max(0, box[1] * h - bh * margin);
+    const cw = Math.min(w - x, bw * (1 + 2 * margin));
+    const ch = Math.min(h - y, bh * (1 + 2 * margin));
+    const scale = Math.min(1, maxSide / Math.max(cw, ch));
+    const canvas = document.createElement("canvas");
+    canvas.width = Math.max(1, Math.round(cw * scale));
+    canvas.height = Math.max(1, Math.round(ch * scale));
+    canvas.getContext("2d").drawImage(bitmap, x, y, cw, ch, 0, 0, canvas.width, canvas.height);
+    bitmap.close?.();
+    return canvas.toDataURL("image/jpeg", 0.85);
+  } catch {
+    return "";
+  }
+}

@@ -80,14 +80,6 @@ def test_upload_process_confirm_flow(client, teacher_user, classroom, student):
     assert len(logs.json()) == 1
     assert len(logs.json()[0]["records"]) == 1
 
-    analytics = client.get(
-        f"/attendance/analytics?classroom_id={classroom.id}", headers=headers
-    )
-    assert analytics.status_code == 200
-    body = analytics.json()
-    assert body["present_count"] == 1
-    assert body["average_attendance_rate"] == 1.0
-
 
 def test_process_matches_enrolled_students_from_s3_photo(
     client, teacher_user, classroom, student, db_session
@@ -122,7 +114,7 @@ def test_process_matches_enrolled_students_from_s3_photo(
             "app.services.s3_service.get_object_bytes", return_value=b"photo-bytes"
         ) as get_object,
         patch.object(
-            face_recognition, "extract_face_embeddings", return_value=faces
+            face_recognition, "extract_faces", return_value=(faces, [(0.0, 0.0, 0.1, 0.1)] * 3)
         ) as extract,
     ):
         process = client.post(
@@ -136,6 +128,39 @@ def test_process_matches_enrolled_students_from_s3_photo(
     assert {s["name"] for s in body["recognized_students"]} == {"Alice", "Bob"}
     assert all(s["confidence"] > 0.99 for s in body["recognized_students"])
     assert body["unrecognized_face_count"] == 1
+    assert body["suggestions"] == []  # the stranger is too unlike anyone to suggest
+
+
+def test_process_suggests_a_close_but_unaccepted_face_with_its_box(
+    client, teacher_user, classroom, student, db_session
+):
+    from app.services import face_recognition
+
+    def unit(index):
+        return np.eye(1, face_recognition.EMBEDDING_DIM, index, dtype=np.float32)[0]
+
+    student.face_embedding = face_recognition.embedding_to_bytes(unit(0))
+    db_session.commit()
+    headers = auth_headers(client, "teacher1@classsight.example", "teacherpass123")
+    session = _create_session(client, headers, classroom.id)
+    db_session.get(AttendanceSession, session["id"]).photo_url = "https://b.s3.us-east-1.amazonaws.com/c/s/a.jpg"
+    db_session.commit()
+
+    # ~0.45 similar to the enrolled student: under the 0.5 threshold, over the 0.3 suggestion floor.
+    face = face_recognition._normalize(unit(0) * 0.45 + unit(7) * 0.893)
+    box = (0.2, 0.3, 0.4, 0.5)
+    with (
+        patch("app.services.s3_service.get_object_bytes", return_value=b"x"),
+        patch.object(face_recognition, "extract_faces", return_value=(np.stack([face]), [box])),
+    ):
+        body = client.post(f"/attendance/process?session_id={session['id']}", headers=headers).json()
+
+    assert body["recognized_students"] == []
+    assert body["unrecognized_face_count"] == 1
+    (suggestion,) = body["suggestions"]
+    assert suggestion["student_id"] == student.id and suggestion["name"] == student.name
+    assert 0.4 < suggestion["confidence"] < 0.5
+    assert suggestion["box"] == list(box) and suggestion["reason"] == "below_threshold"
 
 
 def test_process_requires_uploaded_photo(client, teacher_user, classroom):

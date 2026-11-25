@@ -1,10 +1,12 @@
 import { Icon } from "./icons";
-import { SEMESTER_START, SEMESTER_END, formatRange } from "./reportsMock";
+import { formatRange } from "./reportsUtil";
+import { useReports } from "./useReports";
 
 const WEEKDAYS = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
 
 // Month grid (always 6 rows). First click sets the range start, second click the end.
 function MonthCalendar({ month, onMonthChange, from, to, anchor, onPick, onReset }) {
+  const { SEMESTER_START, SEMESTER_END } = useReports();
   const y = month.getFullYear();
   const m = month.getMonth();
   const first = new Date(y, m, 1);

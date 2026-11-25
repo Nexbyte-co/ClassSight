@@ -1,9 +1,9 @@
 // src/pages/AttendanceSession/SessionHeader.jsx — back button, class title and session chips
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Clock, MapPin } from "lucide-react";
-import { SESSION } from "./attendanceMock";
+import { ArrowLeft, Calendar, Clock, MapPin } from "lucide-react";
+import { formatShortSessionDate } from "../../context/schedule/scheduleStatus";
 
-export default function SessionHeader({ state }) {
+export default function SessionHeader({ classroom, lecture, dateKey, state, picker }) {
   const navigate = useNavigate();
   const pill = state === "saved" ? ["ok", "Saved"] : state === "ready" ? ["ok", "Ready to save"] : ["wa", "In review"];
   return (
@@ -13,23 +13,33 @@ export default function SessionHeader({ state }) {
       </button>
       <div className="as-atl">
         <div className="as-title-row">
-          <h1 className="as-title">{SESSION.name}</h1>
-        <div className="as-chips">
-          <span className="as-chip">{SESSION.type}</span>
-          <span className="as-chip br">{SESSION.group}</span>
-          <span className="as-chip">{SESSION.code}</span>
-          <span className="as-chip ic">
-            <Clock size={12} strokeWidth={2} aria-hidden="true" />
-            {SESSION.start} – {SESSION.end}
-          </span>
-          <span className="as-chip ic">
-            <MapPin size={12} strokeWidth={2} aria-hidden="true" />
-            {SESSION.venue}
-          </span>
-          <span className={`as-spill ${pill[0]}`} role="status">
-            {pill[1]}
-          </span>
-        </div>
+          <h1 className="as-title">{classroom ? classroom.course : "Attendance"}</h1>
+          <div className="as-chips">
+            {classroom && <span className="as-chip br">{classroom.section}</span>}
+            {classroom?.course_code && <span className="as-chip">{classroom.course_code}</span>}
+            <span className="as-chip ic">
+              <Calendar size={12} strokeWidth={2} aria-hidden="true" />
+              {formatShortSessionDate(dateKey)}
+            </span>
+            {lecture && (
+              <span className="as-chip ic">
+                <Clock size={12} strokeWidth={2} aria-hidden="true" />
+                {lecture.timeRange || lecture.time}
+              </span>
+            )}
+            {lecture?.room && (
+              <span className="as-chip ic">
+                <MapPin size={12} strokeWidth={2} aria-hidden="true" />
+                {lecture.room}
+              </span>
+            )}
+            {classroom && (
+              <span className={`as-spill ${pill[0]}`} role="status">
+                {pill[1]}
+              </span>
+            )}
+            {picker}
+          </div>
         </div>
       </div>
     </div>

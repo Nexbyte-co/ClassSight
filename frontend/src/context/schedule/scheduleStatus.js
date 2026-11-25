@@ -62,17 +62,9 @@ export function parseSessionId(sessionId) {
   return { classId: sessionId, dateKey: null };
 }
 
-// Demo clock: schedule statuses are computed as if it were always this time of day
-// (matches the dashboard design: two lectures done, 09:40 active, 10:30 next, the rest scheduled).
-// Set to null to follow the real clock.
-export const DEMO_SCHEDULE_TIME = { hours: 10, minutes: 15 };
-
-// Today's date with the demo time of day applied (or the real time when the demo clock is off)
+// "Now" for the schedule: the real clock.
 export function getScheduleNow(date = new Date()) {
-  if (!DEMO_SCHEDULE_TIME) return date;
-  const demo = new Date(date);
-  demo.setHours(DEMO_SCHEDULE_TIME.hours, DEMO_SCHEDULE_TIME.minutes, 0, 0);
-  return demo;
+  return date;
 }
 
 // Time slot parser helper (Instruction 5). A slot without an end time lasts

@@ -1,6 +1,7 @@
 import { useLayoutEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { termLabel } from "../../utils/termLabel";
+import { useAuth } from "../../context/AuthContext";
 import {
   BookOpen,
   CalendarDays,
@@ -27,6 +28,8 @@ let lastPill = null;
 
 /** Shared desktop teacher navigation. It uses the existing db-* styles in Dashboard.css. */
 function Sidebar({ active, collapsed, liveBadge = false, onSignOut }) {
+  const { session } = useAuth();
+  const department = session?.department;
   const navRef = useRef(null);
   const [pill, setPill] = useState(lastPill);
   const [pillAnimates, setPillAnimates] = useState(false);
@@ -85,8 +88,7 @@ function Sidebar({ active, collapsed, liveBadge = false, onSignOut }) {
       <div className="db-bot">
         <div className="db-term">
           <b>{termLabel()}</b>
-          <span>CSE Dept. • Semester 6</span>
-          <i>Academic Week 8</i>
+          {department && <span>{department}</span>}
         </div>
         <button type="button" className="db-logout" onClick={onSignOut}>
           <LogOut size={16} strokeWidth={2} />

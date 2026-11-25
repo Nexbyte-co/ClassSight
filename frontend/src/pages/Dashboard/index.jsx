@@ -3,15 +3,14 @@ import { Link, useNavigate } from "react-router-dom";
 import {
   Camera,
   X,
-  Trash2,
-  AlertTriangle,
   Download,
   Smartphone,
   Nfc,
   Check,
 } from "lucide-react";
 import "../../styles/Dashboard.css";
-import { useAttendance, useAttendanceSession } from "../../context/attendance/AttendanceContext";
+import { useAuth } from "../../context/AuthContext";
+import { useTodayAttendance } from "../../hooks/useTodayAttendance";
 import { useSettings } from "../../context/settings/SettingsContext";
 import { useSchedule } from "../../context/schedule/ScheduleContext";
 import {
@@ -24,6 +23,9 @@ import {
 import TeacherShell from "../../components/navigation/TeacherShell";
 import CountUp from "../../components/motion/CountUp";
 import { useDialogA11y } from "../../hooks/useDialogA11y";
+import { updateLecture } from "../../api/lectures";
+import { nfcTap } from "../../api/attendance";
+import { formatUid, nfcSupported, startNfcScan } from "../../lib/webNfc";
 
 // Status tag text in Today's Class Schedule
 const STATUS_LABELS = {
@@ -40,30 +42,34 @@ function Dashboard() {
   const navigate = useNavigate();
 
 
-  // Photo scan state
-  const [selectedPhoto, setSelectedPhoto] = useState(null);
-  const [isPhotoScanning, setIsPhotoScanning] = useState(false);
-  const [photoScanSuccess, setPhotoScanSuccess] = useState(false);
-  const fileInputRef = useRef(null);
-
   // Mark Attendance card tab: "photo" | "nfc"
   const [attendanceTab, setAttendanceTab] = useState("photo");
 
-  // NFC scan state (Task 2)
-  // Inline NFC reader: "" (ready) → "det" (card detected) → "rec" (recorded)
-  const [nfcState, setNfcState] = useState("");
-  const [nfcLast, setNfcLast] = useState(null);
-  const [nfcCount, setNfcCount] = useState(0);
-  const nfcTimers = useRef([]);
-  useEffect(() => () => nfcTimers.current.forEach(clearTimeout), []);
-
-  // Time of the last photo scan on this page (shown in the "Last Batch Scan" row)
-  const [lastScanTime, setLastScanTime] = useState(null);
+  // NFC card reader (Web NFC: Chrome on an Android phone). Cards tapped here are collected; "Review & save" hands
+  // them to the attendance page, which marks those students present and saves with the rest of the record.
+  const [nfcOn, setNfcOn] = useState(false);
+  const [nfcError, setNfcError] = useState("");
+  const [nfcFlash, setNfcFlash] = useState(false); // "Attendance recorded" for a moment after each card
+  const [nfcLast, setNfcLast] = useState(null); // { ok, text } of the latest tap
+  const [nfcTaps, setNfcTaps] = useState([]); // students tapped this session: { id, name, roll }
+  const nfcStopRef = useRef(null);
+  const nfcClassRef = useRef(null); // numeric id of the class the taps belong to
+  const nfcFlashTimer = useRef(0);
+  useEffect(
+    () => () => {
+      nfcStopRef.current?.();
+      clearTimeout(nfcFlashTimer.current);
+    },
+    []
+  );
 
   // Schedule list & session tracking live in ScheduleContext so they survive navigation
   const {
     scheduleList,
     setScheduleList,
+    scheduleLoading,
+    scheduleError,
+    reloadSchedule,
     manualActiveClassId,
     setManualActiveClassId,
     endedClassIds,
@@ -71,14 +77,16 @@ function Dashboard() {
     todayKey,
     fallbackClassId,
   } = useSchedule();
-  const { getSession, getSessionSummary } = useAttendance();
-  const { defaultLectureMinutes, defaultDepartment } = useSettings();
+  const { session: authSession } = useAuth();
+  // Saved attendance of today's lectures, read from the API
+  const { getSummary, error: attendanceError } = useTodayAttendance(
+    scheduleList.map((c) => c.id),
+    todayKey
+  );
+  const { defaultLectureMinutes } = useSettings();
 
   // Dynamic status tracking (Instructions 4 & 5)
   const [currentTimeTick, setCurrentTimeTick] = useState(() => getScheduleNow());
-
-  // Confirm delete modal state (Instruction 3)
-  const [confirmDeleteClassId, setConfirmDeleteClassId] = useState(null);
 
   // Tick timer every 30s to dynamically update time-based status
   useEffect(() => {
@@ -151,65 +159,38 @@ function Dashboard() {
   const scanClass =
     currentActiveClass || scheduleList.find((c) => c.id === fallbackClassId) || null;
   const scanSessionId = scanClass ? makeSessionId(scanClass.id, todayKey) : "";
-  const { unverifiedStudents, verifiedStudents, absentStudents, resolveStudent } =
-    useAttendanceSession(scanSessionId, scanClass);
-  const scanRosterSize = verifiedStudents.length + unverifiedStudents.length + absentStudents.length;
+  const scanSummary = getSummary(scanClass?.id);
   const scanMatchRate =
-    scanRosterSize > 0 ? `${((verifiedStudents.length / scanRosterSize) * 100).toFixed(1)}%` : "0.0%";
+    scanSummary.total > 0 ? `${((scanSummary.recognized / scanSummary.total) * 100).toFixed(1)}%` : "0.0%";
+  const scanClassId = scanClass ? Number(String(scanClass.id).replace("class-", "")) || null : null;
+  useEffect(() => {
+    nfcClassRef.current = scanClassId;
+  });
+  // Taps belong to one class: when the class in focus changes, stop reading and start a fresh list.
+  useEffect(
+    () => () => {
+      nfcStopRef.current?.();
+      nfcStopRef.current = null;
+      setNfcOn(false);
+      setNfcTaps([]);
+      setNfcLast(null);
+    },
+    [scanClassId]
+  );
 
-  // Modal: Edit Active Session
+  // Modal: active session venue (saved to the lecture via the API)
   const [isSessionModalOpen, setIsSessionModalOpen] = useState(false);
-  const [sessionFormData, setSessionFormData] = useState({
-    section: "",
-    department: "",
-    room: "",
-    timeRange: "",
-    title: "",
-    code: "",
-  });
-
-  // Modal: Add / Edit Class in Today's Classes
-  const [isClassModalOpen, setIsClassModalOpen] = useState(false);
-  const [editingClassId, setEditingClassId] = useState(null);
-  const [classFormData, setClassFormData] = useState({
-    title: "",
-    code: "",
-    section: "",
-    room: "",
-    time: "",
-    timeRange: "",
-    department: defaultDepartment,
-    status: "upcoming",
-  });
-
-  // Notifications
-  const notifications = [
-    {
-      id: 1,
-      title: "Attendance Processed",
-      text: "3C2C Software Engineering attendance recorded (54/56 present).",
-      time: "10m ago",
-    },
-    {
-      id: 2,
-      title: "Smart Camera Ready",
-      text: "L105 high-resolution angle calibrated for facial detection.",
-      time: "1h ago",
-    },
-    {
-      id: 3,
-      title: "Upcoming Lecture",
-      text: "Database Management System II in L207 starts at 11:20 AM.",
-      time: "2h ago",
-    },
-  ];
+  const [sessionFormData, setSessionFormData] = useState({ room: "" });
+  const [sessionSaving, setSessionSaving] = useState(false);
+  const [sessionError, setSessionError] = useState("");
 
   // Dynamic greeting based on current hour
   const getGreeting = () => {
     const hour = new Date().getHours();
-    if (hour < 12) return "Good morning, Professor Jhonsy";
-    if (hour < 17) return "Good afternoon, Professor Jhonsy";
-    return "Good evening, Professor Jhonsy";
+    const who = authSession?.name ? `, ${authSession.name}` : "";
+    if (hour < 12) return `Good morning${who}`;
+    if (hour < 17) return `Good afternoon${who}`;
+    return `Good evening${who}`;
   };
 
   const currentDateString = new Date().toLocaleDateString("en-US", {
@@ -223,8 +204,7 @@ function Dashboard() {
   const handleExportLedger = () => {
     const header = ["Time", "Course", "Code", "Batch", "Venue", "Status", "Present", "Pending", "Absent", "Saved"];
     const rows = finalScheduleList.map((item) => {
-      const sessionId = makeSessionId(item.id, todayKey);
-      const session = getSession(sessionId);
+      const summary = getSummary(item.id);
       return [
         item.timeRange || item.time,
         item.title,
@@ -232,10 +212,10 @@ function Dashboard() {
         item.section,
         item.room,
         item.computedStatus,
-        session.verified.length,
-        session.unverified.length,
-        session.absent.length,
-        getSessionSummary(sessionId).isSaved ? "Yes" : "No",
+        summary.present,
+        summary.unresolved,
+        summary.absent,
+        summary.isSaved ? "Yes" : "No",
       ];
     });
     const csv = [header, ...rows]
@@ -249,127 +229,73 @@ function Dashboard() {
     URL.revokeObjectURL(url);
   };
 
-  // Photo upload handlers
-  const handlePhotoSelect = (e) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const photoUrl = URL.createObjectURL(file);
-      setSelectedPhoto(photoUrl);
-      setIsPhotoScanning(true);
-      setPhotoScanSuccess(false);
-
-      // Simulate AI Face detection
-      setTimeout(() => {
-        setIsPhotoScanning(false);
-        setPhotoScanSuccess(true);
-        setLastScanTime(
-          new Date().toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })
-        );
-      }, 1600);
+  // A card was tapped: find the student it belongs to in this class and keep them in the list.
+  const handleNfcCard = async (uid) => {
+    const classId = nfcClassRef.current;
+    if (!classId) return;
+    try {
+      const hit = await nfcTap(classId, uid);
+      setNfcTaps((list) => (list.some((t) => t.id === hit.student_id) ? list : [...list, { id: hit.student_id, name: hit.name, roll: hit.roll_number }]));
+      setNfcLast({ ok: true, text: `${hit.name} · ${hit.roll_number}` });
+      setNfcFlash(true);
+      clearTimeout(nfcFlashTimer.current);
+      nfcFlashTimer.current = setTimeout(() => setNfcFlash(false), 2200);
+      navigator.vibrate?.(60);
+    } catch (err) {
+      setNfcLast({ ok: false, text: err.status === 404 ? `Card ${formatUid(uid)} isn't linked to a student` : err.message || "Couldn't check that card" });
+      navigator.vibrate?.([40, 60, 40]);
     }
   };
 
-  const handleResetPhoto = () => {
-    setSelectedPhoto(null);
-    setPhotoScanSuccess(false);
-    setIsPhotoScanning(false);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
+  const toggleNfc = async () => {
+    if (nfcOn) {
+      nfcStopRef.current?.();
+      nfcStopRef.current = null;
+      setNfcOn(false);
+      return;
+    }
+    setNfcError("");
+    try {
+      nfcStopRef.current = await startNfcScan({
+        onCard: handleNfcCard,
+        onError: (text) => setNfcLast({ ok: false, text }),
+      });
+      setNfcOn(true);
+    } catch (err) {
+      setNfcError(err.message);
     }
   };
 
-  // NFC card tap (Task 2): verifies the next unmatched student of the scan session
-  const handleNfcScan = () => {
-    const student = unverifiedStudents[0];
-    if (!student || nfcState) return;
-    setNfcState("det");
-    nfcTimers.current.push(
-      setTimeout(() => {
-        resolveStudent(student.id, "nfc");
-        setNfcLast(student);
-        setNfcCount((n) => n + 1);
-        setNfcState("rec");
-        nfcTimers.current.push(setTimeout(() => setNfcState(""), 2200));
-      }, 900)
-    );
+  const reviewNfcTaps = () => {
+    nfcStopRef.current?.();
+    nfcStopRef.current = null;
+    setNfcOn(false);
+    navigate(`/attendance/${scanSessionId}`, { state: { nfcStudentIds: nfcTaps.map((t) => t.id) } });
   };
 
-  // Active Session Edit Handlers
+  // Active session: set the venue of the running lecture
   const handleOpenSessionEdit = () => {
     if (!currentActiveClass) return;
-    setSessionFormData({
-      section: currentActiveClass.section || "",
-      department: currentActiveClass.department || "Computer Science & Eng.",
-      room: currentActiveClass.room || "",
-      timeRange: currentActiveClass.timeRange || "",
-      title: currentActiveClass.title || "",
-      code: currentActiveClass.code || "",
-    });
+    setSessionFormData({ room: currentActiveClass.room || "" });
+    setSessionError("");
     setIsSessionModalOpen(true);
   };
 
-  const handleSaveSession = (e) => {
+  const handleSaveSession = async (e) => {
     e.preventDefault();
-    if (currentActiveClass) {
-      setScheduleList((prev) =>
-        prev.map((c) =>
-          c.id === currentActiveClass.id ? { ...c, ...sessionFormData } : c
-        )
-      );
+    if (!currentActiveClass?.lectureId) return;
+    setSessionSaving(true);
+    setSessionError("");
+    try {
+      const room = sessionFormData.room.trim();
+      await updateLecture(currentActiveClass.classroomId, currentActiveClass.lectureId, { room });
+      setScheduleList((prev) => prev.map((c) => (c.lectureId === currentActiveClass.lectureId ? { ...c, room } : c)));
+      setIsSessionModalOpen(false);
+    } catch (err) {
+      setSessionError(err.message || "Could not save the venue.");
+    } finally {
+      setSessionSaving(false);
     }
-    setIsSessionModalOpen(false);
-  };
-
-  // Scheduled Class (Add/Edit) Handlers
-  const handleOpenAddClass = () => {
-    setEditingClassId(null);
-    setClassFormData({
-      title: "",
-      code: "",
-      section: "",
-      room: "",
-      time: "",
-      timeRange: "",
-      department: defaultDepartment,
-      status: "upcoming",
-    });
-    setIsClassModalOpen(true);
-  };
-
-  const handleOpenEditClass = (item) => {
-    setEditingClassId(item.id);
-    setClassFormData({
-      title: item.title,
-      code: item.code,
-      section: item.section,
-      room: item.room,
-      time: item.time,
-      timeRange: item.timeRange,
-      department: item.department || "Computer Science & Eng.",
-      status: item.computedStatus || item.status,
-    });
-    setIsClassModalOpen(true);
-  };
-
-  const handleSaveClass = (e) => {
-    e.preventDefault();
-    if (editingClassId) {
-      // Edit existing
-      setScheduleList((prev) =>
-        prev.map((item) =>
-          item.id === editingClassId ? { ...item, ...classFormData } : item
-        )
-      );
-    } else {
-      // Add new
-      const newId = `class-${Date.now()}`;
-      const newClass = {
-        id: newId,
-        ...classFormData,
-      };
-      setScheduleList((prev) => [...prev, newClass]);
-    }
-    setIsClassModalOpen(false);
   };
 
   // Start & End Class Handlers (Instruction 4)
@@ -389,31 +315,13 @@ function Dashboard() {
     }
   };
 
-  // Confirmed Delete Class Handler (Instruction 3)
-  const confirmDeleteClass = (id) => {
-    setScheduleList((prev) => prev.filter((item) => item.id !== id));
-    if (manualActiveClassId === id) {
-      setManualActiveClassId(null);
-    }
-    setEndedClassIds((prev) => {
-      const next = new Set(prev);
-      next.delete(id);
-      return next;
-    });
-    setConfirmDeleteClassId(null);
-    setIsClassModalOpen(false);
-  };
-
   // Accessible modal behaviour (focus in, Tab trapped, Escape closes, focus returned)
   const sessionDialogRef = useDialogA11y(isSessionModalOpen, () => setIsSessionModalOpen(false));
-  const classDialogRef = useDialogA11y(isClassModalOpen, () => setIsClassModalOpen(false));
-  const deleteDialogRef = useDialogA11y(Boolean(confirmDeleteClassId), () => setConfirmDeleteClassId(null));
 
   return (
     <TeacherShell
       active="dashboard"
       dateLabel={currentDateString}
-      notifications={notifications}
       liveBadge={Boolean(currentActiveClass)}
       overlays={(
         <>
@@ -423,8 +331,8 @@ function Dashboard() {
           <div className="cs-modal-card" ref={sessionDialogRef} role="dialog" aria-modal="true" tabIndex={-1} aria-label="Edit active session" onClick={(e) => e.stopPropagation()}>
             <div className="cs-modal-header">
               <div>
-                <h3>Edit Active Session</h3>
-                <p>Customize batch, venue, time, and course for the current lecture.</p>
+                <h3>Active session</h3>
+                <p>Set the venue for this lecture. It is saved to your timetable.</p>
               </div>
               <button
                 type="button"
@@ -437,94 +345,26 @@ function Dashboard() {
             </div>
 
             <form onSubmit={handleSaveSession} className="cs-modal-form">
-              <div className="form-row-2">
-                <div className="cs-form-group">
-                  <label htmlFor="session-batch">Batch / Section</label>
-                  <input
-                    id="session-batch"
-                    type="text"
-                    required
-                    placeholder="e.g. 3C2"
-                    value={sessionFormData.section}
-                    onChange={(e) =>
-                      setSessionFormData({ ...sessionFormData, section: e.target.value })
-                    }
-                  />
-                </div>
-
-                <div className="cs-form-group">
-                  <label htmlFor="session-dept">Department / Subtext</label>
-                  <input
-                    id="session-dept"
-                    type="text"
-                    placeholder="e.g. Computer Science & Eng."
-                    value={sessionFormData.department}
-                    onChange={(e) =>
-                      setSessionFormData({ ...sessionFormData, department: e.target.value })
-                    }
-                  />
-                </div>
+              <dl className="db-sess-facts">
+                <div><dt>Course</dt><dd>{currentActiveClass?.title}{currentActiveClass?.code ? ` · ${currentActiveClass.code}` : ""}</dd></div>
+                <div><dt>Batch</dt><dd>{currentActiveClass?.section || "—"}</dd></div>
+                <div><dt>Time</dt><dd>{currentActiveClass?.timeRange || "—"}</dd></div>
+              </dl>
+              <div className="cs-form-group">
+                <label htmlFor="session-room">Venue / Room</label>
+                <input
+                  id="session-room"
+                  type="text"
+                  maxLength={40}
+                  placeholder="e.g. LP402"
+                  value={sessionFormData.room}
+                  onChange={(e) => setSessionFormData({ room: e.target.value })}
+                />
               </div>
-
-              <div className="form-row-2">
-                <div className="cs-form-group">
-                  <label htmlFor="session-room">Venue / Room</label>
-                  <input
-                    id="session-room"
-                    type="text"
-                    required
-                    placeholder="e.g. LP402"
-                    value={sessionFormData.room}
-                    onChange={(e) =>
-                      setSessionFormData({ ...sessionFormData, room: e.target.value })
-                    }
-                  />
-                </div>
-
-                <div className="cs-form-group">
-                  <label htmlFor="session-time">Time Range</label>
-                  <input
-                    id="session-time"
-                    type="text"
-                    required
-                    placeholder="e.g. 08:00 AM – 08:50 AM"
-                    value={sessionFormData.timeRange}
-                    onChange={(e) =>
-                      setSessionFormData({ ...sessionFormData, timeRange: e.target.value })
-                    }
-                  />
-                </div>
-              </div>
-
-              <div className="form-row-2">
-                <div className="cs-form-group">
-                  <label htmlFor="session-title">Course / Subject</label>
-                  <input
-                    id="session-title"
-                    type="text"
-                    required
-                    placeholder="e.g. Data Structures"
-                    value={sessionFormData.title}
-                    onChange={(e) =>
-                      setSessionFormData({ ...sessionFormData, title: e.target.value })
-                    }
-                  />
-                </div>
-
-                <div className="cs-form-group">
-                  <label htmlFor="session-code">Course Code</label>
-                  <input
-                    id="session-code"
-                    type="text"
-                    required
-                    placeholder="e.g. UCE301"
-                    value={sessionFormData.code}
-                    onChange={(e) =>
-                      setSessionFormData({ ...sessionFormData, code: e.target.value })
-                    }
-                  />
-                </div>
-              </div>
+              {sessionError && <p className="db-sess-err" role="alert">{sessionError}</p>}
+              <p className="db-sm db-sess-note">
+                Course, batch or time wrong? <Link to="/settings?tab=requests">Send a request to the admin</Link>.
+              </p>
 
               <div className="cs-modal-actions">
                 <button
@@ -534,207 +374,11 @@ function Dashboard() {
                 >
                   Cancel
                 </button>
-                <button type="submit" className="btn-modal-submit">
-                  Save Changes
+                <button type="submit" className="btn-modal-submit" disabled={sessionSaving}>
+                  {sessionSaving ? "Saving…" : "Save venue"}
                 </button>
               </div>
             </form>
-          </div>
-        </div>
-      )}
-
-      {/* ================= MODAL: ADD / EDIT CLASS ================= */}
-      {isClassModalOpen && (
-        <div className="cs-modal-backdrop" onClick={() => setIsClassModalOpen(false)}>
-          <div
-            className="cs-modal-card"
-            ref={classDialogRef} role="dialog" aria-modal="true" tabIndex={-1}
-            aria-label={editingClassId ? "Edit scheduled lecture" : "Add lecture to today's schedule"}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="cs-modal-header">
-              <div>
-                <h3>{editingClassId ? "Edit Scheduled Lecture" : "Add Lecture to Today's Schedule"}</h3>
-                <p>Fill in the course, timing, and classroom details.</p>
-              </div>
-              <button
-                type="button"
-                className="cs-modal-close"
-                onClick={() => setIsClassModalOpen(false)}
-                aria-label="Close modal"
-              >
-                <X size={19} />
-              </button>
-            </div>
-
-            <form onSubmit={handleSaveClass} className="cs-modal-form">
-              <div className="form-row-2">
-                <div className="cs-form-group">
-                  <label htmlFor="class-title">Course / Subject Title</label>
-                  <input
-                    id="class-title"
-                    type="text"
-                    required
-                    placeholder="e.g. Data Structures"
-                    value={classFormData.title}
-                    onChange={(e) =>
-                      setClassFormData({ ...classFormData, title: e.target.value })
-                    }
-                  />
-                </div>
-
-                <div className="cs-form-group">
-                  <label htmlFor="class-code">Course Code</label>
-                  <input
-                    id="class-code"
-                    type="text"
-                    required
-                    placeholder="e.g. UCE301"
-                    value={classFormData.code}
-                    onChange={(e) =>
-                      setClassFormData({ ...classFormData, code: e.target.value })
-                    }
-                  />
-                </div>
-              </div>
-
-              <div className="form-row-2">
-                <div className="cs-form-group">
-                  <label htmlFor="class-section">Batch / Section</label>
-                  <input
-                    id="class-section"
-                    type="text"
-                    required
-                    placeholder="e.g. 3C2"
-                    value={classFormData.section}
-                    onChange={(e) =>
-                      setClassFormData({ ...classFormData, section: e.target.value })
-                    }
-                  />
-                </div>
-
-                <div className="cs-form-group">
-                  <label htmlFor="class-room">Venue / Room</label>
-                  <input
-                    id="class-room"
-                    type="text"
-                    required
-                    placeholder="e.g. LP402"
-                    value={classFormData.room}
-                    onChange={(e) =>
-                      setClassFormData({ ...classFormData, room: e.target.value })
-                    }
-                  />
-                </div>
-              </div>
-
-              <div className="form-row-2">
-                <div className="cs-form-group">
-                  <label htmlFor="class-time">Start Time</label>
-                  <input
-                    id="class-time"
-                    type="text"
-                    required
-                    placeholder="e.g. 08:00 AM"
-                    value={classFormData.time}
-                    onChange={(e) =>
-                      setClassFormData({ ...classFormData, time: e.target.value })
-                    }
-                  />
-                </div>
-
-                <div className="cs-form-group">
-                  <label htmlFor="class-timeRange">Full Time Slot</label>
-                  <input
-                    id="class-timeRange"
-                    type="text"
-                    required
-                    placeholder="e.g. 08:00 AM – 08:50 AM"
-                    value={classFormData.timeRange}
-                    onChange={(e) =>
-                      setClassFormData({ ...classFormData, timeRange: e.target.value })
-                    }
-                  />
-                </div>
-              </div>
-
-              <div className="cs-form-group">
-                <label htmlFor="class-status">Lecture Status</label>
-                <select
-                  id="class-status"
-                  value={classFormData.status}
-                  onChange={(e) =>
-                    setClassFormData({ ...classFormData, status: e.target.value })
-                  }
-                >
-                  <option value="done">Done (Completed)</option>
-                  <option value="next">Next (Active / In Progress)</option>
-                  <option value="upcoming">Upcoming</option>
-                </select>
-              </div>
-
-              <div className="cs-modal-actions-split">
-                {editingClassId && (
-                  <button
-                    type="button"
-                    className="btn-modal-delete"
-                    onClick={() => setConfirmDeleteClassId(editingClassId)}
-                  >
-                    <Trash2 size={15} strokeWidth={1.8} />
-                    <span>Delete Class</span>
-                  </button>
-                )}
-                <div className="cs-modal-actions-right">
-                  <button
-                    type="button"
-                    className="btn-modal-cancel"
-                    onClick={() => setIsClassModalOpen(false)}
-                  >
-                    Cancel
-                  </button>
-                  <button type="submit" className="btn-modal-submit">
-                    {editingClassId ? "Save Changes" : "Add to Schedule"}
-                  </button>
-                </div>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* Confirmation Modal for Delete Class (Instruction 3) */}
-      {confirmDeleteClassId && (
-        <div className="cs-modal-backdrop" onClick={() => setConfirmDeleteClassId(null)}>
-          <div className="cs-modal-card cs-modal-confirm" ref={deleteDialogRef} role="alertdialog" aria-modal="true" tabIndex={-1} aria-label="Delete class" onClick={(e) => e.stopPropagation()}>
-            <div className="cs-modal-header">
-              <div className="confirm-icon-danger">
-                <AlertTriangle size={24} strokeWidth={2} />
-              </div>
-              <div>
-                <h3>Delete Class</h3>
-                <p className="cs-modal-subtitle">Are you sure you want to delete this class?</p>
-              </div>
-            </div>
-            <p className="confirm-body-text">
-              This class will be permanently removed from today&apos;s schedule list. Saved
-              attendance records for this lecture are retained.
-            </p>
-            <div className="cs-modal-actions">
-              <button
-                type="button"
-                className="btn-modal-cancel"
-                onClick={() => setConfirmDeleteClassId(null)}
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                className="btn-modal-delete-confirm"
-                onClick={() => confirmDeleteClass(confirmDeleteClassId)}
-              >
-                Yes, Delete
-              </button>
-            </div>
           </div>
         </div>
       )}
@@ -767,21 +411,21 @@ function Dashboard() {
                         <span className="db-sm db-ago">Lecture Started {activeStartedAgo}m ago</span>
                       )}
                     </div>
-                    <button type="button" className="db-col" onClick={handleOpenSessionEdit} title="Edit Course / Subject">
+                    <button type="button" className="db-col" onClick={handleOpenSessionEdit} title="Set the venue">
                       <div className="db-course">{currentActiveClass.title}</div>
                       {currentActiveClass.code && <div className="db-code">{currentActiveClass.code}</div>}
                     </button>
                     <div className="db-g3">
-                      <button type="button" className="db-col" onClick={handleOpenSessionEdit} title="Edit Batch / Section">
+                      <button type="button" className="db-col" onClick={handleOpenSessionEdit} title="Set the venue">
                         <div className="db-k">Batch / Section</div>
                         <div className="db-v">{currentActiveClass.section}</div>
-                        <div className="db-g3-sub">{currentActiveClass.department || "Computer Science & Eng."}</div>
+                        {(currentActiveClass.department || authSession?.department) && <div className="db-g3-sub">{currentActiveClass.department || authSession.department}</div>}
                       </button>
-                      <button type="button" className="db-col" onClick={handleOpenSessionEdit} title="Edit Venue">
+                      <button type="button" className="db-col" onClick={handleOpenSessionEdit} title="Set the venue">
                         <div className="db-k">Venue</div>
-                        <div className="db-v">{currentActiveClass.room}</div>
+                        <div className="db-v">{currentActiveClass.room || "Not set"}</div>
                       </button>
-                      <button type="button" className="db-col" onClick={handleOpenSessionEdit} title="Edit Time">
+                      <button type="button" className="db-col" onClick={handleOpenSessionEdit} title="Set the venue">
                         <div className="db-k">Time</div>
                         <div className="db-v db-v-time">{currentActiveClass.timeRange}</div>
                       </button>
@@ -847,64 +491,26 @@ function Dashboard() {
                     aria-hidden={attendanceTab !== "photo"}
                   >
                     <div className="db-drop">
-                      <input
-                        type="file"
-                        ref={fileInputRef}
-                        onChange={handlePhotoSelect}
-                        accept="image/*"
-                        style={{ display: "none" }}
-                      />
-                      {!selectedPhoto ? (
-                        <>
-                          <div className="db-emb db-seq" aria-hidden="true">
-                            <i className="db-cn a" />
-                            <i className="db-cn b" />
-                            <i className="db-cn d" />
-                            <i className="db-cn e" />
-                            <Camera className="db-cam" size={28} strokeWidth={1.8} />
-                            <Check className="db-tick" size={30} strokeWidth={2.4} />
-                          </div>
-                          <h3>Upload Classroom Photo to Mark Attendance</h3>
-                          <p className="db-sm db-drop-text">
-                            Take or upload a panoramic photo of the lecture hall. Neural network instantly matches
-                            student face embeddings.
-                          </p>
-                          <button
-                            type="button"
-                            className="db-bm db-bm-lg"
-                            onClick={() => fileInputRef.current?.click()}
-                          >
-                            Upload Classroom Photo
-                          </button>
-                        </>
-                      ) : (
-                        <div className="db-photo-result">
-                          <div className="photo-preview-container">
-                            <img src={selectedPhoto} alt="Classroom Scan Preview" className="photo-preview-img" />
-                            {isPhotoScanning && <div className="scanning-laser" />}
-                          </div>
-                          {isPhotoScanning ? (
-                            <p className="db-scanning">
-                              Scanning faces{scanClass ? ` in ${scanClass.section}` : ""}...
-                            </p>
-                          ) : (
-                            photoScanSuccess && (
-                              <div className="db-row db-wrap db-center">
-                                <button
-                                  type="button"
-                                  className="db-bm"
-                                  onClick={() => navigate(scanSessionId ? `/attendance/${scanSessionId}` : "/dashboard")}
-                                >
-                                  View Results
-                                </button>
-                                <button type="button" className="db-b1" onClick={handleResetPhoto}>
-                                  Upload Another Photo
-                                </button>
-                              </div>
-                            )
-                          )}
-                        </div>
-                      )}
+                      <div className="db-emb db-seq" aria-hidden="true">
+                        <i className="db-cn a" />
+                        <i className="db-cn b" />
+                        <i className="db-cn d" />
+                        <i className="db-cn e" />
+                        <Camera className="db-cam" size={28} strokeWidth={1.8} />
+                        <Check className="db-tick" size={30} strokeWidth={2.4} />
+                      </div>
+                      <h3>Upload Classroom Photo to Mark Attendance</h3>
+                      <p className="db-sm db-drop-text">
+                        Take or upload a panoramic photo of the lecture hall. Neural network instantly matches
+                        student face embeddings.
+                      </p>
+                      <button
+                        type="button"
+                        className="db-bm db-bm-lg"
+                        onClick={() => navigate(scanSessionId ? `/attendance/${scanSessionId}` : "/attendance")}
+                      >
+                        Upload Classroom Photo
+                      </button>
                       <div className="db-sm db-drop-meta">
                         Supports JPG, PNG up to 20MB • Wide panoramic angle recommended
                       </div>
@@ -915,10 +521,12 @@ function Dashboard() {
                         <div className="db-chk">✓</div>
                         <div>
                           <div className="db-scan-title">
-                            Last Batch Scan: {scanClass ? scanClass.section : "—"} ({lastScanTime || scanClass?.time || "—"})
+                            Last Batch Scan: {scanClass ? scanClass.section : "—"} ({scanClass?.time || "—"})
                           </div>
                           <div className="db-sm">
-                            {verifiedStudents.length} faces recognized • {scanMatchRate} match rate
+                            {scanSummary.isSaved
+                              ? `${scanSummary.recognized} faces recognized • ${scanMatchRate} match rate`
+                              : attendanceError || "No attendance saved yet today"}
                           </div>
                         </div>
                       </div>
@@ -937,38 +545,41 @@ function Dashboard() {
                     aria-hidden={attendanceTab !== "nfc"}
                   >
                     <div className="db-drop">
-                      <div className={`db-emb ${nfcState === "" ? "db-wait" : ""}`} aria-hidden="true">
+                      <div className={`db-emb ${nfcOn && !nfcFlash ? "db-wait" : ""}`} aria-hidden="true">
                         <Nfc size={28} strokeWidth={1.8} />
                       </div>
                       <h3>Tap Library Card to Mark Attendance</h3>
                       <p className="db-sm db-drop-text">
-                        Ask the student to hold their registered library card against the reader. Scan one student at
-                        a time.
+                        Press Start, then ask each student to hold their library card against the back of this phone.
+                        Scan one student at a time.
                       </p>
-                      <div className={`db-nst ${nfcState}`} aria-live="polite">
+                      <div className={`db-nst ${nfcFlash ? "rec" : ""}`} aria-live="polite">
                         <i />
                         <span>
-                          {nfcState === "det"
-                            ? "Card detected · reading…"
-                            : nfcState === "rec"
-                            ? "Attendance recorded"
-                            : unverifiedStudents.length === 0
-                            ? "Reader ready · all students verified"
-                            : "Reader ready · waiting for a card"}
+                          {!nfcSupported()
+                            ? "Open this page in Chrome on an Android phone"
+                            : !scanClass
+                            ? "No class to take attendance for yet"
+                            : nfcFlash
+                            ? "Card read"
+                            : nfcOn
+                            ? "Reader ready · waiting for a card"
+                            : "Reader stopped · press Start"}
                         </span>
                       </div>
-                      <div className="db-sm db-drop-meta">Attendance is recorded for the ongoing lecture</div>
+                      {nfcError && <div className="db-sm" role="alert">{nfcError}</div>}
+                      <div className="db-sm db-drop-meta">
+                        {scanClass ? `For ${scanClass.title} · ${scanClass.section}` : "Attendance is recorded for the ongoing lecture"}
+                      </div>
                     </div>
 
                     {/* Keyed by the count so the pop/flash animation replays on every recorded card */}
-                    <div key={nfcCount} className={`db-scan ${nfcCount > 0 ? "db-flash" : ""}`}>
+                    <div key={nfcTaps.length} className={`db-scan ${nfcTaps.length > 0 ? "db-flash" : ""}`}>
                       <div className="db-row">
-                        <div className={`db-chk ${nfcLast ? "db-pop" : "idle"}`}>{nfcLast ? "✓" : "–"}</div>
+                        <div className={`db-chk ${nfcLast?.ok ? "db-pop" : "idle"}`}>{nfcLast ? (nfcLast.ok ? "✓" : "!") : "–"}</div>
                         <div>
-                          <div className="db-scan-title">
-                            {nfcLast ? `${nfcLast.name} · ${nfcLast.roll}` : "No card scanned yet"}
-                          </div>
-                          <div className="db-sm">Recorded this session: {nfcCount}</div>
+                          <div className="db-scan-title">{nfcLast ? nfcLast.text : "No card scanned yet"}</div>
+                          <div className="db-sm">Cards read this session: {nfcTaps.length}</div>
                         </div>
                       </div>
                     </div>
@@ -976,12 +587,17 @@ function Dashboard() {
                     <button
                       type="button"
                       className="db-b1 db-b1-wide"
-                      onClick={handleNfcScan}
-                      disabled={nfcState !== "" || unverifiedStudents.length === 0}
+                      onClick={toggleNfc}
+                      disabled={!nfcSupported() || !scanClass}
                     >
                       <span className="db-green-dot" />
-                      Scan Library Card
+                      {nfcOn ? "Stop reading cards" : "Start reading cards"}
                     </button>
+                    {nfcTaps.length > 0 && (
+                      <button type="button" className="db-bm db-bm-lg" onClick={reviewNfcTaps} disabled={!scanSessionId}>
+                        Review &amp; save ({nfcTaps.length} {nfcTaps.length === 1 ? "student" : "students"})
+                      </button>
+                    )}
                   </div>
                 </div>
               </section>
@@ -1048,10 +664,16 @@ function Dashboard() {
 
               {scheduleList.length === 0 ? (
                 <div className="db-ci db-empty">
-                  <span className="db-sm">No classes scheduled for today.</span>
-                  <button type="button" className="db-b1" onClick={handleOpenAddClass}>
-                    Add Lecture
-                  </button>
+                  <span className="db-sm" role={scheduleError ? "alert" : "status"}>
+                    {scheduleLoading
+                      ? "Loading today's lectures..."
+                      : scheduleError || "No classes scheduled for today. An admin adds lecture times under Admin."}
+                  </span>
+                  {scheduleError && !scheduleLoading && (
+                    <button type="button" className="db-b1" onClick={reloadSchedule}>
+                      Try Again
+                    </button>
+                  )}
                 </div>
               ) : (
                 <div className="db-list" ref={scheduleListRef}>
@@ -1060,9 +682,8 @@ function Dashboard() {
                     const isActive = currentActiveClass?.id === item.id;
                     const sessionId = makeSessionId(item.id, todayKey);
                     const [clock, period] = (item.time || "").split(" ");
-                    const session = getSession(sessionId);
-                    const enrolled =
-                      session.verified.length + session.unverified.length + session.absent.length;
+                    const summary = getSummary(item.id);
+                    const enrolled = summary.total;
                     return (
                       <div
                         key={item.id}
@@ -1084,11 +705,13 @@ function Dashboard() {
                             </p>
                             {status === "done" ? (
                               <div className="db-ok">
-                                Attendance: {session.verified.length}/{enrolled} Students (
-                                {enrolled > 0 ? ((session.verified.length / enrolled) * 100).toFixed(1) : "0.0"}%)
+                                Attendance: {summary.present}/{enrolled} Students (
+                                {enrolled > 0 ? ((summary.present / enrolled) * 100).toFixed(1) : "0.0"}%)
                               </div>
                             ) : isActive ? (
-                              <div className="db-warn">Pending live class verification</div>
+                              <div className="db-warn">
+                                {summary.isSaved ? "Attendance saved" : "Pending live class verification"}
+                              </div>
                             ) : (
                               <div className="db-sm">{enrolled} total students</div>
                             )}

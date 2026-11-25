@@ -9,19 +9,49 @@ import MonthCalendar from "./MonthCalendar";
 import LowestAttendanceCard from "./LowestAttendanceCard";
 import LowestAttendanceModal from "./LowestAttendanceModal";
 import WeeklyBreakdownCard from "./WeeklyBreakdownCard";
-import {
-  BATCHES,
-  SEMESTER_START,
-  SEMESTER_END,
-  batchesOfSubject,
-  downloadStudentCsv,
-  lowAttendance,
-  rangeFileTag,
-  studentRows,
-} from "./reportsMock";
+import { downloadStudentCsv, rangeFileTag } from "./reportsUtil";
+import { useReports } from "./useReports";
 import "./Reports.css";
 
+// Loading, error and "no classes yet" screens; the real page needs at least one class to show anything.
 function Reports() {
+  const { BATCHES, loading, error, reload } = useReports();
+  if (!loading && BATCHES.length) return <ReportsBody />;
+  return (
+    <TeacherShell active="reports">
+      <main className="db-main">
+        <div className="rp-page">
+          <div className="rp-hd">
+            <div className="rp-hico"><Icon name="chartBars" size={26} strokeWidth={1.8} /></div>
+            <div>
+              <h1 className="rp-title">Reports</h1>
+              <p className="rp-sub">Attendance analytics and exports across your classes</p>
+            </div>
+          </div>
+          <div className="rp-card" role="status" style={{ padding: 24, display: "grid", gap: 8 }}>
+            {loading ? (
+              <b>Loading your reports…</b>
+            ) : error ? (
+              <>
+                <b>We couldn't load your reports.</b>
+                <span>{error}</span>
+                <button type="button" className="rp-exp" style={{ width: "fit-content" }} onClick={reload}>Try again</button>
+              </>
+            ) : (
+              <>
+                <b>No classes yet</b>
+                <span>Reports appear here once an administrator gives you a class and you have saved attendance for it.</span>
+              </>
+            )}
+          </div>
+        </div>
+      </main>
+    </TeacherShell>
+  );
+}
+
+function ReportsBody() {
+  const { BATCHES, SEMESTER_START, SEMESTER_END, batchesOfSubject, lowAttendance, studentRows } = useReports();
   const [subject, setSubject] = useState(0);
   const [batchIndex, setBatchIndex] = useState(batchesOfSubject(0)[0].index);
   const [allMode, setAllMode] = useState(false);
@@ -38,11 +68,11 @@ function Reports() {
   const setClampedRange = (a, b) =>
     setRange({ from: Math.max(SEMESTER_START, Math.min(a, b)), to: Math.min(SEMESTER_END, Math.max(a, b)) });
 
-  const rows = useMemo(() => studentRows(batchIndex, allMode, from, to), [batchIndex, allMode, from, to]);
+  const rows = useMemo(() => studentRows(batchIndex, allMode, from, to), [batchIndex, allMode, from, to, studentRows]);
   const lowStudents = useMemo(() => {
     const q = query.trim().toLowerCase();
     return lowAttendance(rows).filter((r) => !q || r.name.toLowerCase().includes(q) || r.roll.includes(q));
-  }, [rows, query]);
+  }, [rows, query, lowAttendance]);
 
   const fileBatch = allMode ? "all-batches" : BATCHES[batchIndex].group;
 

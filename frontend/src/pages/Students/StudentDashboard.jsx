@@ -7,7 +7,7 @@ import { Link } from "react-router-dom";
 import { AlertTriangle, CalendarDays, CheckCircle2, Info } from "lucide-react";
 import { classesCanMiss, classesNeededToReach } from "../../context/students/studentOverview";
 import "./StudentDashboard.css";
-import { useDemoSession } from "../../context/demo-session/DemoSessionContext";
+import { useAuth } from "../../context/AuthContext";
 import { useTheme } from "../../context/theme/ThemeContext";
 import { useStudentModel } from "../../context/students/useStudentModel";
 import { classWeight } from "../../context/students/studentCourses";
@@ -285,7 +285,7 @@ function AlertsCard({ alerts }) {
 }
 
 function StudentDashboard() {
-  const { session } = useDemoSession();
+  const { session } = useAuth();
   const { isDarkMode } = useTheme();
   const m = useStudentModel();
 

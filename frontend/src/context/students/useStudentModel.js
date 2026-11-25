@@ -1,36 +1,55 @@
 // src/context/students/useStudentModel.js
-// The student portal layout builds the model once and hands it to the pages through the router's
-// Outlet context, so every student page reads the same records of the signed-in student.
-import { useEffect, useMemo, useState } from "react";
+// The student portal layout loads the signed-in student's real data (GET /student/overview), builds the
+// model once and hands it to the pages through the router's Outlet context, so every student page reads
+// the same records.
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useOutletContext } from "react-router-dom";
-import { useAttendance } from "../attendance/AttendanceContext";
-import { useSchedule } from "../schedule/ScheduleContext";
+import { getStudentOverview } from "../../api/student";
 import { useSettings } from "../settings/SettingsContext";
-import { findDemoAccount } from "../demo-session/demoSession";
-import { buildStudentModel } from "./studentCourses";
+import { buildStudentModelFromApi } from "./studentCourses";
 
-/** Used by the layout: builds the model for the signed-in student and refreshes it every minute. */
-export function useBuildStudentModel(session) {
-  const { sessions } = useAttendance();
-  const { scheduleList } = useSchedule();
+/**
+ * Used by the layout. Returns { model, loading, error, reload }; `model` is null until the first load.
+ * Re-reads quietly every minute and when the tab regains focus, so a teacher's newly saved attendance appears.
+ */
+export function useBuildStudentModel() {
   const { attendanceThreshold } = useSettings();
+  const [overview, setOverview] = useState(null);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(true);
   const [now, setNow] = useState(() => new Date());
-  useEffect(() => {
-    const timer = setInterval(() => setNow(new Date()), 60000);
-    return () => clearInterval(timer);
+
+  const load = useCallback(async () => {
+    try {
+      setOverview(await getStudentOverview());
+      setError("");
+    } catch (err) {
+      // A failed refresh keeps showing the data we already have.
+      setError(err.message || "Could not load your attendance.");
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
-  return useMemo(() => {
-    const account = findDemoAccount(session.email);
-    return buildStudentModel({
-      email: session.email,
-      roll: account?.roll,
-      now,
-      sessions,
-      scheduleList,
-      threshold: attendanceThreshold,
-    });
-  }, [session.email, now, sessions, scheduleList, attendanceThreshold]);
+  useEffect(() => {
+    load();
+    const timer = setInterval(() => {
+      setNow(new Date());
+      load();
+    }, 60000);
+    const onFocus = () => load();
+    window.addEventListener("focus", onFocus);
+    return () => {
+      clearInterval(timer);
+      window.removeEventListener("focus", onFocus);
+    };
+  }, [load]);
+
+  const model = useMemo(
+    () => (overview ? buildStudentModelFromApi({ overview, now, threshold: attendanceThreshold }) : null),
+    [overview, now, attendanceThreshold]
+  );
+  return { model, loading, error, reload: load };
 }
 
 /** Used by the student pages. */

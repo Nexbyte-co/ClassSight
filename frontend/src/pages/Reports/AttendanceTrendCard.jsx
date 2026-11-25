@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Icon } from "./icons";
-import { BATCHES, formatRange, trendPoints } from "./reportsMock";
+import { formatRange } from "./reportsUtil";
+import { useReports } from "./useReports";
 
 const PAD = { L: 34, R: 12, T: 14, B: 28 };
 
@@ -91,6 +92,7 @@ function TrendChart({ points }) {
 }
 
 function AttendanceTrendCard({ batchIndex, allMode, from, to, onExport }) {
+  const { BATCHES, trendPoints } = useReports();
   const navigate = useNavigate();
   const batch = BATCHES[batchIndex];
   // Same page as "Open record": every session of the batch (all batches -> All recorded lectures)

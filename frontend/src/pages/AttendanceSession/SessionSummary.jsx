@@ -1,7 +1,8 @@
 // src/pages/AttendanceSession/SessionSummary.jsx — "This session": segmented ring, count tiles,
 // how present students were verified, and Save record / Edit
 import { useEffect, useRef, useState } from "react";
-import { Camera, Check, Nfc, Pencil, RotateCcw, Save, UserCheck } from "lucide-react";
+import { Camera, Nfc, UserCheck } from "lucide-react";
+import { formatShortSessionDate } from "../../context/schedule/scheduleStatus";
 
 const reducedMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -135,9 +136,12 @@ const METHODS = [
   ["man", "Manual", UserCheck],
 ];
 
-export default function SessionSummary({ list, saved, savedAt, onSave, onEdit, onReset }) {
+export default function SessionSummary({ list, excused = 0, dateKey, lecture }) {
   const counts = { p: 0, u: 0, a: 0 };
-  list.forEach((r) => (counts[r.st] += 1));
+  list.forEach((r) => {
+    if (r.st in counts) counts[r.st] += 1;
+  });
+  const total = list.length - excused;
   const by = (m) => list.filter((r) => r.st === "p" && r.m === m).length;
   const arcRefs = useRef({});
 
@@ -150,10 +154,6 @@ export default function SessionSummary({ list, saved, savedAt, onSave, onEdit, o
     g.style.animationDelay = "0ms";
   };
 
-  const hint = counts.u
-    ? `Resolve the ${counts.u} student${counts.u > 1 ? "s" : ""} the photo couldn’t match. Anyone left unreviewed is saved as absent.`
-    : "Everyone is accounted for. Save the record to finish.";
-
   return (
     <section className="as-card as-sess db-rise" aria-label="This session">
       <div className="as-ash">
@@ -163,20 +163,20 @@ export default function SessionSummary({ list, saved, savedAt, onSave, onEdit, o
           </span>
           <div>
             <h4>This session</h4>
-            <div className="as-rs">Live now · started 09:40</div>
+            <div className="as-rs">
+              {formatShortSessionDate(dateKey)}
+              {lecture ? ` · ${lecture.timeRange || lecture.time}` : ""}
+            </div>
           </div>
         </div>
         <div className="as-ahd2">
           <span className="as-chip sm">{list.length} enrolled</span>
-          <button type="button" className="as-lnk" onClick={onReset}>
-            <RotateCcw size={14} strokeWidth={2} aria-hidden="true" />
-            Reset demo
-          </button>
+          {excused > 0 && <span className="as-chip sm">{excused} excused</span>}
         </div>
       </div>
 
       <div className="as-asb">
-        <AttendanceRing counts={counts} total={list.length} arcRefs={arcRefs} />
+        <AttendanceRing counts={counts} total={Math.max(1, total)} arcRefs={arcRefs} />
         <CountTiles counts={counts} onReplay={replay} />
       </div>
 
@@ -189,25 +189,6 @@ export default function SessionSummary({ list, saved, savedAt, onSave, onEdit, o
               <b>{by(k)}</b>
             </span>
           ))}
-        </div>
-        <div className="as-aprog">
-          {saved ? (
-            <>
-              <button type="button" className="as-b1" title="Correct mistakes until the end of the day" onClick={onEdit}>
-                <Pencil size={14} strokeWidth={2} aria-hidden="true" />
-                Edit
-              </button>
-              <button type="button" className="as-pbtn" disabled title={`Saved at ${savedAt}`}>
-                <Check size={15} strokeWidth={2.4} aria-hidden="true" />
-                <span>Saved {savedAt}</span>
-              </button>
-            </>
-          ) : (
-            <button type="button" className="as-pbtn" title={hint} onClick={onSave}>
-              <Save size={15} strokeWidth={2} aria-hidden="true" />
-              <span>Save record</span>
-            </button>
-          )}
         </div>
       </div>
     </section>

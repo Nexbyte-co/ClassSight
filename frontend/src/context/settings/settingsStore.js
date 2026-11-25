@@ -14,13 +14,10 @@ export const DEFAULT_LECTURE_MINUTES = 50;
 export const MIN_LECTURE_MINUTES = 10;
 export const MAX_LECTURE_MINUTES = 240;
 
-export const DEFAULT_DEPARTMENT = "Computer Science & Eng.";
-export const MAX_DEPARTMENT_LENGTH = 60;
-
 export const DEFAULT_SETTINGS = {
   attendanceThreshold: DEFAULT_ATTENDANCE_THRESHOLD,
   defaultLectureMinutes: DEFAULT_LECTURE_MINUTES,
-  defaultDepartment: DEFAULT_DEPARTMENT,
+  notifyRequestUpdates: true, // bell: when an admin starts on or fixes one of your requests
 };
 
 // Lowest percentage still counted as "at risk" (65% with the default 75% threshold)
@@ -46,13 +43,6 @@ export function validateLectureMinutes(value) {
   return validateWholeNumber(value, MIN_LECTURE_MINUTES, MAX_LECTURE_MINUTES, "minutes");
 }
 
-export function validateDepartment(value) {
-  const text = String(value ?? "").trim();
-  if (text === "") return "Enter a department name.";
-  if (text.length > MAX_DEPARTMENT_LENGTH) return `Keep it under ${MAX_DEPARTMENT_LENGTH} characters.`;
-  return null;
-}
-
 // Keeps only known, valid fields; anything missing or invalid falls back to the default
 export function normalizeSettings(raw) {
   const settings = { ...DEFAULT_SETTINGS };
@@ -63,8 +53,8 @@ export function normalizeSettings(raw) {
   if (Number.isInteger(raw.defaultLectureMinutes) && validateLectureMinutes(raw.defaultLectureMinutes) === null) {
     settings.defaultLectureMinutes = raw.defaultLectureMinutes;
   }
-  if (typeof raw.defaultDepartment === "string" && validateDepartment(raw.defaultDepartment) === null) {
-    settings.defaultDepartment = raw.defaultDepartment.trim();
+  if (typeof raw.notifyRequestUpdates === "boolean") {
+    settings.notifyRequestUpdates = raw.notifyRequestUpdates;
   }
   return settings;
 }

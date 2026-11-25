@@ -5,9 +5,10 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import {
   BookOpen,
-  ChartColumn,
-  ClipboardCheck,
+  Building2,
+  GraduationCap,
   LayoutDashboard,
+  Library,
   ChevronDown,
   LogOut,
   Menu,
@@ -23,21 +24,21 @@ import "./admin.css";
 import { useTheme } from "../../context/theme/ThemeContext";
 import { useAuth } from "../../context/AuthContext";
 import { AdminDataProvider } from "../../context/AdminDataContext";
+import { DeletionToasts, TeacherDeletionProvider } from "./TeacherDeletion";
 
 const ADMIN_NAV = [
   { to: "/admin", key: "dashboard", label: "Dashboard", Icon: LayoutDashboard },
-  { to: "/admin/users", key: "users", label: "Users", Icon: Users },
-  { to: "/admin/classes", key: "classes", label: "Classes & Subjects", Icon: BookOpen },
-  { to: "/admin/attendance", key: "attendance", label: "Attendance & Reports", Icon: ClipboardCheck },
-  { to: "/admin/analytics", key: "analytics", label: "Analytics", Icon: ChartColumn },
+  { to: "/admin/teachers", key: "teachers", label: "Teachers", Icon: Users },
+  { to: "/admin/batches", key: "batches", label: "Batches", Icon: BookOpen },
+  { to: "/admin/subjects", key: "subjects", label: "Subjects", Icon: Library },
+  { to: "/admin/students", key: "students", label: "Students", Icon: GraduationCap },
+  { to: "/admin/departments", key: "departments", label: "Departments", Icon: Building2 },
   { to: "/admin/settings", key: "settings", label: "Settings", Icon: Settings },
 ];
 
-// /admin/setup (the class setup steps) belongs to Classes & Subjects.
 function activeKeyFor(pathname) {
   const path = pathname.replace(/\/+$/, "") || "/";
   if (path === "/admin") return "dashboard";
-  if (path.startsWith("/admin/setup")) return "classes";
   const hit = ADMIN_NAV.find((item) => item.to !== "/admin" && path.startsWith(item.to));
   return hit ? hit.key : "dashboard";
 }
@@ -269,55 +270,58 @@ function AdminLayout() {
 
   return (
     <AdminDataProvider>
-      <div className={`dashboard-root db-page teacher-ui admin-ui ${isDarkMode ? "dark-mode" : ""}`}>
-        <header className="db-top">
-          <div className="db-row">
-            <button
-              type="button"
-              className="db-ib hamburger-nav-btn"
-              onClick={handleToggleNav}
-              aria-label="Toggle navigation"
-              aria-expanded={isMobileNav() ? isNavOpen : !isSideCollapsed}
-            >
-              <Menu size={20} strokeWidth={2} aria-hidden="true" />
-            </button>
-            <Link to="/admin" className="db-row db-brand-link adm-brand">
-              <div className="db-logo">
-                <ScanFace size={20} strokeWidth={2} />
-              </div>
-              <span className="db-brand">ClassSight</span>
-            </Link>
-          </div>
+      <TeacherDeletionProvider>
+        <div className={`dashboard-root db-page teacher-ui admin-ui ${isDarkMode ? "dark-mode" : ""}`}>
+          <header className="db-top">
+            <div className="db-row">
+              <button
+                type="button"
+                className="db-ib hamburger-nav-btn"
+                onClick={handleToggleNav}
+                aria-label="Toggle navigation"
+                aria-expanded={isMobileNav() ? isNavOpen : !isSideCollapsed}
+              >
+                <Menu size={20} strokeWidth={2} aria-hidden="true" />
+              </button>
+              <Link to="/admin" className="db-row db-brand-link adm-brand">
+                <div className="db-logo">
+                  <ScanFace size={20} strokeWidth={2} />
+                </div>
+                <span className="db-brand">ClassSight</span>
+              </Link>
+            </div>
 
-          <div className="db-row">
-            <button
-              type="button"
-              className="db-ib db-ib-sm"
-              onClick={toggleDarkMode}
-              aria-label="Night mode"
-              title={isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
-            >
-              {isDarkMode ? <Sun size={16} strokeWidth={2} /> : <Moon size={16} strokeWidth={2} />}
-            </button>
-            <AdminProfileMenu session={session} initials={initials} onSignOut={handleSignOut} />
-          </div>
-        </header>
+            <div className="db-row">
+              <button
+                type="button"
+                className="db-ib db-ib-sm"
+                onClick={toggleDarkMode}
+                aria-label="Night mode"
+                title={isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
+              >
+                {isDarkMode ? <Sun size={16} strokeWidth={2} /> : <Moon size={16} strokeWidth={2} />}
+              </button>
+              <AdminProfileMenu session={session} initials={initials} onSignOut={handleSignOut} />
+            </div>
+          </header>
 
-        <div className="db-body">
-          <AdminDrawer
-            isOpen={isNavOpen}
-            onClose={() => setIsNavOpen(false)}
-            active={active}
-          />
-          <AdminSidebar
-            active={active}
-            collapsed={isSideCollapsed}
-          />
-          <main className="db-main adm-main" id="admin-main">
-            <Outlet />
-          </main>
+          <div className="db-body">
+            <AdminDrawer
+              isOpen={isNavOpen}
+              onClose={() => setIsNavOpen(false)}
+              active={active}
+            />
+            <AdminSidebar
+              active={active}
+              collapsed={isSideCollapsed}
+            />
+            <main className="db-main adm-main" id="admin-main">
+              <Outlet />
+            </main>
+          </div>
+          <DeletionToasts />
         </div>
-      </div>
+      </TeacherDeletionProvider>
     </AdminDataProvider>
   );
 }

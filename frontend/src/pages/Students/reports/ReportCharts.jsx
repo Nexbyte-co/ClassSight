@@ -148,7 +148,8 @@ const SHORT = { daily: (l) => l, weekly: (l) => l.replace("Week of ", ""), month
 export function HistoryChart({ buckets, view }) {
   const [hover, setHover] = useState(null);
   if (buckets.length === 0) return <p className="sp-empty">No classes held in this selection.</p>;
-  const max = Math.max(...buckets.map((b) => b.total));
+  // At least 4 on the scale, so one or two classes read as short bars, not full-height blocks
+  const max = Math.max(4, ...buckets.map((b) => b.total));
   const every = Math.ceil(buckets.length / 12);
   const hb = hover === null ? null : buckets[hover];
   return (

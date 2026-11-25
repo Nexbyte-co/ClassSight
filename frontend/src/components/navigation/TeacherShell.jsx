@@ -15,6 +15,7 @@ import AppNavigationDrawer from "./AppNavigationDrawer";
 import Sidebar from "./Sidebar";
 import TeacherProfileMenu from "./TeacherProfileMenu";
 import TeacherNotificationsMenu from "./TeacherNotificationsMenu";
+import { useRequestNotifications } from "../../hooks/useRequestNotifications";
 
 // Below this width the sidebar is hidden and the hamburger opens the drawer instead
 const MOBILE_NAV_QUERY = "(max-width: 700px)";
@@ -36,10 +37,6 @@ const DEFAULT_DATE = new Date().toLocaleDateString("en-US", {
   year: "numeric",
 });
 
-const DEFAULT_NOTIFICATIONS = [
-  { id: 1, title: "Schedule Updated", text: "UCS503P room changed to L105", time: "2 hours ago" },
-];
-
 /**
  * Teacher page frame: top bar, collapsible sidebar and the mobile drawer.
  * `active` is "dashboard" | "classes" | "schedule" | "attendance" | ... ; `children` is the page's <main>.
@@ -48,7 +45,6 @@ function TeacherShell({
   active,
   children,
   overlays = null,
-  notifications = DEFAULT_NOTIFICATIONS,
   dateLabel = DEFAULT_DATE,
   liveBadge = false,
   rootClassName = "",
@@ -56,6 +52,7 @@ function TeacherShell({
   const navigate = useNavigate();
   const { isDarkMode, toggleDarkMode } = useTheme();
   const { signOut } = useAuth();
+  const bell = useRequestNotifications();
 
   const [isNavOpen, setIsNavOpen] = useState(false);
   const [isSideCollapsed, setIsSideCollapsed] = useState(readSideCollapsed);
@@ -76,7 +73,7 @@ function TeacherShell({
       });
   };
 
-  // Ends the mock demo sign-in and returns to the public landing page
+  // Ends the API session and returns to the public landing page
   const handleSignOut = () => {
     logout(); // also clear any API token from the backend login
     signOut();
@@ -122,10 +119,12 @@ function TeacherShell({
           </button>
 
           <TeacherNotificationsMenu
-            items={notifications}
+            items={bell.items}
+            hasNew={bell.hasNew}
             open={isNotificationsOpen}
             onOpenChange={(open) => {
               setIsNotificationsOpen(open);
+              if (open) bell.markSeen();
               if (open) setIsProfileOpen(false);
             }}
           />

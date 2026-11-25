@@ -17,7 +17,7 @@ function readStoredId() {
 
 export function ClassroomProvider({ children }) {
   const { session } = useAuth();
-  const userId = session?.id ?? null;
+  const userId = session && session.apiRole !== "student" ? session.id : null; // students have no teacher data
   const [classrooms, setClassrooms] = useState([]);
   const [selectedId, setSelectedId] = useState(readStoredId);
   const [loading, setLoading] = useState(false);

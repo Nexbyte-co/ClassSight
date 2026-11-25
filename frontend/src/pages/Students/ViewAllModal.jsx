@@ -1,26 +1,17 @@
-// src/pages/Students/ViewAllModal.jsx — every student in one band (the page's Subject / Batch filters apply)
+// src/pages/Students/ViewAllModal.jsx — every student in one band (the page's Subject / Class filters apply)
 import { useEffect, useMemo, useRef, useState } from "react";
 import { ArrowDownToLine, X } from "lucide-react";
 import { useDialogA11y } from "../../hooks/useDialogA11y";
+import { initials } from "../../utils/initials";
 import { BAND_ICON } from "./bandIcons";
-import {
-  BAND_LABEL,
-  BAND_ORDER,
-  SEMESTER_END,
-  SEMESTER_START,
-  bandOf,
-  bandRange,
-  downloadStudentsCsv,
-  initials,
-  labsToReach,
-  shortDate,
-} from "./studentsMock";
+import { BAND_LABEL, BAND_ORDER, bandOf, bandRange, downloadStudentsCsv, labsToReach, shortDate } from "./studentData";
+import Dropdown from "../Classes/Dropdown";
 
 const SORTS = {
   lo: (a, b) => a.pct - b.pct,
   hi: (a, b) => b.pct - a.pct,
   az: (a, b) => a.name.localeCompare(b.name),
-  roll: (a, b) => a.roll.localeCompare(b.roll),
+  roll: (a, b) => a.roll.localeCompare(b.roll, undefined, { numeric: true }),
 };
 
 export default function ViewAllModal({ band: initialBand, students, thr, context, onClose, onPick }) {
@@ -63,7 +54,7 @@ export default function ViewAllModal({ band: initialBand, students, thr, context
               {BAND_LABEL[band]} · {n} student{n === 1 ? "" : "s"}
             </h3>
             <p>
-              {context} · {bandRange(band, thr).toLowerCase()} · {shortDate(SEMESTER_START)} – {shortDate(SEMESTER_END)}
+              {context} · {bandRange(band, thr).toLowerCase()}
             </p>
           </div>
           <button type="button" className="st-exp" ref={firstRef} onClick={() => downloadStudentsCsv(list, thr, band)}>
@@ -83,20 +74,15 @@ export default function ViewAllModal({ band: initialBand, students, thr, context
               </button>
             ))}
           </div>
-          <select className="st-bsel" aria-label="Sort" value={sort} onChange={(e) => setSort(e.target.value)}>
-            <option value="lo">Lowest first</option>
-            <option value="hi">Highest first</option>
-            <option value="az">Name A–Z</option>
-            <option value="roll">Roll number</option>
-          </select>
+          <Dropdown className="st-bsel-dd" ariaLabel="Sort" label="Sort" align="right" value={sort} onChange={setSort} options={[{ value: "lo", label: "Lowest first" }, { value: "hi", label: "Highest first" }, { value: "az", label: "Name A–Z" }, { value: "roll", label: "Roll number" }]} />
         </div>
 
         {/* Header and rows share one scroll box so they stay aligned when the table scrolls sideways */}
         <div className="st-vbody">
           <div className="st-vgrid st-vhd" aria-hidden="true">
             <span>Student</span>
-            <span>Batch</span>
-            <span>Labs</span>
+            <span>Class</span>
+            <span>Sessions</span>
             <span>Attendance</span>
             <span>Last seen</span>
             <span>To reach {thr}%</span>
@@ -128,7 +114,7 @@ export default function ViewAllModal({ band: initialBand, students, thr, context
                   </div>
                   <span className="st-tla">{r.last ? shortDate(r.last) : "—"}</span>
                   <span className="st-vrec" style={{ color: need ? `var(--st-${b})` : "var(--st-ok)" }}>
-                    {need ? `Next ${need} lab${need > 1 ? "s" : ""} in a row` : "On track"}
+                    {!r.h ? "No sessions yet" : need ? `Next ${need} session${need > 1 ? "s" : ""} in a row` : "On track"}
                   </span>
                 </button>
               );

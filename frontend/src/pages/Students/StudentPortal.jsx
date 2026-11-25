@@ -1,6 +1,6 @@
 // src/pages/Students/StudentPortal.jsx
-// Student portal (frontend demo): shared layout with student-only navigation,
-// plus skeleton pages. Reached only through the mock demo sign-in (StudentArea guard).
+// Student portal: shared layout with student-only navigation,
+// plus skeleton pages. Reached only after a real student sign-in (StudentArea guard).
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import {
@@ -22,7 +22,8 @@ import "../../styles/Reports.css";
 import "../../components/navigation/AppNavigationDrawer.css";
 import "./StudentPortal.css";
 import { useTheme } from "../../context/theme/ThemeContext";
-import { useDemoSession } from "../../context/demo-session/DemoSessionContext";
+import { useAuth } from "../../context/AuthContext";
+import { useMyPhoto } from "../../context/students/useMyPhoto";
 import { useBuildStudentModel } from "../../context/students/useStudentModel";
 import { useStudentPrefs } from "../../context/students/studentPrefs";
 import TeacherNotificationsMenu from "../../components/navigation/TeacherNotificationsMenu";
@@ -35,8 +36,13 @@ const STUDENT_NAV = [
   { to: "/student/settings", label: "Settings", Icon: SettingsIcon },
 ];
 
-// Fixed mock semester information
-const TERM = { title: "Odd Semester", sub: "2026–27", note: "Student portal" };
+// The current term, worked out from today's date (July-December is the odd semester, January-June the even one)
+const termInfo = (now = new Date()) => {
+  const odd = now.getMonth() >= 6;
+  const y = now.getFullYear();
+  return { title: odd ? "Odd Semester" : "Even Semester", sub: odd ? `${y}–${String(y + 1).slice(2)}` : `${y - 1}–${String(y).slice(2)}`, note: "Student portal" };
+};
+const TERM = termInfo();
 
 // Below this width the sidebar is hidden and the menu button opens the drawer instead (same as TeacherShell)
 const MOBILE_NAV_QUERY = "(max-width: 700px)";
@@ -112,6 +118,7 @@ function StudentProfileMenu({ session, onSignOut }) {
   }, [open]);
 
   const first = session.name.split(" ")[0];
+  const photo = useMyPhoto(session);
   return (
     <div className="user-profile-wrapper teacher-profile-menu" ref={wrapRef}>
       <button
@@ -123,7 +130,9 @@ function StudentProfileMenu({ session, onSignOut }) {
         aria-label={`Account menu for ${session.name}`}
         onClick={() => setOpen((v) => !v)}
       >
-        <span className="profile-avatar" aria-hidden="true">{session.name.charAt(0)}</span>
+        <span className="profile-avatar" aria-hidden="true">
+          {photo ? <img src={photo} alt="" className="profile-avatar-img" /> : session.name.charAt(0)}
+        </span>
         <span className="profile-stack">
           <span className="profile-stack-name">{first}</span>
           <span className="profile-stack-dept">{session.roll ?? "Student"}</span>
@@ -220,14 +229,14 @@ export function StudentPortalLayout() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const { isDarkMode, toggleDarkMode } = useTheme();
-  const { session, signOut } = useDemoSession();
+  const { session, signOut } = useAuth();
   const [isNavOpen, setIsNavOpen] = useState(false);
   const [isSideCollapsed, setIsSideCollapsed] = useState(readSideCollapsed);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
-  const model = useBuildStudentModel(session);
+  const { model, loading, error, reload } = useBuildStudentModel();
   const [prefs, setPref] = useStudentPrefs();
   // The bell shows the student's own attendance alerts, minus the kinds they switched off in Settings
-  const notifications = model.alerts
+  const notifications = (model?.alerts ?? [])
     .filter((a) => (a.id === "unverified" ? prefs.pendingReview : prefs.lowAttendance))
     .map((a) => ({ id: a.id, title: a.title, text: a.text }));
   const navRef = useRef(null);
@@ -336,7 +345,21 @@ export function StudentPortalLayout() {
         </div>
 
         <main className="dashboard-main">
-          <Outlet context={{ ...model, prefs, setPref, sideCollapsed: isSideCollapsed, setSideCollapsed, signOut: handleSignOut }} />
+          {model ? (
+            <Outlet context={{ ...model, prefs, setPref, sideCollapsed: isSideCollapsed, setSideCollapsed, signOut: handleSignOut }} />
+          ) : (
+            <div className="db-card" style={{ margin: 24, padding: 24, display: "grid", gap: 12 }} role="status">
+              <b>{loading ? "Loading your attendance…" : "We couldn't load your attendance."}</b>
+              {!loading && (
+                <>
+                  <span>{error}</span>
+                  <button type="button" className="db-btn" style={{ width: "fit-content" }} onClick={reload}>
+                    Try again
+                  </button>
+                </>
+              )}
+            </div>
+          )}
         </main>
       </div>
 

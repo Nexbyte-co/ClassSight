@@ -1,13 +1,15 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { Icon } from "./icons";
 import StudentTile from "./StudentTile";
-import { BATCHES, formatRange } from "./reportsMock";
+import { formatRange } from "./reportsUtil";
+import { useReports } from "./useReports";
 
 const TILE_GAP = 12;
 
 // Students under 75% for the selected batch (or all batches). The list scrolls by whole rows
 // with the chevrons on the right instead of a scrollbar; View more opens the full list in a window.
 function LowestAttendanceCard({ batchIndex, allMode, from, to, students, query, onQueryChange, onExport, onViewMore }) {
+  const { BATCHES } = useReports();
   const listRef = useRef(null);
   const [canUp, setCanUp] = useState(false);
   const [canDown, setCanDown] = useState(false);

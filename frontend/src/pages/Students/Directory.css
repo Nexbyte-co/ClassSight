@@ -1287,3 +1287,29 @@
 .db-page.teacher-ui.st-root .st-dc.mul:hover,
 .db-page.teacher-ui.st-root .st-dc.mul:focus,
 .db-page.teacher-ui.st-root .st-dc.mul:focus-within { z-index: 5; }
+
+/* Load / empty / error line under the page header (real data) */
+.st-root .st-status { margin: 0 0 14px; font-size: 14px; color: var(--st-mu, inherit); }
+.st-root .st-status-error { color: var(--st-er, #b91c1c); }
+.st-root .st-exp:disabled { opacity: .55; cursor: default; }
+
+/* Class overview card: never overflow its column. Pickers and the last-session row wrap, the band boxes
+   stack their label over the range, and a narrow card puts the ring above the rest. */
+.db-page.teacher-ui .st-bdeck { min-width: 0; gap: 18px; }
+.db-page.teacher-ui .st-bring { max-width: 160px; }
+.db-page.teacher-ui .st-bring-meta { overflow-wrap: anywhere; }
+.db-page.teacher-ui .st-bpick { flex-wrap: wrap; }
+.db-page.teacher-ui .st-bpick .st-fld:first-child { flex: 1 1 170px; max-width: none; }
+.db-page.teacher-ui .st-bpick .st-fld:nth-child(2) { flex: 1 1 110px; }
+.db-page.teacher-ui .st-bpick .st-allb { flex: none; }
+.db-page.teacher-ui .st-bsel { width: 100%; min-width: 0; }
+.db-page.teacher-ui .st-cnts span { flex-direction: column; gap: 1px; }
+.db-page.teacher-ui .st-cnts > div { min-width: 0; }
+.db-page.teacher-ui .st-blast { flex-wrap: wrap; row-gap: 6px; }
+.db-page.teacher-ui .st-blast .st-lnk { margin-left: auto; white-space: nowrap; }
+
+/* Sort dropdown in the "View all" window (shared Dropdown) */
+.db-page.teacher-ui .st-vat .st-bsel-dd { width: 200px; margin-left: auto; flex: none; }
+@media (max-width: 720px) {
+  .db-page.teacher-ui .st-vat .st-bsel-dd { width: 100%; margin-left: 0; }
+}

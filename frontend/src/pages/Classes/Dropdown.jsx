@@ -3,6 +3,7 @@
 // Enter/Space/Arrow keys open it, Arrow/Home/End move, Enter/Space pick, Escape/Tab/outside click close.
 import { useEffect, useId, useRef, useState } from "react";
 import { Check, ChevronDown } from "lucide-react";
+import "./Dropdown.css";
 
 export default function Dropdown({ label, value, options, onChange, ariaLabel, icon: Icon, active = false, align = "left", className = "" }) {
   const [open, setOpen] = useState(false);

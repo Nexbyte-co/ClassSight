@@ -1,8 +1,8 @@
 // src/pages/AttendanceSession/AbsentLane.jsx — students confirmed not in class (Undo asks first)
-import { CircleMinus } from "lucide-react";
-import { initials } from "../Students/studentsMock";
+import { CircleMinus, Maximize2 } from "lucide-react";
+import { initials } from "../../utils/initials";
 
-export default function AbsentLane({ rows, saved, onUndo }) {
+export default function AbsentLane({ rows, saved, locked, onUndo, onExpand }) {
   return (
     <section className="as-lane lne db-rise" aria-label="Absent">
       <header>
@@ -14,6 +14,11 @@ export default function AbsentLane({ rows, saved, onUndo }) {
           <p>Confirmed not in class</p>
         </div>
         <span className="lc">{rows.length}</span>
+        {onExpand && (
+          <button type="button" className="as-lexp" aria-label="Open Absent in a larger window" title="Open in a larger window" onClick={onExpand}>
+            <Maximize2 size={14} strokeWidth={2.2} aria-hidden="true" />
+          </button>
+        )}
       </header>
       <div className="as-ll">
         {rows.length ? (
@@ -27,7 +32,7 @@ export default function AbsentLane({ rows, saved, onUndo }) {
                 <i>{r.roll}</i>
               </span>
               {!saved && (
-                <button type="button" className="as-undo" onClick={(e) => onUndo(r.j, e.currentTarget)}>
+                <button type="button" className="as-undo" disabled={locked} onClick={() => onUndo(r.j)}>
                   Undo
                 </button>
               )}

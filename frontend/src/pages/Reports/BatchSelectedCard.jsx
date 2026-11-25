@@ -1,7 +1,10 @@
 import { Icon } from "./icons";
-import { BATCHES, SUBJECTS, batchesOfSubject, batchStats, formatRange } from "./reportsMock";
+import { formatRange } from "./reportsUtil";
+import { useReports } from "./useReports";
+import Dropdown from "../Classes/Dropdown";
 
 function BatchSelectedCard({ subject, batchIndex, allMode, from, to, onSubjectChange, onBatchChange, onToggleAll }) {
+  const { BATCHES, SUBJECTS, batchesOfSubject, batchStats } = useReports();
   const batch = BATCHES[batchIndex];
   const siblings = batchesOfSubject(subject);
   const stats = batchStats(batchIndex, from, to);
@@ -17,22 +20,14 @@ function BatchSelectedCard({ subject, batchIndex, allMode, from, to, onSubjectCh
           </div>
         </div>
         <div className="rp-sels">
-          <label>
-            <span>Subject</span>
-            <select className="rp-sel" value={subject} onChange={(e) => onSubjectChange(Number(e.target.value))}>
-              {SUBJECTS.map((s, i) => (
-                <option key={s.code} value={i}>{s.name}</option>
-              ))}
-            </select>
-          </label>
-          <label>
-            <span>Batch</span>
-            <select className="rp-sel" value={batchIndex} onChange={(e) => onBatchChange(Number(e.target.value))}>
-              {siblings.map((b) => (
-                <option key={b.index} value={b.index}>{b.group}</option>
-              ))}
-            </select>
-          </label>
+          <div className="rp-sel-f">
+            <span aria-hidden="true">Subject</span>
+            <Dropdown ariaLabel="Subject" value={subject} onChange={onSubjectChange} options={SUBJECTS.map((s, i) => ({ value: i, label: s.name }))} />
+          </div>
+          <div className="rp-sel-f">
+            <span aria-hidden="true">Batch</span>
+            <Dropdown ariaLabel="Batch" value={batchIndex} onChange={onBatchChange} options={siblings.map((b) => ({ value: b.index, label: b.group }))} />
+          </div>
         </div>
       </div>
 

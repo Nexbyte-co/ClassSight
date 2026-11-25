@@ -4,7 +4,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useRef, use
 import { listUsers } from "../api/users";
 import { listClassrooms } from "../api/classrooms";
 import { listSections, listSectionStudents } from "../api/sections";
-import { getAnalytics, listLogs } from "../api/attendance";
+import { listLogs } from "../api/attendance";
 
 const AdminDataContext = createContext(null);
 
@@ -13,7 +13,7 @@ const EMPTY = {
   classrooms: [],
   sections: [],
   students: [], // every student, with section_id
-  analytics: {}, // classroomId -> ClassroomAnalyticsOut
+  sessionsByClass: {}, // classroomId -> number of attendance sessions taken
   logs: {}, // classroomId -> [{ session, records }]
 };
 
@@ -24,18 +24,17 @@ async function fetchAll() {
     listSections(),
   ]);
   // Per-section and per-class calls: one failure must not blank the whole admin area.
-  const [rosters, analyticsList, logsList] = await Promise.all([
+  const [rosters, logsList] = await Promise.all([
     Promise.all(sections.map((s) => listSectionStudents(s.id).catch(() => []))),
-    Promise.all(classrooms.map((c) => getAnalytics(c.id).catch(() => null))),
     Promise.all(classrooms.map((c) => listLogs(c.id).catch(() => []))),
   ]);
-  const analytics = {};
   const logs = {};
+  const sessionsByClass = {};
   classrooms.forEach((c, i) => {
-    if (analyticsList[i]) analytics[c.id] = analyticsList[i];
     logs[c.id] = logsList[i];
+    sessionsByClass[c.id] = logsList[i].length;
   });
-  return { users, classrooms, sections, students: rosters.flat(), analytics, logs };
+  return { users, classrooms, sections, students: rosters.flat(), sessionsByClass, logs };
 }
 
 export function AdminDataProvider({ children }) {
@@ -90,7 +89,7 @@ function rate(present, total) {
   return total ? present / total : null;
 }
 
-function derive({ users, classrooms, sections, students, analytics, logs }) {
+function derive({ users, classrooms, sections, students, logs }) {
   const userById = new Map(users.map((u) => [u.id, u]));
   const teachers = users.filter((u) => u.role === "teacher");
   const admins = users.filter((u) => u.role === "admin");
@@ -121,12 +120,12 @@ function derive({ users, classrooms, sections, students, analytics, logs }) {
     .sort((a, b) => (a.date === b.date ? b.id - a.id : a.date < b.date ? 1 : -1));
 
   // Platform totals across all classes.
-  const totals = Object.values(analytics).reduce(
-    (acc, a) => {
-      acc.present += a.present_count;
-      acc.absent += a.absent_count;
-      acc.excused += a.excused_count;
-      acc.sessions += a.total_sessions;
+  const totals = sessions.reduce(
+    (acc, s) => {
+      acc.present += s.present;
+      acc.absent += s.absent;
+      acc.excused += s.excused;
+      acc.sessions += 1;
       return acc;
     },
     { present: 0, absent: 0, excused: 0, sessions: 0 }

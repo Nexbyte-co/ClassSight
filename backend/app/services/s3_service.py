@@ -23,10 +23,14 @@ _EXTENSIONS = {"image/jpeg": "jpg", "image/png": "png"}
 
 def _client(endpoint_url: str | None = None):
     settings = get_settings()
+    keys = {}
+    if settings.local_s3_access_key and settings.local_s3_secret_key:
+        keys = {"aws_access_key_id": settings.local_s3_access_key, "aws_secret_access_key": settings.local_s3_secret_key}
     return boto3.client(
         "s3",
         region_name=settings.aws_region,
         endpoint_url=endpoint_url or settings.s3_endpoint_url,
+        **keys,
     )
 
 

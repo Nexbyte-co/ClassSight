@@ -12,7 +12,7 @@ import "../../styles/Dashboard.css";
 import "../../styles/Reports.css";
 import TeacherShell from "../../components/navigation/TeacherShell";
 import { useSettings } from "../../context/settings/SettingsContext";
-import { BATCHES, batchSessions, findBatch } from "./reportsMock";
+import { useReports } from "./useReports";
 
 const fmtDate = (d) => d.toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short", year: "numeric" });
 
@@ -25,86 +25,50 @@ function ReportDetails() {
 
   // Parse parameters
   const mode = searchParams.get("mode") || "total"; // 'total' or 'range'
-  const course = searchParams.get("course") || "Data Structures";
-  const section = searchParams.get("section") || "3C2";
-  const fromDate = searchParams.get("from") || "01 Sep 2026";
-  const toDate = searchParams.get("to") || "05 Sep 2026";
+  const course = searchParams.get("course") || "";
+  const section = searchParams.get("section") || "";
+  const fromDate = searchParams.get("from") || "";
+  const toDate = searchParams.get("to") || "";
 
   const isTotalMode = mode === "total";
 
-  // Per-course baseline stats (mirrors the sample data used on the Reports page)
-  const courseStatsMap = {
-    "Data Structures": { code: "UCE301", totalStudents: 50, totalLectures: 28 },
-    "Database Systems": { code: "UCE305", totalStudents: 50, totalLectures: 26 },
-    "Operating Systems": { code: "UCE304", totalStudents: 48, totalLectures: 30 },
-  };
-  // Timetable batches (Reports, Students "Open record") use their real weekly sessions
+  // Every number comes from the batch's real saved sessions.
+  const { BATCHES, findBatch, batchSessions, loading } = useReports();
   const batchIndex = findBatch(course, section);
   const batch = batchIndex >= 0 ? BATCHES[batchIndex] : null;
-  const fallback = courseStatsMap[course] || courseStatsMap["Data Structures"];
-  const stats = batch
-    ? { code: batch.code, totalStudents: 30, totalLectures: batchSessions(batchIndex).length }
-    : fallback;
-
-  // Build lecture-wise rows: one row per day in range mode, or the most
-  // recent sessions in total mode. Present-count is derived deterministically
-  // so the numbers stay stable for a given course/date instead of re-randomizing.
-  const buildLectureRows = () => {
-    if (batch) {
-      const all = batchSessions(batchIndex);
-      if (isTotalMode) return all;
-      const a = new Date(fromDate);
-      const b = new Date(toDate);
-      return all.filter((r) => r.date >= a && r.date <= b);
-    }
-    const rows = [];
-    const seed = course.length;
-
-    if (isTotalMode) {
-      const count = Math.min(stats.totalLectures, 8);
-      for (let i = 0; i < count; i++) {
-        const lectureNum = stats.totalLectures - count + i + 1;
-        const present = Math.max(
-          Math.round(stats.totalStudents * 0.7),
-          stats.totalStudents - ((lectureNum * 3 + seed) % 9)
-        );
-        // Weekly sessions counting back from the last teaching day (22 Oct 2026)
-        const date = new Date(2026, 9, 22 - (count - 1 - i) * 7);
-        rows.push({ date, code: stats.code, type: "Lecture", present, total: stats.totalStudents });
-      }
-    } else {
-      const start = new Date(fromDate);
-      const end = new Date(toDate);
-      if (!isNaN(start) && !isNaN(end) && start <= end) {
-        const cursor = new Date(start);
-        let dayIndex = 0;
-        while (cursor <= end) {
-          const present = Math.max(
-            Math.round(stats.totalStudents * 0.7),
-            stats.totalStudents - ((dayIndex * 3 + seed) % 9)
-          );
-          rows.push({
-            date: new Date(cursor),
-            code: stats.code,
-            type: "Lecture",
-            present,
-            total: stats.totalStudents,
-          });
-          cursor.setDate(cursor.getDate() + 1);
-          dayIndex++;
-        }
-      }
-    }
-    return isTotalMode ? rows.reverse() : rows;
-  };
-
-  const lectureRows = buildLectureRows();
+  const allRows = batch ? batchSessions(batchIndex) : [];
+  const lectureRows = isTotalMode
+    ? allRows
+    : allRows.filter((r) => {
+        const a = new Date(fromDate);
+        const b = new Date(toDate);
+        return !isNaN(a) && !isNaN(b) && r.date >= a && r.date <= b;
+      });
+  const stats = batch ? { code: batch.code, totalStudents: batch.students.length, totalLectures: allRows.length } : null;
   const presentSum = lectureRows.reduce((sum, r) => sum + r.present, 0);
-  const possibleSum = lectureRows.length * stats.totalStudents;
+  const possibleSum = lectureRows.reduce((sum, r) => sum + r.total, 0);
   const overallPct = possibleSum > 0 ? Math.round((presentSum / possibleSum) * 100) : 0;
-  const belowThresholdCount = lectureRows.filter(
-    (r) => Math.round((r.present / r.total) * 100) < attendanceThreshold
-  ).length;
+  const rowPct = (r) => (r.total > 0 ? Math.round((r.present / r.total) * 100) : 0);
+  const belowThresholdCount = lectureRows.filter((r) => rowPct(r) < attendanceThreshold).length;
+
+  if (!batch) {
+    return (
+      <TeacherShell active="reports" rootClassName="reports-root">
+        <main className="reports-main">
+          <div className="teacher-page-nav">
+            <Link to="/reports" className="btn-back-breadcrumb">
+              <ArrowLeft size={16} aria-hidden="true" />
+              <span>Back to Reports</span>
+            </Link>
+          </div>
+          <div className="report-scope-card" role="status">
+            <h1 className="scope-title">{loading ? "Loading the report…" : "We couldn't find that class"}</h1>
+            {!loading && <div className="scope-meta">Open a class from Reports or Students to see its sessions.</div>}
+          </div>
+        </main>
+      </TeacherShell>
+    );
+  }
 
   return (
     <TeacherShell active="reports" rootClassName="reports-root">
@@ -221,7 +185,7 @@ function ReportDetails() {
                   <div className="lecture-row-empty">No sessions found for this selection.</div>
                 ) : (
                   lectureRows.map((row, idx) => {
-                    const pct = Math.round((row.present / row.total) * 100);
+                    const pct = rowPct(row);
                     const isLow = pct < attendanceThreshold;
                     return (
                       <div className="lecture-row" key={idx}>

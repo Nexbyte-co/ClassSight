@@ -2,7 +2,7 @@
 import { Maximize2 } from "lucide-react";
 import StudentCard from "./StudentCard";
 import { BAND_ICON } from "./bandIcons";
-import { BAND_LABEL, bandRange } from "./studentsMock";
+import { BAND_LABEL, bandRange } from "./studentData";
 
 // Cards visible before the list scrolls (the footer counts against this)
 const VISIBLE = 5;

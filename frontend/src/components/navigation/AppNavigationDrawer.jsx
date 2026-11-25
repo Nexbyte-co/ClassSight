@@ -11,8 +11,8 @@ import {
   LogOut,
   ScanFace,
 } from "lucide-react";
-import "./AppNavigationDrawer.css";
 import ReportsIcon from "./ReportsIcon";
+import "./AppNavigationDrawer.css";
 import { logout } from "../../api/auth";
 import { useAuth } from "../../context/AuthContext";
 
@@ -97,8 +97,8 @@ function AppNavigationDrawer({ isOpen, onClose, activePage }) {
     };
   }, [isOpen]);
 
-  // Ends the mock demo sign-in and returns to the public landing page
-  const { signOut } = useAuth();
+  // Ends the API session and returns to the public landing page
+  const { signOut, session } = useAuth();
   const handleSignOut = () => {
     onClose();
     logout(); // also clear any API token from the backend login
@@ -197,7 +197,7 @@ function AppNavigationDrawer({ isOpen, onClose, activePage }) {
         <div className="app-nav-footer">
           <div className="app-nav-term-badge">
             <strong>{termLabel()}</strong>
-            <span>CSE Dept. · Semester 6</span>
+            {session?.department && <span>{session.department}</span>}
           </div>
 
           <button

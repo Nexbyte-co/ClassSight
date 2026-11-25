@@ -1,6 +1,6 @@
 import pytest
 
-from app.models import Classroom, Lecture
+from app.models import Classroom, Department, Lecture
 from tests.conftest import auth_headers, make_classroom
 
 TEACHER = ("teacher1@classsight.example", "teacherpass123")
@@ -29,13 +29,13 @@ def test_owner_creates_and_lists_lectures(client, teacher_user, classroom):
     assert [item["weekday"] for item in listing] == [0, 2]
 
 
-def test_one_lecture_per_class_per_weekday(client, teacher_user, classroom):
+def test_same_kind_twice_on_a_weekday_needs_different_start_times(client, teacher_user, classroom):
     headers = auth_headers(client, *TEACHER)
     assert client.post(_url(classroom), json=_slot(), headers=headers).status_code == 201
-    again = client.post(_url(classroom), json=_slot(start="13:00", end="14:00"), headers=headers)
-    assert again.status_code == 409
-    assert "weekday" in again.json()["detail"]
-
+    assert client.post(_url(classroom), json=_slot(start="13:00", end="14:00"), headers=headers).status_code == 201
+    same_start = client.post(_url(classroom), json=_slot(end="10:30"), headers=headers)
+    assert same_start.status_code == 409
+    assert "weekday" in same_start.json()["detail"]
 
 @pytest.mark.parametrize(
     "payload",
@@ -132,7 +132,11 @@ def test_schedule_requires_login(client):
     assert client.get("/lectures").status_code == 401
 
 
-def test_classroom_create_stores_course_code_and_department(client, admin_user, teacher_user):
+def test_classroom_create_stores_course_code_and_department(
+    client, admin_user, teacher_user, db_session
+):
+    db_session.add(Department(name="Department of Computer Science & Engineering"))
+    db_session.commit()
     headers = auth_headers(client, *ADMIN)
     response = client.post(
         "/classrooms",
@@ -141,14 +145,14 @@ def test_classroom_create_stores_course_code_and_department(client, admin_user, 
             "section": "3C2C",
             "teacher_id": teacher_user.id,
             "course_code": " UCS503P ",
-            "department": "Computer Science & Eng.",
+            "department": "Department of Computer Science & Engineering",
         },
         headers=headers,
     )
     assert response.status_code == 201, response.text
     body = response.json()
     assert body["course_code"] == "UCS503P"
-    assert body["department"] == "Computer Science & Eng."
+    assert body["department"] == "Department of Computer Science & Engineering"
 
 
 def test_classroom_without_details_defaults_to_empty(client, admin_user, teacher_user):
@@ -159,3 +163,49 @@ def test_classroom_without_details_defaults_to_empty(client, admin_user, teacher
         headers=headers,
     ).json()
     assert body["course_code"] == "" and body["department"] == ""
+
+
+def _move(lecture_id, weekday, start, end):
+    return {"lecture_id": lecture_id, "weekday": weekday, "start_time": start, "end_time": end}
+
+
+def test_admin_moves_slots_at_once_and_can_swap(client, admin_user, teacher_user, classroom):
+    headers = auth_headers(client, *ADMIN)
+    a = client.post(_url(classroom), json=_slot(weekday=0, start="08:00", end="08:50"), headers=headers).json()
+    b = client.post(_url(classroom), json=_slot(weekday=0, start="08:50", end="09:40"), headers=headers).json()
+    lab = client.post(
+        _url(classroom), json={**_slot(weekday=1, start="09:40", end="11:20"), "session_type": "lab"}, headers=headers
+    ).json()
+    moved = client.patch(
+        "/lectures",
+        json={"moves": [
+            _move(a["id"], 0, "08:50", "09:40"),
+            _move(b["id"], 0, "08:00", "08:50"),
+            _move(lab["id"], 3, "13:50", "15:30"),
+        ]},
+        headers=headers,
+    )
+    assert moved.status_code == 200, moved.text
+    by_id = {item["id"]: item for item in client.get(_url(classroom), headers=headers).json()}
+    assert by_id[a["id"]]["start_time"] == "08:50:00" and by_id[b["id"]]["start_time"] == "08:00:00"
+    assert by_id[lab["id"]]["weekday"] == 3 and by_id[lab["id"]]["end_time"] == "15:30:00"
+    assert by_id[lab["id"]]["session_type"] == "lab" and by_id[lab["id"]]["room"] == "L105"
+
+
+def test_move_rejects_a_clash_with_the_teachers_other_class(client, admin_user, teacher_user, classroom, db_session):
+    other = make_classroom(db_session, "MA101", "B", teacher_user.id)
+    headers = auth_headers(client, *ADMIN)
+    mine = client.post(_url(classroom), json=_slot(weekday=0, start="08:00", end="08:50"), headers=headers).json()
+    client.post(_url(other), json=_slot(weekday=2, start="09:40", end="11:20"), headers=headers)
+    clash = client.patch("/lectures", json={"moves": [_move(mine["id"], 2, "10:30", "11:20")]}, headers=headers)
+    assert clash.status_code == 409
+    assert "MA101" in clash.json()["detail"]
+    # nothing changed
+    assert client.get(_url(classroom), headers=headers).json()[0]["weekday"] == 0
+
+
+def test_only_admins_move_slots(client, teacher_user, classroom):
+    headers = auth_headers(client, *TEACHER)
+    lec = client.post(_url(classroom), json=_slot(), headers=headers).json()
+    res = client.patch("/lectures", json={"moves": [_move(lec["id"], 1, "08:00", "08:50")]}, headers=headers)
+    assert res.status_code == 403

@@ -4,9 +4,6 @@ export function listLogs(classroomId) {
   return api.get("/attendance/logs", { classroom_id: classroomId });
 }
 
-export function getAnalytics(classroomId) {
-  return api.get("/attendance/analytics", { classroom_id: classroomId });
-}
 
 // One session per class per day; the API answers 409 if today's already exists.
 export function createSession(classroomId, sessionDate) {
@@ -28,4 +25,10 @@ export function processSession(sessionId) {
 // Replaces everything saved for the session.
 export function confirmSession(sessionId, records) {
   return api.post(`/attendance/confirm?session_id=${sessionId}`, { records });
+}
+
+// Who a tapped NFC card belongs to in this class: { student_id, roll_number, name }.
+// 404 = card not linked to anyone; 422 = the student isn't in this class. Nothing is saved.
+export function nfcTap(classroomId, uid) {
+  return api.post(`/attendance/nfc?classroom_id=${classroomId}`, { uid });
 }

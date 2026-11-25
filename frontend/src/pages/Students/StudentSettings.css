@@ -30,3 +30,13 @@
   align-items: center;
   gap: 8px;
 }
+
+/* One scrolling page: the jump bar sticks to the top of the scrolling area (the portal's own top bar is outside it) */
+.db-page.teacher-ui.sp-setwrap .ts-jump { top: 0; }
+.db-page.teacher-ui.sp-setwrap .ts-sec { scroll-margin-top: 64px; }
+.db-page.teacher-ui.sp-setwrap .ts-sections { padding-bottom: 24px; }
+/* A sticky bar sticks below the scroll box's top padding, which let content show above it; the space now
+   sits on the header instead, so the bar pins to the very top edge */
+.db-page.teacher-ui.sp-setwrap > .db-main { padding-top: 0; }
+.db-page.teacher-ui.sp-setwrap .reports-page-header { padding-top: clamp(16px, 1.8vw, 32px); }
+.db-page.teacher-ui.sp-setwrap .ts-jump { padding-top: 6px; box-shadow: 0 1px 0 var(--cs-border); }

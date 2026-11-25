@@ -93,7 +93,7 @@ export default function StudentAttendance() {
         <div>
           <h1>Reports</h1>
           <p>
-            {T}% required · a lab counts as 2 lectures · {held.length} class{held.length === 1 ? "" : "es"}{m.usingDemo ? " · sample data" : ""}
+            {T}% required · a lab counts as 2 lectures · {held.length} class{held.length === 1 ? "" : "es"}
           </p>
         </div>
         <span className="sp-tools rp-filters" aria-label="Report filters">

@@ -1,108 +1,67 @@
-// src/pages/AttendanceSession/ResolveCard.jsx — confirm the selected student: NFC card, retake photo,
-// mark present or keep absent, with their recent labs for context.
-// Nav arrows are now tall side-panels on the left/right edges of the card.
-import { useEffect, useRef, useState } from "react";
+// src/pages/AttendanceSession/ResolveCard.jsx — confirm the selected student: mark present or keep
+// absent (NFC is not available yet; photo verification is in the Face check card), with their
+// recent sessions in this class for context.
+import { useState } from "react";
 import {
-  Camera, Check, ChevronLeft, ChevronRight,
-  CircleAlert, CircleMinus, Hand, Nfc, X,
+  Check, ChevronLeft, ChevronRight,
+  CircleAlert, CircleMinus, Hand, X,
 } from "lucide-react";
 import { useSettings } from "../../context/settings/SettingsContext";
-import { BAND_LABEL, bandOf, initials, labDate, shortDate } from "../Students/studentsMock";
-import { BATCH_INDEX, OVERALL, SESSION } from "./attendanceMock";
+import { getAtRiskFloor } from "../../context/settings/settingsStore";
+import { initials } from "../../utils/initials";
 
-const WINDOW = 4; // labs visible at once
-const reducedMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const WINDOW = 4; // sessions visible at once
+const BAND_LABEL = { er: "Critical", wa: "Warning", ok: "Good" };
+const bandOf = (pct, thr) => (pct >= thr ? "ok" : pct >= getAtRiskFloor(thr) ? "wa" : "er");
+const shortDate = (key) => new Date(`${key}T12:00:00`).toLocaleDateString("en-GB", { day: "numeric", month: "short" });
 
-const ACTIONS = [
-  ["nfc",  "NFC card",     Nfc,         "nfc"],
-  ["ai",   "Retake photo", Camera,      "info"],
-  ["man",  "Mark present", Hand,        "br"],
-  ["abs",  "Keep absent",  CircleMinus, "ne"],
-];
-
-/* ---------- Recent Labs widget ---------- */
-function RecentLabs({ pres, offset, onPage }) {
-  const N = pres.length;
-  const [slide, setSlide] = useState("");
-  const o = Math.max(0, Math.min(N - WINDOW, offset ?? N - WINDOW));
-
-  const handlePrev = () => { setSlide("prev"); onPage(o - 1); };
-  const handleNext = () => { setSlide("next"); onPage(o + 1); };
-
+/* ---------- Recent sessions widget ---------- */
+function RecentSessions({ history }) {
+  const N = history.length;
+  const max = Math.max(0, N - WINDOW);
+  const [offset, setOffset] = useState(max);
+  const o = Math.min(offset, max);
+  if (!N) {
+    return (
+      <div className="as-rlab">
+        <div className="as-rlh">
+          <span className="as-k2">Recent sessions</span>
+          <span className="as-dnote">No earlier attendance in this class</span>
+        </div>
+      </div>
+    );
+  }
+  const slice = history.slice(o, o + WINDOW);
   return (
     <div className="as-rlab">
-      {/* Header row */}
       <div className="as-rlh">
-        <span className="as-k2">Recent labs</span>
+        <span className="as-k2">Recent sessions</span>
         <span className="as-dnote">
-          {shortDate(labDate(BATCH_INDEX, o))} – {shortDate(labDate(BATCH_INDEX, o + WINDOW - 1))}
+          {shortDate(slice[0].date)} – {shortDate(slice[slice.length - 1].date)}
         </span>
       </div>
-
-      {/* Scrollable row of lab cells + navigation chevrons */}
       <div className="as-drow">
-        <button
-          type="button"
-          className="as-lnav"
-          aria-label="Earlier labs"
-          disabled={o <= 0}
-          onClick={handlePrev}
-        >
+        <button type="button" className="as-lnav" aria-label="Earlier sessions" disabled={o <= 0} onClick={() => setOffset(Math.max(0, o - WINDOW))}>
           <ChevronLeft size={15} strokeWidth={2.4} aria-hidden="true" />
         </button>
-
-        <div
-          key={`${o}-${slide}`}
-          className={`as-rlabs ${slide ? `slide-${slide}` : ""}`}
-        >
-          {pres.slice(o, o + WINDOW).map((present, k) => {
-            const w = o + k;
-            const d = labDate(BATCH_INDEX, w);
-            const isCurrent = w === N - 1;
-            return (
-              <div
-                key={w}
-                className={`as-rlc ${isCurrent ? "cur" : ""}`}
-                title={`${shortDate(d)} · ${SESSION.start} · ${present ? "Present" : "Absent"}`}
-              >
-                {/* Status icon */}
-                <span className={`as-rlq ${present ? "p" : "a"}`}>
-                  {present
-                    ? <Check size={12} strokeWidth={3} aria-hidden="true" />
-                    : <X    size={12} strokeWidth={3} aria-hidden="true" />}
-                  <span className="sr-only">{present ? "Present" : "Absent"}</span>
-                </span>
-
-                {/* Date label – day + short month */}
-                <b>{shortDate(d)}</b>
-
-                {/* Session start time */}
-                <i>{SESSION.start}</i>
-
-                {isCurrent && (
-                  <span className="as-rlc-now" aria-label="Today's session">Now</span>
-                )}
-              </div>
-            );
-          })}
+        <div className="as-rlabs">
+          {slice.map((entry) => (
+            <div key={entry.date} className="as-rlc" title={`${shortDate(entry.date)} · ${entry.present ? "Present" : "Absent"}`}>
+              <span className={`as-rlq ${entry.present ? "p" : "a"}`}>
+                {entry.present ? <Check size={12} strokeWidth={3} aria-hidden="true" /> : <X size={12} strokeWidth={3} aria-hidden="true" />}
+                <span className="sr-only">{entry.present ? "Present" : "Absent"}</span>
+              </span>
+              <b>{shortDate(entry.date)}</b>
+            </div>
+          ))}
         </div>
-
-        <button
-          type="button"
-          className="as-lnav"
-          aria-label="Later labs"
-          disabled={o >= N - WINDOW}
-          onClick={handleNext}
-        >
+        <button type="button" className="as-lnav" aria-label="Later sessions" disabled={o >= max} onClick={() => setOffset(Math.min(max, o + WINDOW))}>
           <ChevronRight size={15} strokeWidth={2.4} aria-hidden="true" />
         </button>
       </div>
-
-      {/* Mini legend */}
       <div className="as-rl-legend">
         <span className="as-rl-leg-p"><Check size={9} strokeWidth={3} aria-hidden="true" /> Present</span>
-        <span className="as-rl-leg-a"><X     size={9} strokeWidth={3} aria-hidden="true" /> Absent</span>
-        <span className="as-rl-leg-cur">Highlighted = today</span>
+        <span className="as-rl-leg-a"><X size={9} strokeWidth={3} aria-hidden="true" /> Absent</span>
       </div>
     </div>
   );
@@ -110,61 +69,48 @@ function RecentLabs({ pres, offset, onPage }) {
 
 /* ---------- Main ResolveCard ---------- */
 export default function ResolveCard({
-  row, left, saved, labOffset, onLabs,
+  row, left, saved, locked, history = [], section,
   onResolve, onKeepAbsent,
-  reviewRows = [], onSelectStudent,
+  reviewRows = [], onSelectStudent, photos = null,
 }) {
   const { attendanceThreshold: thr } = useSettings();
-  const [busy, setBusy] = useState(null);
-  const timer = useRef(null);
-  useEffect(() => () => window.clearTimeout(timer.current), []);
 
-  /* ---- Empty / saved state ---- */
   if (!row) {
     return (
-      <section className="as-card as-res db-rise" aria-live="polite" aria-label="Resolve">
-        <div className="as-rhd">
-          <span className="as-ri2">
-            <Check size={16} strokeWidth={2} aria-hidden="true" />
-          </span>
-          <div>
-            <h4>Resolve</h4>
-            <div className="as-rs">Click a student in Needs review</div>
+      <section className="as-card as-res as-res-empty db-rise" aria-live="polite" aria-label="Student under review">
+        <div className="as-res-inner">
+          <div className="as-res-title">
+            <h4>Student under review</h4>
+            <span className="as-res-pos">{left ? `${left} left` : "0 left"}</span>
           </div>
-        </div>
-        <div className="as-lempty fill">
-          <b>{saved ? "Record saved" : "All resolved"}</b>
-          {saved ? "Use Edit to make changes." : "Nobody left to review."}
+          <div className="as-lempty fill as-res-none">
+            <span className="as-ri2">
+              <Check size={18} strokeWidth={2.2} aria-hidden="true" />
+            </span>
+            <b>{saved ? "Record saved" : left ? "Pick a student" : "All resolved"}</b>
+            {saved ? "Use Edit details to make changes." : left ? "Click a student in Needs review." : "Nobody left to review."}
+          </div>
         </div>
       </section>
     );
   }
 
-  const o = OVERALL[row.j];
-  const band = bandOf(o.pct, thr);
+  const attended = history.filter((h) => h.present).length;
+  const pct = history.length ? Math.round((attended / history.length) * 100) : null;
+  const band = pct == null ? null : bandOf(pct, thr);
+  const lastPresent = [...history].reverse().find((h) => h.present);
   const studentIndex = reviewRows.findIndex((s) => s.j === row.j);
-
   const canPrev = studentIndex > 0;
   const canNext = studentIndex >= 0 && studentIndex < reviewRows.length - 1;
+  const disabled = saved || locked;
 
-  const act = (k) => {
-    if (k === "abs") return onKeepAbsent(row);
-    if (k === "man") return onResolve(row, "man");
-    // NFC and Retake photo wait for the reader / the new photo (900ms in the demo)
-    setBusy(k);
-    timer.current = window.setTimeout(() => {
-      setBusy(null);
-      onResolve(row, k);
-    }, reducedMotion() ? 0 : 900);
-  };
+  const actions = [
+    { key: "man", label: "Mark present", Icon: Hand, tone: "br", disabled, onClick: () => onResolve(row, "man") },
+    { key: "abs", label: "Keep absent", Icon: CircleMinus, tone: "ne", disabled, onClick: () => onKeepAbsent(row) },
+  ];
 
   return (
-    <section
-      className="as-card as-res as-res-with-nav db-rise"
-      aria-live="polite"
-      aria-label={`Resolve ${row.name}`}
-    >
-      {/* ── LEFT side-arrow: previous student ── */}
+    <section className="as-card as-res as-res-with-nav db-rise" aria-live="polite" aria-label={`Resolve ${row.name}`}>
       <button
         type="button"
         className={`as-side-nav as-side-nav-l${canPrev ? "" : " as-side-nav-off"}`}
@@ -176,70 +122,59 @@ export default function ResolveCard({
         <ChevronLeft size={22} strokeWidth={1.6} aria-hidden="true" />
       </button>
 
-      {/* ── MAIN CONTENT ── */}
       <div className="as-res-inner">
-        {/* Student identity row */}
+        <div className="as-res-title">
+          <h4>Student under review</h4>
+          <span className="as-res-pos" aria-label={`Student ${studentIndex + 1} of ${reviewRows.length}`}>
+            {studentIndex + 1} of {reviewRows.length}
+          </span>
+        </div>
         <div className="as-rhd">
           <span className="as-av lg" aria-hidden="true">
             {initials(row.name)}
           </span>
           <div style={{ minWidth: 0 }}>
             <h4>{row.name}</h4>
-            <div className="as-rs">{row.roll} · {SESSION.group}</div>
+            <div className="as-rs">Roll {row.roll} · Batch {section}</div>
           </div>
-          <span className={`as-spill ${band}`} title="Overall attendance">
-            {o.pct}%&thinsp;·&thinsp;{BAND_LABEL[band]}
-          </span>
-          {/* Position indicator */}
-          <span className="as-res-pos" aria-label={`Student ${studentIndex + 1} of ${reviewRows.length}`}>
-            {studentIndex + 1}/{reviewRows.length}
-          </span>
-        </div>
-
-        {/* Reason */}
-        <div className="as-rwhy">
-          <CircleAlert size={14} strokeWidth={2} aria-hidden="true" />
-          <span>{row.why}</span>
-        </div>
-
-        {/* Action buttons */}
-        <div className="as-ropts">
-          {busy ? (
-            <div className="as-busy" role="status">
-              <span className="as-spin" aria-hidden="true" />
-              {busy === "nfc"
-                ? `Waiting for ${row.name.split(" ")[0]}'s card…`
-                : "Matching the new photo…"}
-            </div>
+          {band ? (
+            <span className={`as-spill ${band}`} title="Attendance in this class so far">
+              {pct}%&thinsp;·&thinsp;{BAND_LABEL[band]}
+            </span>
           ) : (
-            ACTIONS.map(([k, label, Icon, tone]) => (
-              <button
-                key={k}
-                type="button"
-                className="as-ro"
-                disabled={saved}
-                onClick={() => act(k)}
-              >
-                <span className={`as-ati ${tone}`}>
-                  <Icon size={15} strokeWidth={2} aria-hidden="true" />
-                </span>
-                {label}
-              </button>
-            ))
+            <span className="as-spill ne" title="No earlier sessions in this class">New</span>
           )}
         </div>
 
-        {/* Recent labs */}
-        <RecentLabs pres={o.pres} offset={labOffset} onPage={onLabs} />
+        {photos}
 
-        {/* Footer */}
+        <div className="as-rwhy">
+          <CircleAlert size={14} strokeWidth={2} aria-hidden="true" />
+          <span>
+            {row.why}
+            {!row.faceEnrolled && " · no enrolled face, so the photo can never match them"}
+          </span>
+        </div>
+
+        <RecentSessions history={history} />
+
+        <div className="as-ropts">
+          {actions.map(({ key, label, Icon, tone, disabled: off, onClick }) => (
+            <button key={key} type="button" className="as-ro" disabled={off} onClick={onClick}>
+              <span className={`as-ati ${tone}`}>
+                <Icon size={15} strokeWidth={2} aria-hidden="true" />
+              </span>
+              {label}
+            </button>
+          ))}
+        </div>
+
         <div className="as-rft">
-          <span>{o.last ? `Last attended ${shortDate(o.last)}` : "No attendance yet"}</span>
+          <span>{lastPresent ? `Last attended ${shortDate(lastPresent.date)}` : "No attendance yet"}</span>
           <span>{left} left to review</span>
         </div>
       </div>
 
-      {/* ── RIGHT side-arrow: next student ── */}
       <button
         type="button"
         className={`as-side-nav as-side-nav-r${canNext ? "" : " as-side-nav-off"}`}

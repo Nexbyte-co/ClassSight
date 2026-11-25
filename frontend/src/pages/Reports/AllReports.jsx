@@ -13,6 +13,7 @@ import "../../styles/Reports.css";
 import { useSettings } from "../../context/settings/SettingsContext";
 import TeacherShell from "../../components/navigation/TeacherShell";
 import { useDialogA11y } from "../../hooks/useDialogA11y";
+import { useReports } from "./useReports";
 
 function AllReports() {
   const navigate = useNavigate();
@@ -30,92 +31,34 @@ function AllReports() {
   const [activeModalLecture, setActiveModalLecture] = useState(null);
   const [studentSearchQuery, setStudentSearchQuery] = useState("");
 
-  // All Recorded Lectures for Professor Jhonsy (Expanded list)
-  const allRecordedLectures = [
-    {
-      id: "lec-1",
-      course: "Data Structures",
-      code: "UCE301",
-      section: "3C2",
-      time: "08:00–08:50",
-      room: "LP402",
-      attendancePct: 86,
-      totalLectures: 28,
-    },
-    {
-      id: "lec-2",
-      course: "Database Systems",
-      code: "UCE305",
-      section: "3C2",
-      time: "10:00–10:50",
-      room: "LP402",
-      attendancePct: 82,
-      totalLectures: 26,
-    },
-    {
-      id: "lec-3",
-      course: "Operating Systems",
-      code: "UCE304",
-      section: "3C1",
-      time: "02:00–02:50",
-      room: "LT101",
-      attendancePct: 91,
-      totalLectures: 30,
-    },
-    {
-      id: "lec-4",
-      course: "Computer Networks",
-      code: "UCE308",
-      section: "3C1",
-      time: "11:00–11:50",
-      room: "LT102",
-      attendancePct: 88,
-      totalLectures: 25,
-    },
-    {
-      id: "lec-5",
-      course: "Algorithm Design",
-      code: "UCE312",
-      section: "3C2",
-      time: "09:00–09:50",
-      room: "LP402",
-      attendancePct: 79,
-      totalLectures: 27,
-    },
-    {
-      id: "lec-6",
-      course: "Software Engineering",
-      code: "UCE315",
-      section: "3C3",
-      time: "03:00–03:50",
-      room: "LT201",
-      attendancePct: 84,
-      totalLectures: 24,
-    },
-    {
-      id: "lec-7",
-      course: "Data Structures Lab",
-      code: "UCE301L",
-      section: "3C2",
-      time: "04:00–05:40",
-      room: "CSLab-3",
-      attendancePct: 94,
-      totalLectures: 14,
-    },
-  ];
+  // One row per class of this teacher, from their real saved attendance
+  const { BATCHES, SEMESTER_START, SEMESTER_END, studentRows, loading, error } = useReports();
+  const allRecordedLectures = BATCHES.map((b) => {
+    const slot = b.lectures[0];
+    const hhmm = (t) => String(t).slice(0, 5);
+    return {
+      id: `class-${b.id}`,
+      batchIndex: b.index,
+      course: b.name,
+      code: b.code,
+      section: b.group,
+      time: slot ? `${hhmm(slot.start_time)}–${hhmm(slot.end_time)}` : "No slot yet",
+      room: slot?.room || "—",
+      attendancePct: b.avg,
+      totalLectures: b.sessions.length,
+    };
+  });
+  const courseNames = [...new Set(allRecordedLectures.map((l) => l.course))].sort();
 
-  const studentRoster = [
-    { roll: "3C2-001", name: "Aarav Sharma", attended: 25, total: 28 },
-    { roll: "3C2-002", name: "Ananya Gupta", attended: 26, total: 28 },
-    { roll: "3C2-003", name: "Devansh Patel", attended: 19, total: 28 },
-    { roll: "3C2-004", name: "Isha Malhotra", attended: 27, total: 28 },
-    { roll: "3C2-005", name: "Kabir Mehta", attended: 20, total: 28 },
-    { roll: "3C2-006", name: "Meera Nair", attended: 24, total: 28 },
-    { roll: "3C2-007", name: "Rohan Verma", attended: 28, total: 28 },
-    { roll: "3C2-008", name: "Sanya Chawla", attended: 18, total: 28 },
-    { roll: "3C2-009", name: "Tanmay Joshi", attended: 23, total: 28 },
-    { roll: "3C2-010", name: "Zoya Khan", attended: 25, total: 28 },
-  ];
+  // Students of the class whose breakdown is open: attended / held over all saved sessions
+  const studentRoster = activeModalLecture
+    ? studentRows(activeModalLecture.batchIndex, false, SEMESTER_START, SEMESTER_END).map((r) => ({
+        roll: r.roll,
+        name: r.name,
+        attended: r.a,
+        total: r.h,
+      }))
+    : [];
 
   const filteredLectures = allRecordedLectures
     .filter((lec) => {
@@ -131,8 +74,8 @@ function AllReports() {
     .sort((a, b) => {
       if (sortBy === "name-asc") return a.course.localeCompare(b.course);
       if (sortBy === "name-desc") return b.course.localeCompare(a.course);
-      if (sortBy === "att-high") return b.attendancePct - a.attendancePct;
-      if (sortBy === "att-low") return a.attendancePct - b.attendancePct;
+      if (sortBy === "att-high") return (b.attendancePct ?? -1) - (a.attendancePct ?? -1);
+      if (sortBy === "att-low") return (a.attendancePct ?? 101) - (b.attendancePct ?? 101);
       return 0;
     });
 
@@ -207,12 +150,9 @@ function AllReports() {
                 <span>Filter:</span>
                 <select value={filterCourse} onChange={(e) => setFilterCourse(e.target.value)}>
                   <option value="all">All Courses</option>
-                  <option value="Data Structures">Data Structures</option>
-                  <option value="Database Systems">Database Systems</option>
-                  <option value="Operating Systems">Operating Systems</option>
-                  <option value="Computer Networks">Computer Networks</option>
-                  <option value="Algorithm Design">Algorithm Design</option>
-                  <option value="Software Engineering">Software Engineering</option>
+                  {courseNames.map((name) => (
+                    <option key={name} value={name}>{name}</option>
+                  ))}
                 </select>
               </div>
             </div>
@@ -228,7 +168,7 @@ function AllReports() {
 
             {filteredLectures.length === 0 ? (
               <div style={{ padding: "32px", textAlign: "center", color: "var(--cs-text-muted)" }}>
-                No recorded lectures found matching your criteria.
+                {loading ? "Loading…" : error ? `We couldn't load your classes: ${error}` : allRecordedLectures.length ? "No classes match your search." : "You have no classes yet."}
               </div>
             ) : (
               filteredLectures.map((lec) => (
@@ -256,7 +196,7 @@ function AllReports() {
                   </div>
 
                   <div className="attendance-action-cell">
-                    <span className="attendance-pct-badge">{lec.attendancePct}%</span>
+                    <span className="attendance-pct-badge">{lec.attendancePct == null ? "—" : `${lec.attendancePct}%`}</span>
                     <button
                       type="button"
                       className="btn-view-session"
@@ -327,7 +267,7 @@ function AllReports() {
                         s.roll.toLowerCase().includes(studentSearchQuery.toLowerCase())
                     )
                     .map((student) => {
-                      const pct = Math.round((student.attended / student.total) * 100);
+                      const pct = student.total > 0 ? Math.round((student.attended / student.total) * 100) : 0;
                       const isDetained = pct < attendanceThreshold;
                       return (
                         <tr key={student.roll}>

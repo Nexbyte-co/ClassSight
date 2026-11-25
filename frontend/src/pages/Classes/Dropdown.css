@@ -1,0 +1,54 @@
+/* src/pages/Classes/Dropdown.css
+   The teacher area's dropdown (Dropdown.jsx): Classes toolbar, Students and Reports filters. */
+/* Dropdowns (filters + sort): one trigger and one floating menu style */
+.db-page.teacher-ui .cx-dd { position: relative; min-width: 0; }
+.db-page.teacher-ui .cx-dd-btn {
+  width: 100%; height: 40px; display: flex; align-items: center; gap: 6px; padding: 0 10px 0 12px; border-radius: 10px;
+  border: 1px solid var(--db-line); background: var(--db-card); color: var(--db-ink); font: inherit; text-align: left; cursor: pointer;
+  transition: border-color 0.16s, background-color 0.16s, box-shadow 0.16s;
+}
+.db-page.teacher-ui .cx-dd-btn:hover { border-color: var(--db-hover-line); background: var(--db-top-bg); }
+.db-page.teacher-ui .cx-dd-btn:focus-visible, .db-page.teacher-ui .cx-dd.open .cx-dd-btn {
+  outline: 0; border-color: var(--db-mr); box-shadow: 0 0 0 3px color-mix(in srgb, var(--db-mr) 16%, transparent);
+}
+.db-page.teacher-ui .cx-dd.on .cx-dd-btn { border-color: color-mix(in srgb, var(--db-mr) 40%, var(--db-line)); background: color-mix(in srgb, var(--db-mr) 6%, var(--db-card)); }
+.db-page.teacher-ui .cx-dd-ico { flex: none; color: var(--db-mr-text); }
+.db-page.teacher-ui .cx-dd-k { flex: none; font-size: 12px; font-weight: 500; color: var(--db-muted); }
+.db-page.teacher-ui .cx-dd.on .cx-dd-k { color: var(--db-mr-text); }
+.db-page.teacher-ui .cx-dd-v { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13px; font-weight: 600; }
+.db-page.teacher-ui .cx-dd-chev { flex: none; margin-left: auto; color: var(--db-muted); transition: transform 0.18s cubic-bezier(0.2, 0.7, 0.2, 1); }
+.db-page.teacher-ui .cx-dd.open .cx-dd-chev { transform: rotate(180deg); color: var(--db-mr-text); }
+
+.db-page.teacher-ui .cx-dd-menu {
+  position: absolute; z-index: 30; top: calc(100% + 6px); left: 0; min-width: max(100%, 184px); max-height: 280px; overflow-y: auto;
+  margin: 0; padding: 5px; display: grid; gap: 2px; list-style: none; outline: 0; border-radius: 12px;
+  border: 1px solid var(--db-card-line); background: var(--db-card);
+  box-shadow: 0 12px 32px color-mix(in srgb, var(--db-ink) 14%, transparent), 0 2px 6px color-mix(in srgb, var(--db-ink) 6%, transparent);
+  scrollbar-width: thin; scrollbar-color: var(--db-scroll) transparent;
+  opacity: 0; visibility: hidden; transform: translateY(-4px); pointer-events: none;
+  transition: opacity 0.16s ease-out, transform 0.16s ease-out, visibility 0s linear 0.16s;
+}
+.db-page.teacher-ui .cx-dd-menu.right { left: auto; right: 0; }
+.db-page.teacher-ui .cx-dd.open .cx-dd-menu { opacity: 1; visibility: visible; transform: none; pointer-events: auto; transition-delay: 0s; }
+.db-page.teacher-ui .cx-dd-menu li {
+  position: relative; display: flex; align-items: center; justify-content: space-between; gap: 16px; height: 36px; padding: 0 10px 0 14px;
+  border-radius: 8px; font-size: 13px; font-weight: 500; white-space: nowrap; cursor: pointer;
+  color: color-mix(in srgb, var(--db-ink) 78%, var(--db-card));
+  transition: background-color 0.14s ease, color 0.14s ease;
+}
+/* Thin maroon marker on the left: faint on hover/keyboard cursor, solid on the selected option */
+.db-page.teacher-ui .cx-dd-menu li::before {
+  content: ""; position: absolute; left: 5px; top: 10px; bottom: 10px; width: 3px; border-radius: 2px;
+  background: var(--db-mr); opacity: 0; transform: scaleY(0.4); transition: opacity 0.14s ease, transform 0.14s ease;
+}
+.db-page.teacher-ui .cx-dd-menu li svg { flex: none; width: 15px; height: 15px; color: var(--db-mr-text); }
+.db-page.teacher-ui .cx-dd-menu li.cur { background: color-mix(in srgb, var(--db-mr) 5%, var(--db-card)); color: var(--db-ink); }
+.db-page.teacher-ui .cx-dd-menu li.cur::before { opacity: 0.35; transform: none; }
+.db-page.teacher-ui .cx-dd-menu li[aria-selected="true"] { background: color-mix(in srgb, var(--db-mr) 10%, var(--db-card)); color: var(--db-mr-text); font-weight: 600; }
+.db-page.teacher-ui .cx-dd-menu li[aria-selected="true"]::before { opacity: 1; transform: none; }
+.db-page.teacher-ui .cx-dd-menu li[aria-selected="true"].cur { background: color-mix(in srgb, var(--db-mr) 15%, var(--db-card)); }
+/* Keyboard users see a ring on the highlighted option */
+.db-page.teacher-ui .cx-dd-menu:focus-visible li.cur { box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--db-mr) 45%, transparent); }
+@media (prefers-reduced-motion: reduce) {
+  .db-page.teacher-ui :is(.cx-dd-btn, .cx-dd-chev, .cx-dd-menu, .cx-dd-menu li, .cx-dd-menu li::before) { transition: none; }
+}

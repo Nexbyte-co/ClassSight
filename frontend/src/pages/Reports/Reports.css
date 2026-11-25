@@ -466,7 +466,8 @@
 .db-page.teacher-ui .rp-k { font-size: 12.5px; }
 .db-page.teacher-ui .rp-abl { font-size: 13.5px; }
 .db-page.teacher-ui .rp-abst b,
-.db-page.teacher-ui .rp-sels label span { font-size: 12px; }
+.db-page.teacher-ui .rp-sels label span,
+.db-page.teacher-ui .rp-sel-f > span { font-size: 12px; }
 .db-page.teacher-ui .rp-abst span { font-size: 16px; }
 .db-page.teacher-ui .rp-mt { font-size: 17px; }
 .db-page.teacher-ui .rp-cg i { font-size: 12.5px; }
@@ -481,3 +482,11 @@
 .db-page.teacher-ui .rp-snm { font-size: 14.5px; }
 .db-page.teacher-ui .rp-ssb { font-size: 13px; }
 .db-page.teacher-ui .rp-page button:active:not(:disabled) { transform: scale(0.98); }
+
+/* Subject / Batch pickers and the "View more" sort use the shared Dropdown */
+.db-page.teacher-ui .rp-sel-f { display: grid; gap: 6px; min-width: 0; }
+.db-page.teacher-ui .rp-sel-f > span { font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--rp-muted); }
+.db-page.teacher-ui .rp-vat .rp-vsel-dd { width: 200px; margin-left: auto; flex: none; }
+@media (max-width: 720px) {
+  .db-page.teacher-ui .rp-vat .rp-vsel-dd { width: 100%; margin-left: 0; }
+}

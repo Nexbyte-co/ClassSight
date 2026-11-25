@@ -1,6 +1,6 @@
 // src/pages/Students/StudentCard.jsx — one student in a status lane (click to load them into the student deck)
 import AttendanceRing from "../../components/attendance/AttendanceRing";
-import { initials } from "./studentsMock";
+import { initials } from "../../utils/initials";
 
 export default function StudentCard({ student, band, selected, onSelect }) {
   return (

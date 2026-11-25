@@ -164,3 +164,168 @@
   .db-page.teacher-ui .sc-blk, .db-page.teacher-ui .sc-cr, .db-page.teacher-ui .sc-today { transition: none; }
   .db-page.teacher-ui .sc-ttb, .db-page.teacher-ui .sc-pop { animation: none; }
 }
+
+/* The "No lectures yet / loading / error" line is an extra row above the timetable: give it its own row so
+   the timetable keeps the remaining height instead of collapsing into the last row. */
+@media (min-width: 1101px) and (min-height: 700px) {
+  .db-page.teacher-ui .sc-page:has(> .sc-sub[role="status"]) { grid-template-rows: auto auto minmax(0, 1fr); }
+  .db-page.teacher-ui .sc-page > .sc-sub[role="status"] { margin: 0 4px !important; }
+}
+
+/* Empty week: a calm card over the timetable instead of a line of text above it */
+.db-page.teacher-ui .sc-tt { position: relative; }
+.db-page.teacher-ui .sc-empty {
+  position: absolute; left: 50%; top: 55%; transform: translate(-50%, -50%); width: min(420px, calc(100% - 32px));
+  display: grid; justify-items: center; gap: 8px; padding: 28px 26px; text-align: center;
+  border: 1px solid var(--db-card-line); border-radius: 16px; background: var(--db-card); box-shadow: var(--db-shadow);
+  animation: sc-fade 0.3s ease;
+}
+.db-page.teacher-ui .sc-empty-ic {
+  width: 52px; height: 52px; display: grid; place-items: center; margin-bottom: 4px; border-radius: 14px;
+  background: var(--db-badge-bg, rgba(122, 18, 24, 0.08)); color: var(--db-mr);
+}
+.db-page.teacher-ui .sc-empty b { font-size: 16px; font-weight: 700; color: var(--db-ink); }
+.db-page.teacher-ui .sc-empty p { margin: 0; font-size: 13px; line-height: 1.55; color: var(--db-muted); }
+.db-page.teacher-ui .sc-cl-empty {
+  display: grid; justify-items: center; gap: 8px; margin-top: 8px; padding: 22px 12px; text-align: center;
+  border: 1px dashed var(--db-row-line); border-radius: 12px; color: var(--db-muted); font-size: 13px;
+}
+@media (prefers-reduced-motion: reduce) { .db-page.teacher-ui .sc-empty { animation: none; } }
+
+/* Vertical scroll: the day keeps a readable height (about 64px an hour) and the timetable scrolls up and down,
+   with the day header staying on top. */
+.db-page.teacher-ui .sc-tt { overflow-y: auto; scrollbar-gutter: stable; }
+.db-page.teacher-ui .sc-tti { height: auto; min-height: max(100%, 860px); }
+.db-page.teacher-ui .sc-tth { position: sticky; top: 0; z-index: 4; background: var(--db-card); }
+.db-page.teacher-ui .sc-tt:hover { scrollbar-color: var(--db-scroll) transparent; }
+.db-page.teacher-ui .sc-tt::-webkit-scrollbar { width: 8px; }
+.db-page.teacher-ui .sc-empty { top: 260px; transform: translate(-50%, 0); }
+
+/* ===== Timetable grid (v2): rows are the 50-minute periods from 08:00, Monday first ===== */
+.db-page.teacher-ui .sc2 {
+  position: relative; min-height: 0; overflow: auto; border: 1px solid var(--db-card-line); border-radius: 16px;
+  background: var(--db-card); box-shadow: var(--db-shadow); scrollbar-width: thin; scrollbar-color: var(--db-scroll) transparent;
+}
+.db-page.teacher-ui .sc2-in { min-width: 640px; }
+.db-page.teacher-ui .sc2-head,
+.db-page.teacher-ui .sc2-body { display: grid; grid-template-columns: 68px repeat(var(--cols), minmax(0, 1fr)); }
+.db-page.teacher-ui .sc2-head { position: sticky; top: 0; z-index: 5; background: var(--db-card); border-bottom: 1px solid var(--db-row-line); }
+.db-page.teacher-ui .sc2-corner { display: grid; place-items: end center; padding: 0 0 12px; font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--db-muted); }
+.db-page.teacher-ui .sc2-day { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 10px 4px 10px; border-left: 1px solid var(--db-row-line); }
+.db-page.teacher-ui .sc2-day span { font-size: 11px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; color: var(--db-muted); }
+.db-page.teacher-ui .sc2-day b { display: grid; place-items: center; min-width: 32px; height: 32px; border-radius: 999px; font-size: 16px; font-weight: 700; color: var(--db-ink); transition: background-color 0.2s; }
+.db-page.teacher-ui .sc2-day.td { background: color-mix(in srgb, var(--db-mr) 6%, transparent); }
+.db-page.teacher-ui .sc2-day.td span { color: var(--db-mr-text); }
+.db-page.teacher-ui .sc2-day.td b { background: var(--db-mr); color: #fff; box-shadow: 0 4px 10px rgba(123, 17, 19, 0.3); }
+
+.db-page.teacher-ui .sc2-body { position: relative; animation: sc-fade 0.25s ease; }
+.db-page.teacher-ui .sc2-times { display: grid; grid-auto-rows: var(--row); }
+.db-page.teacher-ui .sc2-time { display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 1px; padding-top: 6px; border-bottom: 1px solid var(--db-row-line); }
+.db-page.teacher-ui .sc2-time b { font-size: 12px; font-weight: 700; color: var(--db-ink); font-variant-numeric: tabular-nums; }
+.db-page.teacher-ui .sc2-time small { font-size: 10px; font-weight: 600; color: var(--db-muted); }
+.db-page.teacher-ui .sc2-col {
+  position: relative; border-left: 1px solid var(--db-row-line);
+  background-image: linear-gradient(to bottom, transparent calc(var(--row) - 1px), var(--db-row-line) 0);
+  background-size: 100% var(--row);
+}
+.db-page.teacher-ui .sc2-col.td { background-color: color-mix(in srgb, var(--db-mr) 4%, transparent); }
+.db-page.teacher-ui .sc2-now { position: absolute; left: 0; right: 0; height: 0; border-top: 2px solid var(--db-mr); z-index: 3; pointer-events: none; }
+.db-page.teacher-ui .sc2-now::before { content: ""; position: absolute; left: -5px; top: -6px; width: 10px; height: 10px; border-radius: 50%; background: var(--db-mr); box-shadow: 0 0 0 4px color-mix(in srgb, var(--db-mr) 20%, transparent); }
+
+.db-page.teacher-ui .sc2-blk {
+  position: absolute; left: 4px; right: 4px; box-sizing: border-box; overflow: hidden; cursor: pointer;
+  display: flex; flex-direction: column; gap: 2px; padding: 6px 8px 6px 10px;
+  border-radius: 10px; border: 1px solid color-mix(in srgb, var(--ac) 28%, transparent); border-left: 4px solid var(--ac);
+  background: color-mix(in srgb, var(--ac) 10%, var(--db-card)); color: var(--db-ink);
+  transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.2s ease; animation: sc2-in 0.3s cubic-bezier(0.2, 0.8, 0.3, 1) backwards;
+}
+@keyframes sc2-in { from { opacity: 0; transform: translateY(6px) scale(0.98); } to { opacity: 1; transform: none; } }
+.db-page.teacher-ui .sc2-blk:hover, .db-page.teacher-ui .sc2-blk.open { transform: translateY(-1px); box-shadow: 0 8px 18px color-mix(in srgb, var(--ac) 25%, transparent); z-index: 2; }
+.db-page.teacher-ui .sc2-blk:focus-visible { outline: 2px solid var(--db-mr); outline-offset: 1px; z-index: 2; }
+.db-page.teacher-ui .sc2-blk.dim { opacity: 0.28; }
+.db-page.teacher-ui .sc2-blk.hi { box-shadow: 0 0 0 2px var(--ac), 0 8px 18px rgba(15, 23, 42, 0.12); z-index: 1; }
+.db-page.teacher-ui .sc2-r1 { display: flex; align-items: center; justify-content: space-between; gap: 6px; min-width: 0; }
+.db-page.teacher-ui .sc2-r1 b { font-size: 12.5px; font-weight: 800; color: var(--ac); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.db-page.teacher-ui .sc2-type { flex: none; padding: 1px 6px; border-radius: 6px; background: color-mix(in srgb, var(--ac) 16%, transparent); color: var(--ac); font-size: 10px; font-weight: 700; }
+.db-page.teacher-ui .sc2-r2 { font-size: 11.5px; font-weight: 600; color: var(--db-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.db-page.teacher-ui .sc2-r3 { margin-top: 2px; font-size: 12px; font-weight: 600; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+@media (max-width: 900px) { .db-page.teacher-ui .sc2-type { display: none; } }
+@media (prefers-reduced-motion: reduce) { .db-page.teacher-ui .sc2-blk, .db-page.teacher-ui .sc2-body { animation: none; transition: none; } }
+.db-page.teacher-ui .sc2-batch { flex: none; padding: 1px 6px; border-radius: 6px; background: color-mix(in srgb, var(--ac) 16%, transparent); color: var(--ac); font-size: 10.5px; font-weight: 700; }
+.db-page.teacher-ui .sc-grid { grid-template-columns: minmax(0, 1fr) 260px; }
+@media (max-width: 1100px) { .db-page.teacher-ui .sc-grid { grid-template-columns: 1fr; } }
+.db-page.teacher-ui .sc2-r1 b { font-size: 13px; letter-spacing: 0.01em; }
+.db-page.teacher-ui .sc2-r2 { display: flex; align-items: center; gap: 5px; min-width: 0; }
+.db-page.teacher-ui .sc2-r2 > span:last-child { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.db-page.teacher-ui .sc2-venue { display: flex; align-items: center; gap: 4px; min-width: 0; font-size: 12px; font-weight: 700; color: var(--ac); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.db-page.teacher-ui .sc2-venue.none { color: var(--db-muted); font-weight: 500; font-style: italic; }
+.db-page.teacher-ui .sc2-venue svg { flex: none; }
+.db-page.teacher-ui .sc2-r1 b { font-size: 14px; }
+.db-page.teacher-ui .sc2-r2 { font-size: 12px; }
+.db-page.teacher-ui .sc2-corner { padding: 0; }
+.db-page.teacher-ui .sc2-time { padding-top: 8px; }
+.db-page.teacher-ui .sc2-time b { font-size: 12.5px; }
+.db-page.teacher-ui .sc-grid { grid-template-columns: minmax(0, 1fr) 230px; }
+.db-page.teacher-ui .sc2-blk { gap: 3px; }
+.db-page.teacher-ui .sc2-r2 { flex-wrap: wrap; row-gap: 2px; }
+.db-page.teacher-ui .sc2-r2 > span:last-child { overflow: visible; }
+
+/* Admin: venue editor inside the slot pop-up */
+.db-page .sc-pop .sc-venue-edit { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.db-page .sc-pop .sc-venue-edit input {
+  width: 100px; height: 28px; padding: 0 8px; border-radius: 7px; border: 1px solid var(--db-line);
+  background: var(--db-card); color: var(--db-ink); font: inherit; font-size: 12px;
+}
+.db-page .sc-pop .sc-venue-edit input:focus-visible { outline: 0; border-color: var(--db-mr); box-shadow: 0 0 0 3px color-mix(in srgb, var(--db-mr) 16%, transparent); }
+.db-page .sc-pop .sc-venue-edit button {
+  height: 28px; padding: 0 10px; border-radius: 7px; border: 0; background: var(--db-mr); color: #fff;
+  font: inherit; font-size: 12px; font-weight: 600; cursor: pointer;
+}
+.db-page .sc-pop .sc-venue-edit button:disabled { opacity: 0.45; cursor: default; }
+.db-page .sc-pop .sc-venue-edit small { flex-basis: 100%; font-size: 11px; font-weight: 600; }
+.db-page .sc-pop .sc-venue-edit .ok { color: var(--db-green, #047857); }
+.db-page .sc-pop .sc-venue-edit .err { color: var(--db-red, #b91c1c); }
+
+/* Side column: the Classes card, and on the admin's editable timetable the Save / Cancel card below it */
+.db-page .sc-side.plain { display: contents; }
+.db-page .sc-side:not(.plain) { display: flex; flex-direction: column; gap: 14px; min-height: 0; }
+.db-page .sc-side:not(.plain) .sc-spn { flex: 1 1 0; min-height: 160px; }
+
+/* Admin: drag and drop */
+.db-page .sc2-blk.drag { cursor: grab; }
+.db-page .sc2-blk.drag:active { cursor: grabbing; }
+.db-page .sc2-blk.dragging { opacity: 0.35; }
+.db-page .sc2-blk.moved { box-shadow: 0 0 0 2px var(--ac), 0 6px 14px color-mix(in srgb, var(--ac) 22%, transparent); }
+.db-page .sc2-blk.moved::after {
+  content: "moved"; position: absolute; right: 6px; bottom: 5px; padding: 0 5px; border-radius: 5px;
+  background: var(--ac); color: #fff; font-size: 9.5px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase;
+}
+.db-page .sc2-col.drop-on .sc2-blk:not(.dragging) { pointer-events: none; }
+.db-page .sc2-ghost {
+  position: absolute; left: 4px; right: 4px; z-index: 3; display: grid; place-items: center; border-radius: 10px;
+  border: 2px dashed; font-size: 12px; font-weight: 700; pointer-events: none;
+}
+.db-page .sc2-ghost.ok { border-color: var(--db-green, #047857); background: color-mix(in srgb, var(--db-green, #047857) 12%, transparent); color: var(--db-green, #047857); }
+.db-page .sc2-ghost.bad { border-color: var(--db-red, #b91c1c); background: color-mix(in srgb, var(--db-red, #b91c1c) 10%, transparent); color: var(--db-red, #b91c1c); }
+
+.db-page .sc-edit {
+  flex: none; display: grid; gap: 8px; padding: 16px; border: 1px solid var(--db-card-line); border-radius: 14px;
+  background: var(--db-card); box-shadow: var(--db-shadow);
+}
+.db-page .sc-edit h4 {
+  display: flex; align-items: center; gap: 6px; margin: 0; font-size: 12px; font-weight: 600;
+  letter-spacing: 0.06em; text-transform: uppercase; color: var(--db-muted);
+}
+.db-page .sc-edit-hint { margin: 0; font-size: 12px; line-height: 1.4; color: var(--db-muted); }
+.db-page .sc-edit-state { margin: 0; font-size: 12.5px; font-weight: 600; color: var(--db-ink); }
+.db-page .sc-edit-state.ok { color: var(--db-green, #047857); }
+.db-page .sc-edit-state.err { color: var(--db-red, #b91c1c); }
+.db-page .sc-edit-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 2px; }
+.db-page .sc-edit-btns button {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 36px; border-radius: 9px;
+  font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; transition: box-shadow 0.2s, transform 0.2s;
+}
+.db-page .sc-edit-cancel { border: 1px solid var(--db-line); background: var(--db-card); color: var(--db-ink); }
+.db-page .sc-edit-save { border: 0; background: var(--db-mr); color: #fff; }
+.db-page .sc-edit-save:not(:disabled):hover { box-shadow: 0 4px 12px rgba(123, 17, 19, 0.25); transform: translateY(-1px); }
+.db-page .sc-edit-btns button:disabled { opacity: 0.45; cursor: default; }

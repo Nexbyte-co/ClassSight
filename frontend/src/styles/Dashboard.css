@@ -2915,3 +2915,13 @@
   .db-page.teacher-ui .db-dash .db-sched { padding-top: 14px; gap: 12px; }
   .db-page.teacher-ui .db-dash .db-list { min-height: 180px; gap: 10px; }
 }
+
+/* Active session pop-up: read-only facts + venue */
+.db-sess-facts { margin: 0 0 4px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.db-sess-facts div { min-width: 0; padding: 10px 12px; border-radius: 10px; background: var(--cs-card-hover, rgba(0, 0, 0, 0.03)); }
+.db-sess-facts dt { font-size: 11px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: var(--cs-text-muted); }
+.db-sess-facts dd { margin: 3px 0 0; font-size: 13.5px; font-weight: 600; color: var(--cs-text-primary); overflow-wrap: anywhere; }
+.db-sess-note { margin: 6px 0 0; }
+.db-sess-note a { color: var(--cs-crimson); font-weight: 600; }
+.db-sess-err { margin: 4px 0 0; color: var(--cs-danger); font-size: 13px; font-weight: 600; }
+@media (max-width: 560px) { .db-sess-facts { grid-template-columns: 1fr; } }

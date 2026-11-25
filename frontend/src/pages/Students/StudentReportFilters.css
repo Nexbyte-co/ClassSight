@@ -178,3 +178,18 @@
 .sp-page.rp .rp-cmp > .rp-scroll { overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; }
 .sp-page.rp .rp-cmp .rp-bar:hover { transform: none; }
 .sp-page.rp .rp-cmp .rp-bars { min-width: 0; }
+
+/* Course comparison: lighter heading; course rows start at the top of the card instead of floating mid-card */
+.sp-page.rp .rp-cmp .sp-ch h2 { font-weight: 600; }
+.sp-page.rp .rp-cmp .rp-bars { flex: none; justify-content: flex-start; }
+
+/* Course history: bars line up from the left over faint gridlines, so a short selection doesn't leave one lone
+   full-height bar in the middle of an empty card */
+.sp-page.rp .rp-hc::before {
+  content: ""; position: absolute; inset: 0 0 20px; pointer-events: none;
+  border-bottom: 1px solid var(--sp-line);
+  background-image: linear-gradient(to bottom, var(--sp-line) 1px, transparent 1px);
+  background-size: 100% 25%; opacity: 0.7;
+}
+.sp-page.rp .rp-hcols { position: relative; justify-content: flex-start; gap: 10px; }
+.sp-page.rp .rp-hcol { flex: 0 1 44px; }

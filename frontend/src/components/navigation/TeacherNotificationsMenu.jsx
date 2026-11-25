@@ -1,11 +1,12 @@
 // src/components/navigation/TeacherNotificationsMenu.jsx
-// Shared teacher notifications dropdown (demo content supplied by each page).
+// Shared notifications dropdown (the items each page passes in; empty when there is nothing to show).
 // Accessible: aria-expanded/controls, Escape and outside click close it, focus returns
 // to the bell. Pass `open`/`onOpenChange` to coordinate with the profile menu.
 import { useEffect, useId, useRef } from "react";
+import { Link } from "react-router-dom";
 import { Bell } from "lucide-react";
 
-function TeacherNotificationsMenu({ items, open, onOpenChange }) {
+function TeacherNotificationsMenu({ items, hasNew = false, open, onOpenChange }) {
   const panelId = useId();
   const wrapperRef = useRef(null);
   const triggerRef = useRef(null);
@@ -41,14 +42,14 @@ function TeacherNotificationsMenu({ items, open, onOpenChange }) {
         aria-controls={open ? panelId : undefined}
       >
         <Bell size={19} strokeWidth={1.8} aria-hidden="true" />
-        <span className="notification-badge" aria-hidden="true" />
+        {hasNew && <span className="notification-badge" aria-hidden="true" />}
       </button>
 
       {open && (
         <div className="dropdown-menu teacher-notifications-panel" id={panelId} role="region" aria-label="Notifications">
           <div className="dropdown-user-header">
             <div className="dropdown-user-name">Notifications</div>
-            <div className="dropdown-user-email">Classroom attendance alerts · demo content</div>
+            <div className="dropdown-user-email">Updates on your requests to the admin</div>
           </div>
           {items.length === 0 ? (
             <p className="teacher-notification-empty">No notifications.</p>
@@ -63,6 +64,9 @@ function TeacherNotificationsMenu({ items, open, onOpenChange }) {
               ))}
             </ul>
           )}
+          <Link to="/settings?tab=requests" className="teacher-notification-more" onClick={() => onOpenChange(false)}>
+            Open Requests
+          </Link>
         </div>
       )}
     </div>

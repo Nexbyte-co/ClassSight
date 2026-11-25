@@ -11,6 +11,7 @@ from app.core.config import get_settings
 from app.models import Student, StudentPhoto
 from app.schemas.student import FaceEnrollmentOut, StudentOut, StudentPhotoOut, StudentProfileOut
 from app.services import face_recognition, s3_service
+from app.services import sections as sections_service
 
 logger = logging.getLogger(__name__)
 
@@ -19,6 +20,14 @@ S3_ERRORS = (BotoCoreError, ClientError)
 
 MAX_ENROLLMENT_PHOTOS = 5
 MAX_ENROLLMENT_PHOTO_BYTES = 10 * 1024 * 1024
+
+
+def roster_filter(classroom):
+    """SQL conditions for the students who attend a class: its batch, narrowed to its subbatch if it has one."""
+    conds = [Student.section_id.in_(sections_service.family_ids(classroom.section_id))]  # the batch and its subbatches
+    if classroom.subbatch:
+        conds.append(Student.subbatch == classroom.subbatch)
+    return conds
 
 
 def read_image(upload: UploadFile) -> bytes:
@@ -61,7 +70,7 @@ def student_profile(student: Student) -> StudentProfileOut:
         ]
     except S3_ERRORS as exc:
         raise _storage_unavailable(exc) from exc
-    return StudentProfileOut(**StudentOut.model_validate(student).model_dump(), photos=photos)
+    return StudentProfileOut(**StudentOut.model_validate(student).model_dump(), photos=photos, nfc_uid=student.nfc_uid)
 
 
 def enroll_face(db: Session, student: Student, files: list[UploadFile]) -> FaceEnrollmentOut:
@@ -117,3 +126,18 @@ def delete_face(db: Session, student: Student) -> None:
     student.face_embedding = None
     db.commit()
     logger.info("deleted face data for student %s", student.roll_number)
+
+
+def student_for_card(db: Session, classroom, uid: str) -> Student:
+    """The student of `classroom` who owns the NFC card `uid` (already normalised). 404 if the card is not linked
+    to anyone, 422 if it belongs to a student who is not in this class."""
+    student = db.query(Student).filter(Student.nfc_uid == uid).first()
+    if student is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="This card isn't linked to any student")
+    in_class = db.query(Student.id).filter(*roster_filter(classroom), Student.id == student.id).first()
+    if in_class is None:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="This card belongs to a student who isn't in this class",
+        )
+    return student

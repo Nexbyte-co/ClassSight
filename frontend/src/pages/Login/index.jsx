@@ -6,7 +6,7 @@ import { useAuth } from "../../context/AuthContext";
 import "./Login.css";
 
 // Admins have their own area; teachers go to the teacher panel.
-const homeFor = (session) => (session?.apiRole === "admin" ? "/admin" : "/dashboard");
+const homeFor = (session) => (session?.apiRole === "admin" ? "/admin" : session?.apiRole === "student" ? "/student" : "/dashboard");
 
 // With "Remember me" on, the email is prefilled next time (never the password).
 const REMEMBERED_EMAIL_KEY = "classsight_remembered_email";
