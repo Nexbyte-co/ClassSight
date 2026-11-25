@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { Icon } from "./icons";
 import StudentTile from "./StudentTile";
-import { BATCHES, formatRange } from "./reportsMock";
+import { BATCHES, formatRange } from "./reportData";
 
 const TILE_GAP = 12;
 

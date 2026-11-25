@@ -12,11 +12,11 @@ import "../../styles/Dashboard.css";
 import "../../styles/Reports.css";
 import TeacherShell from "../../components/navigation/TeacherShell";
 import { useSettings } from "../../context/settings/SettingsContext";
-import { BATCHES, batchSessions, findBatch } from "./reportsMock";
+import { useReportData, BATCHES, batchSessions, findBatch } from "./reportData";
 
 const fmtDate = (d) => d.toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short", year: "numeric" });
 
-function ReportDetails() {
+function ReportDetailsView() {
   const [searchParams] = useSearchParams();
 
   // Dark mode state
@@ -43,7 +43,7 @@ function ReportDetails() {
   const batch = batchIndex >= 0 ? BATCHES[batchIndex] : null;
   const fallback = courseStatsMap[course] || courseStatsMap["Data Structures"];
   const stats = batch
-    ? { code: batch.code, totalStudents: 30, totalLectures: batchSessions(batchIndex).length }
+    ? { code: batch.code, totalStudents: batchSessions(batchIndex)[0]?.total ?? 0, totalLectures: batchSessions(batchIndex).length }
     : fallback;
 
   // Build lecture-wise rows: one row per day in range mode, or the most
@@ -255,6 +255,16 @@ function ReportDetails() {
             </div>
           </div>
         </main>
+    </TeacherShell>
+  );
+}
+
+function ReportDetails() {
+  const { ready, error } = useReportData();
+  if (ready) return <ReportDetailsView />;
+  return (
+    <TeacherShell active="reports">
+      <main className="db-main"><p style={{ padding: 24 }}>{error || "Loading the report…"}</p></main>
     </TeacherShell>
   );
 }

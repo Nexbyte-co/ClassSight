@@ -1,5 +1,5 @@
 import { Icon } from "./icons";
-import { SEMESTER_START, SEMESTER_END, formatRange } from "./reportsMock";
+import { SEMESTER_START, SEMESTER_END, formatRange } from "./reportData";
 
 const WEEKDAYS = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
 

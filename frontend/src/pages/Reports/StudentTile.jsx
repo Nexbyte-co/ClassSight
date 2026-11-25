@@ -30,7 +30,7 @@ function StudentTile({ student, showBatch }) {
       <div className="rp-sbody">
         <div className="rp-snm">{student.name}</div>
         <div className="rp-ssb">{student.roll}{showBatch ? ` · ${student.batch}` : ""}</div>
-        <div className="rp-ssb rp-ssl">{student.a} of {student.h} labs attended</div>
+        <div className="rp-ssb rp-ssl">{student.a} of {student.h} classes attended</div>
       </div>
       <div className="rp-bat"><Ring pct={student.pct} /></div>
     </div>

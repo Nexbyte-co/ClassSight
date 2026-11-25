@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useDialogA11y } from "../../hooks/useDialogA11y";
 import { Icon } from "./icons";
-import { BATCHES, LOW_ATTENDANCE_PCT, formatRange } from "./reportsMock";
+import { BATCHES, LOW_ATTENDANCE_PCT, formatRange } from "./reportData";
 
 const SORTS = {
   lo: (a, b) => a.pct - b.pct || a.name.localeCompare(b.name),
@@ -12,7 +12,7 @@ const SORTS = {
   roll: (a, b) => a.roll.localeCompare(b.roll),
 };
 
-/** Labs in a row needed to reach 75%: ceil((T·held − attended) / (1 − T)) */
+/** Classes in a row needed to reach 75%: ceil((T·held − attended) / (1 − T)) */
 const labsToReach = (s) => {
   const T = LOW_ATTENDANCE_PCT / 100;
   return Math.max(0, Math.ceil((T * s.h - s.a) / (1 - T) - 1e-9));
@@ -98,7 +98,7 @@ export default function LowestAttendanceModal({ students, batchIndex, allMode, f
           <div className="rp-vgrid rp-vhd" aria-hidden="true">
             <span>Student</span>
             <span>Batch</span>
-            <span>Labs</span>
+            <span>Classes</span>
             <span>Attendance</span>
             <span>To reach {LOW_ATTENDANCE_PCT}%</span>
           </div>
@@ -126,7 +126,7 @@ export default function LowestAttendanceModal({ students, batchIndex, allMode, f
                     </span>
                     <b>{s.pct}%</b>
                   </div>
-                  <span className="rp-vrec">Next {need} lab{need > 1 ? "s" : ""} in a row</span>
+                  <span className="rp-vrec">Next {need} class{need > 1 ? "es" : ""} in a row</span>
                 </div>
               );
             })

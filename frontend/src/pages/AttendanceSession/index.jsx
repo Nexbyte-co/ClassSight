@@ -13,6 +13,7 @@ import { ENROLL_MAX_SIDE, resizeImage } from "../../lib/resizeImage";
 import { useAttendanceSession } from "./useAttendanceSession";
 import SessionHeader from "./SessionHeader";
 import SessionSummary from "./SessionSummary";
+import AttendanceRecord from "./AttendanceRecord";
 import ReviewLane from "./ReviewLane";
 import ResolveCard from "./ResolveCard";
 import AbsentLane from "./AbsentLane";
@@ -194,6 +195,7 @@ function AttendanceSessionPage() {
               <div className="acol c1">
                 <SessionSummary list={visible} saved={state.saved} savedAt={state.savedAt} dateLabel={dateLabel} saving={data.saving} onSave={() => setModal("save")} onEdit={() => { dispatch({ type: "edit" }); announce("Record unlocked for editing"); }} onReset={data.reload} />
                 <ReviewLane rows={review} focus={state.focus} resolved={state.u0 - review.length} total={state.u0} onSelect={(j) => dispatch({ type: "select", j })} />
+                <AttendanceRecord rows={visible} date={date} classLabel={meta.group || "class"} classroomId={classroomId} saved={state.saved} />
               </div>
               <div className="acol c2">
                 <ResolveCard row={focus} left={review.length} reviewRows={review} onSelectStudent={(j) => dispatch({ type: "select", j })} saved={state.saved} labOffset={state.labOffset} onLabs={(offset) => dispatch({ type: "labs", offset })} onResolve={resolve} onKeepAbsent={keepAbsent} onRetake={setRetakeRow} overall={state.overall} labDates={state.labDates} group={meta.group} />

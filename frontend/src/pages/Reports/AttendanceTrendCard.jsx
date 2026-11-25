@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Icon } from "./icons";
-import { BATCHES, formatRange, trendPoints } from "./reportsMock";
+import { BATCHES, formatRange, trendPoints } from "./reportData";
 
 const PAD = { L: 34, R: 12, T: 14, B: 28 };
 

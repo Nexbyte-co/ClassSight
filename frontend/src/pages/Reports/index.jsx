@@ -11,6 +11,7 @@ import LowestAttendanceModal from "./LowestAttendanceModal";
 import WeeklyBreakdownCard from "./WeeklyBreakdownCard";
 import {
   BATCHES,
+  useReportData,
   SEMESTER_START,
   SEMESTER_END,
   batchesOfSubject,
@@ -18,10 +19,10 @@ import {
   lowAttendance,
   rangeFileTag,
   studentRows,
-} from "./reportsMock";
+} from "./reportData";
 import "./Reports.css";
 
-function Reports() {
+function ReportsView() {
   const [subject, setSubject] = useState(0);
   const [batchIndex, setBatchIndex] = useState(batchesOfSubject(0)[0].index);
   const [allMode, setAllMode] = useState(false);
@@ -139,6 +140,22 @@ function Reports() {
       </main>
     </TeacherShell>
   );
+}
+
+function Reports() {
+  const { ready, error } = useReportData();
+  let note = "";
+  if (error) note = error;
+  else if (!ready) note = "Loading the reports…";
+  else if (BATCHES.length === 0) note = "No classes yet, so there is nothing to report.";
+  if (note) {
+    return (
+      <TeacherShell active="reports">
+        <main className="db-main"><p className="rp-sub" style={{ padding: 24 }}>{note}</p></main>
+      </TeacherShell>
+    );
+  }
+  return <ReportsView />;
 }
 
 export default Reports;
